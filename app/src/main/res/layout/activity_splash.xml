@@ -1,70 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/splash_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/splash_background">
-
+    android:background="@android:color/white">
     <ImageView
-        android:id="@+id/splash_bot"
-        android:layout_width="288dp"
-        android:layout_height="288dp"
-        android:layout_gravity="center"
-        android:contentDescription="@null"
-        android:scaleType="fitCenter"
-        android:src="@drawable/splash_bot_icon" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/splash_content_description"
+        android:scaleX="1.0028"
+        android:scaleY="1.0025"
+        android:scaleType="fitXY"
+        android:src="@drawable/splash_map_final"
+        android:translationX="-0.5dp"
+        android:translationY="-0.5dp" />
 
     <LinearLayout
-        android:id="@+id/splash_branding"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="235dp"
+        android:layout_height="58dp"
         android:layout_gravity="center"
-        android:layout_marginTop="150dp"
-        android:gravity="center"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="invisible">
+        android:translationY="105dp">
 
         <TextView
-            android:id="@+id/splash_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-black"
+            android:layout_width="199dp"
+            android:layout_height="34dp"
+            android:fontFamily="@font/inter"
+            android:gravity="center"
             android:includeFontPadding="false"
-            android:letterSpacing="0"
-            android:text="LINGOCOACH"
-            android:textColor="@android:color/white"
-            android:textSize="30sp" />
+            android:text="@string/app_name"
+            android:textColor="#0C1121"
+            android:textSize="28sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/splash_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:fontFamily="sans-serif-medium"
+            android:layout_width="182dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/inter"
+            android:gravity="center"
             android:includeFontPadding="false"
-            android:letterSpacing="0.18"
-            android:text="AI LANGUAGE TUTOR"
-            android:textColor="#E6FFFFFF"
-            android:textSize="12sp" />
+            android:text="@string/splash_tagline"
+            android:textColor="#4F5765"
+            android:textSize="13sp" />
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/splash_progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="280dp"
-        android:layout_height="10dp"
+    <LinearLayout
+        android:layout_width="146dp"
+        android:layout_height="34dp"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="72dp"
-        android:indeterminate="false"
-        android:max="100"
-        android:progress="0"
-        android:progressDrawable="@drawable/intro_progress"
-        android:visibility="invisible" />
+        android:layout_marginBottom="28dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/splash_banner_slot"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal" />
+        <FrameLayout
+            android:id="@+id/splash_loader_track"
+            android:layout_width="134dp"
+            android:layout_height="5dp"
+            android:background="@drawable/bg_splash_loader_track"
+            android:clipChildren="true"
+            android:clipToPadding="true">
+            <View
+                android:id="@+id/splash_loader_segment"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_splash_loader_segment" />
+        </FrameLayout>
 
+        <TextView
+            android:layout_width="146dp"
+            android:layout_height="13dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/inter"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="@string/splash_disclaimer"
+            android:textColor="#4F5765"
+            android:textSize="11sp" />
+    </LinearLayout>
 </FrameLayout>

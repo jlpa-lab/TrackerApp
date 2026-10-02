@@ -1,17 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="splash_purple">#FF7053FF</color>
-    <color name="app_primary">#08A331</color>
-    <color name="phone_tracker_app_background">#FDFDF9</color>
-    <color name="color_text_primary">#111827</color>
-    <color name="color_text_secondary">#6B7280</color>
-    <color name="lumora_surface_container">#1E293B</color>
-    <color name="lumora_lime">#D9F99D</color>
+    <color name="primary">#6750A4</color>
+    <color name="text_primary">#1D1B20</color>
+    <color name="text_secondary">#49454F</color>
+    <color name="text_muted">#8A9099</color>
+    <color name="tracker_green">#16C96B</color>
+    <color name="tracker_green_dark">#087A42</color>
+    <color name="tracker_red">#EF3340</color>
+    <color name="marker_center">#17362A</color>
+    <color name="screen_background">#FAFBFC</color>
+    <color name="welcome_background">#FFFEFA</color>
+    <color name="app_icon_background">#10B981</color>
 </resources>

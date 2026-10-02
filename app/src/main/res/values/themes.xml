@@ -1,31 +1,65 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.TrackerApp" parent="android:Theme.Material.Light.NoActionBar" />
-
-    <style name="Theme.App.CustomSplash" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@color/splash_purple</item>
-        <item name="android:windowIsTranslucent">false</item>
-        <item name="android:statusBarColor">@color/splash_purple</item>
-        <item name="android:navigationBarColor">@color/splash_purple</item>
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar">false</item>
-    </style>
-
-    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@android:color/white</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_system_logo</item>
-        <item name="windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
-        <item name="postSplashScreenTheme">@style/Theme.App.CustomSplash</item>
-        <item name="android:windowIsTranslucent">false</item>
-        <item name="android:statusBarColor">@android:color/white</item>
+    <style name="Theme.TrackerApp" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">@color/primary</item>
         <item name="android:navigationBarColor">@android:color/white</item>
+        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
-
-    <style name="Theme.TrackerApp.App" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.TrackerApp.Splash" parent="Theme.TrackerApp">
         <item name="android:windowBackground">@android:color/white</item>
-        <item name="android:windowIsTranslucent">false</item>
-        <item name="android:statusBarColor">@color/splash_purple</item>
-        <item name="android:navigationBarColor">@color/splash_purple</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
+        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+    <style name="LanguageOption" parent="android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">58dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:background">@drawable/bg_language_option</item>
+        <item name="android:button">@null</item>
+        <item name="android:drawableEnd">@drawable/ic_language_radio</item>
+        <item name="android:drawablePadding">12dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">18dp</item>
+        <item name="android:paddingEnd">18dp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    <style name="OnboardingIndicator">
+        <item name="android:layout_width">8dp</item>
+        <item name="android:layout_height">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:background">@drawable/bg_indicator_inactive</item>
+    </style>
+    <style name="UninstallPrimaryButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">@drawable/bg_uninstall_primary</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="UninstallSecondaryButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">@drawable/bg_uninstall_secondary</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">#00AA39</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="UninstallReasonOption" parent="android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">46dp</item>
+        <item name="android:buttonTint">@color/uninstall_radio_tint</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">15sp</item>
     </style>
 </resources>
