@@ -1,0 +1,17 @@
+<resources>
+    <color name="primary">#6750A4</color>
+    <color name="text_primary">#1D1B20</color>
+    <color name="text_secondary">#49454F</color>
+    <color name="text_muted">#8A9099</color>
+    <color name="tracker_green">#08A331</color>
+    <color name="tracker_green_dark">#087A42</color>
+    <color name="tracker_red">#EF3340</color>
+    <color name="marker_center">#17362A</color>
+    <color name="screen_background">#FDFDF9</color>
+    <color name="welcome_background">#FFFEFA</color>
+    <color name="app_icon_background">#10B981</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+</resources>

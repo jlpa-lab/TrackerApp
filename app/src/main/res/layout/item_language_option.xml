@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_language_row"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/language_native_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_semibold"
+            android:includeFontPadding="false"
+            android:textColor="#0C1121"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/language_english_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:fontFamily="@font/inter_regular"
+            android:includeFontPadding="false"
+            android:textColor="#7C8494"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <RadioButton
+        android:id="@+id/language_radio"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:buttonTint="@color/language_radio_tint"
+        android:clickable="false"
+        android:focusable="false"
+        android:gravity="center" />
+</LinearLayout>

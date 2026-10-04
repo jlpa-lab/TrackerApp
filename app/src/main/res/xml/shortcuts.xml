@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="uninstall_flow"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_uninstall"
+        android:shortcutLongLabel="@string/shortcut_uninstall_long"
+        android:shortcutShortLabel="@string/shortcut_uninstall_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.mobile.trackerapp.UninstallConfirmActivity"
+            android:targetPackage="com.mobile.trackerapp" />
+    </shortcut>
+</shortcuts>

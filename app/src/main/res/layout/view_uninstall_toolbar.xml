@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="64dp">
+    <ImageView android:id="@+id/back_button" android:layout_width="48dp" android:layout_height="match_parent" android:clickable="true" android:contentDescription="@string/back" android:focusable="true" android:paddingEnd="22dp" android:src="@drawable/ic_arrow_back" />
+    <ImageView android:id="@+id/home_button" android:layout_width="48dp" android:layout_height="match_parent" android:layout_gravity="end" android:clickable="true" android:contentDescription="@string/home" android:focusable="true" android:paddingStart="18dp" android:src="@drawable/ic_home_outline" />
+</FrameLayout>
