@@ -113,7 +113,8 @@ class OnBoardingActivity : BaseActivity<ActivityOnboardingBinding>() {
         onboardingItems.add(
             OnboardingItem(
                 title = R.string.onboarding_title_1,
-                description = R.string.onboarding_title_1,
+                // CHANGE: use the dedicated onboarding description instead of repeating the title.
+                description = R.string.onboarding_des_1,
                 textButton = R.string.next,
                 imageResId = R.drawable.onboarding_1_map,
                 positionIndicator = 0,
@@ -123,7 +124,8 @@ class OnBoardingActivity : BaseActivity<ActivityOnboardingBinding>() {
         onboardingItems.add(
             OnboardingItem(
                 title = R.string.onboarding_title_2,
-                description = R.string.onboarding_title_2,
+                // CHANGE: use the dedicated onboarding description instead of repeating the title.
+                description = R.string.onboarding_des_2,
                 textButton = R.string.next,
                 imageResId = R.drawable.onboarding_2_map,
                 positionIndicator = 1
@@ -132,7 +134,8 @@ class OnBoardingActivity : BaseActivity<ActivityOnboardingBinding>() {
         onboardingItems.add(
             OnboardingItem(
                 title = R.string.onboarding_title_3,
-                description = R.string.onboarding_title_3,
+                // CHANGE: use the dedicated onboarding description instead of repeating the title.
+                description = R.string.onboarding_des_3,
                 textButton = R.string.next,
                 imageResId = R.drawable.onboarding_3_map,
                 positionIndicator = 2,
@@ -151,7 +154,8 @@ class OnBoardingActivity : BaseActivity<ActivityOnboardingBinding>() {
         onboardingItems.add(
             OnboardingItem(
                 title = R.string.onboarding_title_4,
-                description = R.string.onboarding_title_4,
+                // CHANGE: use the dedicated onboarding description instead of repeating the title.
+                description = R.string.onboarding_des_4,
                 textButton = R.string.get_started,
                 imageResId = R.drawable.onboarding_4_map,
                 positionIndicator = 3,

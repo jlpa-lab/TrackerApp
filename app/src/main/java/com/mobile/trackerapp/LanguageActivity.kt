@@ -32,7 +32,6 @@ import com.mobile.trackerapp.bases.ext.isNetwork
 import com.mobile.trackerapp.bases.goneView
 import com.mobile.trackerapp.bases.visibleView
 import com.mobile.trackerapp.databinding.ActivityLanguageBinding
-import com.mobile.trackerapp.databinding.ActivityOnboardingBinding
 import com.mobile.trackerapp.onboarding.OnBoardingActivity
 import com.mobile.trackerapp.pref.AppSharedPreferencesApp
 import com.mobile.trackerapp.ui.BaseActivity
@@ -44,7 +43,6 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
     private lateinit var confirmButton: ImageView
     private var selectedRow: View? = null
     private var selectedRadio: RadioButton? = null
-    private lateinit var binding: ActivityLanguageBinding
     private val fromSetting
         get() = intent.getBooleanExtra(AppConstants.KEY_SETTING, false)
     private val revealConfirmation = Runnable { confirmButton.visibility = View.VISIBLE }
@@ -52,8 +50,9 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
     override fun getLayoutActivity(): Int = R.layout.activity_language
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLanguageBinding.inflate(layoutInflater)
-        val root = findViewById<View>(R.id.language_root)
+        // CHANGE: BaseActivity already inflated and attached this layout as mBinding.
+        // Reusing it prevents the ad from being rendered into a detached copy.
+        val root = mBinding.languageRoot
         ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
             val statusBarTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
             view.setPadding(view.paddingLeft, statusBarTop, view.paddingRight, view.paddingBottom)
@@ -65,7 +64,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
       //  configureRemoteConfig()
         requestNotificationPermission()
 
-        confirmButton = findViewById(R.id.confirm_language)
+        confirmButton = mBinding.confirmLanguage
         populateLanguages()
 
         confirmButton.setOnClickListener {
@@ -77,8 +76,8 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
             Routes.startSplashActivity(this@LanguageActivity)
             finish()
         }
-        binding.root.postDelayed({
-            // Observe both language-ad results before starting the next ad load.
+        mBinding.root.postDelayed({
+            // CHANGE: observe both language-ad results before starting the next ad load.
             listenLanguageAd()
             listenLanguageClickAd()
             loadNativeLanguageClick(this, appSharedPref.firstLanguage, R.layout.layout_native_language_click)
@@ -170,7 +169,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
     }
     private fun initAds() {
         if (fromSetting) {
-            binding.flAds.goneView()
+            mBinding.flAds.goneView()
         } else {
             AdsManager.loadNativeOnboarding1(
                 this,
@@ -181,30 +180,30 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
     }
 
     private fun listenLanguageAd() {
-        AdsManager.nativeLanguageClickAdLive.removeObservers(this)
+        AdsManager.nativeLanguageAdLive.removeObservers(this)
         AdsManager.nativeLanguageAdLive.observe(this) { ad ->
-            if (ad != null) showNativeLanguage(ad) else binding.flAds.goneView()
+            if (ad != null) showNativeLanguage(ad) else mBinding.flAds.goneView()
         }
     }
 
     private fun listenLanguageClickAd() {
-        AdsManager.nativeLanguageAdLive.removeObservers(this)
+        AdsManager.nativeLanguageClickAdLive.removeObservers(this)
         AdsManager.nativeLanguageClickAdLive.observe(this) { ad ->
-            if (ad != null) showNativeLanguage(ad) else binding.flAds.visibility = View.GONE
+            if (ad != null) showNativeLanguage(ad) else mBinding.flAds.visibility = View.GONE
         }
     }
 
     private fun showNativeLanguage(ad: ApNativeAd) {
         if (!isNetwork()) {
-            binding.flAds.visibility = View.GONE
+            mBinding.flAds.visibility = View.GONE
             return
         }
-        binding.flAds.visibleView()
+        mBinding.flAds.visibleView()
         populateNativeAdView(
             this,
             ad,
-            binding.flAds,
-            binding.shimmerAds.shimmerNativeSmall
+            mBinding.flAds,
+            mBinding.shimmerAds.shimmerNativeSmall
         )
     }
 

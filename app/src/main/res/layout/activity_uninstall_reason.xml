@@ -11,7 +11,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:orientation="vertical"
-    android:paddingHorizontal="16dp">
+    android:paddingHorizontal="0dp">
 
     <include layout="@layout/view_uninstall_toolbar" />
 
@@ -30,6 +30,7 @@
         android:layout_marginTop="12dp"
         android:fontFamily="sans-serif"
         android:gravity="center"
+        android:paddingHorizontal="16dp"
         android:includeFontPadding="false"
         android:text="@string/uninstall_sorry_title"
         android:textColor="#101114"
@@ -41,6 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
+        android:paddingHorizontal="16dp"
         android:text="@string/uninstall_question"
         android:textColor="@color/text_primary"
         android:textSize="15sp" />
@@ -49,7 +51,8 @@
         android:id="@+id/uninstall_reason_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp">
 
         <RadioButton
             android:id="@+id/reason_feature"
@@ -81,6 +84,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
+        android:layout_marginHorizontal="16dp"
         android:orientation="horizontal">
 
         <TextView
@@ -107,11 +111,11 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
+    <!-- CHANGE: this container is measured against the full screen width. -->
     <FrameLayout
         android:id="@+id/fr_ads"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="1dp"
         android:layout_marginBottom="4dp"
         android:orientation="vertical"
         android:visibility="visible"

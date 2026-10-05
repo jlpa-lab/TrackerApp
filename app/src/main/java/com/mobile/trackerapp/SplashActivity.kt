@@ -50,7 +50,9 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
     private fun shouldShowLanguageNextTime() = showLanguageNextTime
 
     private val isFromUninstallShortcut: Boolean
-        get() = intent.getStringExtra(AppConstants.FROM_SHORTCUT) == AppConstants.ACTION_OPEN_UNINSTALL
+        // CHANGE: recognize both the app extra and the system shortcut action.
+        get() = intent.getStringExtra(AppConstants.FROM_SHORTCUT) == AppConstants.ACTION_OPEN_UNINSTALL ||
+                intent.action == "android.intent.action.SHORTCUT_UNINSTALL_APP"
 
 //    private val openLanguageScreen = Runnable {
 //        startActivity(Intent(this, LanguageActivity::class.java))
@@ -95,19 +97,18 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
             }
         }
         loadingRemoteConfig()
-//        consentHandler = ConsentHandler(
-//            activity = this,
-//            appSharedPref = appSharedPref,
-//            trackingSuffix = 1,
-//            onConsentFlowCompleted = { loadingRemoteConfig() })
-//        if (appSharedPref.isConfirmConsent.not() && appSharedPref.isUserGlobal.not() && isNetwork()) {
-//            consentHandler.requestConsent()
-//        } else {
-//            loadingRemoteConfig()
-//        }
+        //        consentHandler = ConsentHandler(
+        //            activity = this,
+        //            appSharedPref = appSharedPref,
+        //            trackingSuffix = 1,
+        //            onConsentFlowCompleted = { loadingRemoteConfig() })
+        //        if (appSharedPref.isConfirmConsent.not() && appSharedPref.isUserGlobal.not() && isNetwork()) {
+        //            consentHandler.requestConsent()
+        //        } else {
+        //            loadingRemoteConfig()
+        //        }
        // handler.postDelayed(openLanguageScreen, SPLASH_DURATION_MS)
-        loadSplashBanner()
-        // Preload the language ad while Splash is visible, as required by the sample flow.
+        // CHANGE: preload the language ad while Splash is visible, as required by the sample flow.
         AdsManager.loadNativeLanguage(
             this,
             true,
@@ -134,12 +135,26 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
     override fun loadSuccess() {
         getConfigSuccess = true
     }
+    
+//    override fun onResume() {
+//        super.onResume()
+//        ERainAd.getInstance().onCheckShowSplashWhenFail(this, object : AdCallback() {
+//            override fun onNextAction() {
+//                super.onNextAction()
+//                moveActivity()
+//            }
+//        }, 1000)
+//    } 
+
     private fun checkRemoteConfigResult() {
-       // AdRemoteConfig.initialize(this, RemoteConfigUtils.getAdRemoteConfig())
+        // AdRemoteConfig.initialize(this, RemoteConfigUtils.getAdRemoteConfig())
+        // CHANGE: load the splash banner only after configuration; this prevents a duplicate load.
         loadSplashBanner()
         if (!isFromUninstallShortcut) {
             loadNativeLanguage(
-                this@SplashActivity, appSharedPref.firstLanguage, R.layout.layout_native_language
+                this@SplashActivity,
+                appSharedPref.firstLanguage,
+                R.layout.layout_native_language
             )
         }
         val splashInterConfig = if (isFromUninstallShortcut) {

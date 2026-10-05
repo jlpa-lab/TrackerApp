@@ -11,7 +11,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:orientation="vertical"
-    android:paddingHorizontal="16dp">
+    android:paddingHorizontal="0dp">
 
     <include layout="@layout/view_uninstall_toolbar" />
 
@@ -55,11 +55,13 @@
     <TextView
         android:id="@+id/keep_app_button"
         style="@style/UninstallPrimaryButton"
+        android:layout_marginHorizontal="16dp"
         android:text="@string/keep_phone_tracker" />
 
     <TextView
         android:id="@+id/continue_uninstall_button"
         style="@style/UninstallSecondaryButton"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginTop="12dp"
         android:text="@string/continue_to_uninstall" />
 
@@ -68,11 +70,11 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
+    <!-- CHANGE: this container is measured against the full screen width. -->
     <FrameLayout
         android:id="@+id/fr_ads"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="1dp"
         android:layout_marginBottom="5dp"
         android:orientation="vertical"
         android:visibility="visible"

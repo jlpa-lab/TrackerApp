@@ -5,12 +5,19 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.os.Handler
+import android.os.Looper
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.app.AppConstants
 
 /** No-ad welcome screen displayed after returning from the background. */
 class WelcomeActivity : Activity() {
+    private val handler = Handler(Looper.getMainLooper())
+    private var startReady = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -24,10 +31,20 @@ class WelcomeActivity : Activity() {
         applySystemInsets(findViewById(R.id.welcome_root))
         Log.d("AppEvent", "WelcomeActivity")
 
+        // CHANGE: preload the Welcome interstitial before allowing Start, matching the reference flow.
+        AdsManager.loadInterWelcome(this)
+        handler.postDelayed({ startReady = true }, AppConstants.DEFAULT_TIME_DELAY_LOAD_INTER_WELCOME)
+
         findViewById<View>(R.id.welcome_start_button).setOnClickListener {
             Log.d("AppEvent", "WelcomeActivity_start")
-            finish()
+            if (!startReady) return@setOnClickListener
+            AdsManager.showInterWelcome(this) { finish() }
         }
+    }
+
+    override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroy()
     }
 
     private fun applySystemInsets(root: View) {

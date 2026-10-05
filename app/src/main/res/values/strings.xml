@@ -50,9 +50,11 @@
     <string name="onboarding_des_1">See the live location of people who share their location with you, all on one map.</string>
     <string name="onboarding_title_2">Stay Connected</string>
     <string name="txt_uninstall">Uninstall</string>
-    <string name="onboarding_des_2">Create a private circle with family and friends for simple, secure location sharing.2</string>
+    <!-- CHANGE: remove the accidental suffix from the onboarding copy. -->
+    <string name="onboarding_des_2">Create a private circle with family and friends for simple, secure location sharing.</string>
     <string name="onboarding_title_3">Know When They Arrive</string>
     <string name="onboarding_des_3">Get notified when someone arrives at or leaves an important place</string>
-    <string name="onboarding_title_4">Explore Around You4</string>
+    <!-- CHANGE: use the intended final onboarding title. -->
+    <string name="onboarding_title_4">Explore Around You</string>
     <string name="onboarding_des_4">Find nearby places and use helpful GPS tools wherever you go</string>
 </resources>
