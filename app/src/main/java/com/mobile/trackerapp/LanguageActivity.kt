@@ -77,9 +77,8 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
             finish()
         }
         mBinding.root.postDelayed({
-            // CHANGE: observe both language-ad results before starting the next ad load.
+            // CHANGE: observe only the initial language ad before any selection.
             listenLanguageAd()
-            listenLanguageClickAd()
             loadNativeLanguageClick(this, appSharedPref.firstLanguage, R.layout.layout_native_language_click)
             initAds()
         }, 100L)
@@ -98,6 +97,8 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
             val radio = row.findViewById<RadioButton>(R.id.language_radio)
 
             row.setOnClickListener {
+                // CHANGE: switch to the click-stage ad only after a language is selected.
+                listenLanguageClickAd()
                 selectedRow?.isSelected = false
                 selectedRadio?.isChecked = false
                 row.isSelected = true

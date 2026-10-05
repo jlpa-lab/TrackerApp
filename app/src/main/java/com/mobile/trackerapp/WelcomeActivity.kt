@@ -1,6 +1,5 @@
 package com.mobile.trackerapp
 
-import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -10,17 +9,25 @@ import android.os.Looper
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.appcompat.app.AppCompatActivity
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.app.AppConstants
 
 /** No-ad welcome screen displayed after returning from the background. */
-class WelcomeActivity : Activity() {
+class WelcomeActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private var startReady = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        // CHANGE: keep the Welcome Back screen immersive by hiding the device navigation bar.
+        @Suppress("DEPRECATION")
+        window.decorView.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         window.statusBarColor = Color.rgb(255, 254, 250)
         window.navigationBarColor = Color.rgb(255, 254, 250)
         WindowCompat.getInsetsController(window, window.decorView).apply {
