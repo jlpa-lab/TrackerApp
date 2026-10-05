@@ -1,11 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/uninstall_confirm_root" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@android:color/white" android:orientation="vertical" android:paddingHorizontal="16dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+<LinearLayout
+    android:id="@+id/uninstall_confirm_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp">
+
     <include layout="@layout/view_uninstall_toolbar" />
-    <ImageView android:layout_width="150dp" android:layout_height="110dp" android:layout_gravity="center_horizontal" android:layout_marginTop="14dp" android:contentDescription="@null" android:scaleType="centerInside" android:src="@drawable/uninstall_keep_art" />
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:fontFamily="sans-serif" android:gravity="center" android:includeFontPadding="false" android:paddingHorizontal="24dp" android:text="@string/uninstall_keep_title" android:textColor="#101114" android:textSize="17sp" android:textStyle="bold" />
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:gravity="center" android:lineSpacingExtra="2dp" android:paddingHorizontal="24dp" android:text="@string/uninstall_keep_description" android:textColor="#697080" android:textSize="15sp" />
-    <Space android:layout_width="1dp" android:layout_height="28dp" />
-    <TextView android:id="@+id/keep_app_button" style="@style/UninstallPrimaryButton" android:text="@string/keep_phone_tracker" />
-    <TextView android:id="@+id/continue_uninstall_button" style="@style/UninstallSecondaryButton" android:layout_marginTop="12dp" android:text="@string/continue_to_uninstall" />
-    <Space android:layout_width="1dp" android:layout_height="0dp" android:layout_weight="1" />
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="110dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="14dp"
+        android:contentDescription="@null"
+        android:scaleType="centerInside"
+        android:src="@drawable/uninstall_keep_art" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:paddingHorizontal="24dp"
+        android:text="@string/uninstall_keep_title"
+        android:textColor="#101114"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:lineSpacingExtra="2dp"
+        android:paddingHorizontal="24dp"
+        android:text="@string/uninstall_keep_description"
+        android:textColor="#697080"
+        android:textSize="15sp" />
+
+    <Space
+        android:layout_width="1dp"
+        android:layout_height="28dp" />
+
+    <TextView
+        android:id="@+id/keep_app_button"
+        style="@style/UninstallPrimaryButton"
+        android:text="@string/keep_phone_tracker" />
+
+    <TextView
+        android:id="@+id/continue_uninstall_button"
+        style="@style/UninstallSecondaryButton"
+        android:layout_marginTop="12dp"
+        android:text="@string/continue_to_uninstall" />
+
+    <Space
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <FrameLayout
+        android:id="@+id/fr_ads"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="1dp"
+        android:layout_marginBottom="5dp"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <include
+            android:id="@+id/shimmer_ads"
+            layout="@layout/layout_shimmer_native_medium" />
+
+    </FrameLayout>
 </LinearLayout>
+</layout>

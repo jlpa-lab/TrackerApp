@@ -11,9 +11,18 @@ import android.widget.RadioGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import com.ads.module.ads.wrapper.ApNativeAd
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.populateNativeAdView
+import com.mobile.trackerapp.bases.goneView
+import com.mobile.trackerapp.bases.visibleView
+import com.mobile.trackerapp.databinding.ActivityUninstallReasonBinding
+import com.mobile.trackerapp.ui.BaseActivity
 
 /** Collects a reason before handing uninstalling to Android's system screen. */
-class UninstallReasonActivity : Activity() {
+class UninstallReasonActivity : BaseActivity<ActivityUninstallReasonBinding>() {
+
+    override fun getLayoutActivity() = R.layout.activity_uninstall_reason
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -23,7 +32,7 @@ class UninstallReasonActivity : Activity() {
             isAppearanceLightStatusBars = true
             isAppearanceLightNavigationBars = true
         }
-        setContentView(R.layout.activity_uninstall_reason)
+        setContentView(mBinding.root)
         applySystemInsets(findViewById(R.id.uninstall_reason_root))
         Log.d("AppEvent", "MainActivity_uninstall_screen_02")
 
@@ -42,7 +51,15 @@ class UninstallReasonActivity : Activity() {
             startActivity(Intent(Intent.ACTION_DELETE, Uri.parse("package:$packageName")))
         }
     }
+    override fun initViews() {
+        super.initViews()
+        AdsManager.loadNativeSurvey(this, R.layout.layout_native_ad_medium)
+    }
 
+    override fun observerData() {
+        super.observerData()
+        AdsManager.nativeSurveyAdLive.observe(this) { ad -> renderSurveyAd(ad) }
+    }
     private fun applySystemInsets(root: View) {
         ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -58,4 +75,19 @@ class UninstallReasonActivity : Activity() {
         })
         finish()
     }
+
+    private fun renderSurveyAd(ad: ApNativeAd?) {
+        val frAds = mBinding.root.findViewById<android.widget.FrameLayout>(R.id.fr_ads)
+            ?: return
+        if (ad == null) {
+            frAds.goneView()
+            return
+        }
+        frAds.visibleView()
+        val shimmer = mBinding.root.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmer_ads)
+        if (shimmer != null) {
+            populateNativeAdView(this, ad, frAds, shimmer)
+        }
+    }
+
 }

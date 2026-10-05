@@ -23,6 +23,7 @@ import com.ads.module.ads.wrapper.ApInterstitialAd
 import com.ads.module.funtion.AdCallback
 import com.itg.template.data.pref.AppSharedPref
 import com.mobile.trackerapp.app.AppConstants
+import com.mobile.trackerapp.pref.AppSharedPreferencesApp
 import java.util.Locale
 import javax.inject.Inject
 
@@ -43,6 +44,9 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!::appSharedPref.isInitialized) {
+            appSharedPref = AppSharedPreferencesApp(applicationContext)
+        }
         setLocal()
 
         requestWindow()

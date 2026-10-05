@@ -1,7 +1,6 @@
 package com.mobile.trackerapp
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -21,9 +20,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.ads.module.ads.wrapper.ApNativeAd
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import com.itg.devconfig.utils.setOnAdminAdToggleListener
 import com.itg.template.data.pref.AppSharedPref
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.AdsManager.loadNativeLanguageClick
@@ -33,25 +32,26 @@ import com.mobile.trackerapp.bases.ext.isNetwork
 import com.mobile.trackerapp.bases.goneView
 import com.mobile.trackerapp.bases.visibleView
 import com.mobile.trackerapp.databinding.ActivityLanguageBinding
-import com.mobile.trackerapp.databinding.ActivitySplashBinding
-import javax.inject.Inject
+import com.mobile.trackerapp.databinding.ActivityOnboardingBinding
+import com.mobile.trackerapp.onboarding.OnBoardingActivity
+import com.mobile.trackerapp.pref.AppSharedPreferencesApp
+import com.mobile.trackerapp.ui.BaseActivity
+import com.mobile.trackerapp.utils.Routes
 
 /** Handles language selection and the initial notification permission request. */
-class LanguageActivity : AppCompatActivity() {
+class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var confirmButton: ImageView
     private var selectedRow: View? = null
     private var selectedRadio: RadioButton? = null
     private lateinit var binding: ActivityLanguageBinding
-    @Inject
-    lateinit var appSharedPref: AppSharedPref
     private val fromSetting
         get() = intent.getBooleanExtra(AppConstants.KEY_SETTING, false)
     private val revealConfirmation = Runnable { confirmButton.visibility = View.VISIBLE }
 
+    override fun getLayoutActivity(): Int = R.layout.activity_language
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_language)
         binding = ActivityLanguageBinding.inflate(layoutInflater)
         val root = findViewById<View>(R.id.language_root)
         ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
@@ -70,10 +70,17 @@ class LanguageActivity : AppCompatActivity() {
 
         confirmButton.setOnClickListener {
           //  FirebaseAnalytics.getInstance(this).logEvent("LanguageActivity_confirm", null)
-            startActivity(Intent(this, OnboardingActivity::class.java))
+            startActivity(Intent(this, OnBoardingActivity::class.java))
+            finish()
+        }
+        mBinding.tvLanguage.setOnAdminAdToggleListener(){
+            Routes.startSplashActivity(this@LanguageActivity)
             finish()
         }
         binding.root.postDelayed({
+            // Observe both language-ad results before starting the next ad load.
+            listenLanguageAd()
+            listenLanguageClickAd()
             loadNativeLanguageClick(this, appSharedPref.firstLanguage, R.layout.layout_native_language_click)
             initAds()
         }, 100L)

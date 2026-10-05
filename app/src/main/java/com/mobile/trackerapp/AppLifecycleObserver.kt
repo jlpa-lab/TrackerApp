@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.mobile.trackerapp.onboarding.OnBoardingActivity
 
 /** Shows the welcome screen when a fully onboarded user returns from the background. */
 class AppLifecycleObserver(
@@ -45,7 +46,7 @@ class AppLifecycleObserver(
         // Do not interrupt setup or stack another welcome screen.
         val disabledScreen = activity is SplashActivity ||
             activity is LanguageActivity ||
-            activity is OnboardingActivity ||
+            activity is OnBoardingActivity ||
             activity is WelcomeActivity
         if (disabledScreen) return false
 

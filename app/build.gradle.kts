@@ -1,9 +1,12 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
   //  alias(libs.plugins.hilt)
     kotlin("kapt")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -53,6 +56,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        dataBinding = true
         viewBinding = true
     }
 }
@@ -87,6 +91,18 @@ dependencies {
     // Timber
     val timber_version = "5.0.1"
     implementation("com.jakewharton.timber:timber:${timber_version}")
+
+    val glide_version = "4.15.1"
+    implementation("com.github.bumptech.glide:glide:$glide_version")
+    kapt("com.github.bumptech.glide:compiler:$glide_version")
+
+    // Lifecycle
+    val  androidx_lifecycle_version = "2.6.1"
+    val androidx_fragment_ktx_version = "1.6.1"
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${androidx_lifecycle_version}")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${androidx_lifecycle_version}")
+    implementation("androidx.fragment:fragment-ktx:${androidx_fragment_ktx_version}")
+
 
     val erain_studio_version = "2.1"
     val module_update_gdpr_version = "2.0.2"

@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center_horizontal" android:orientation="vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
     <FrameLayout
         android:id="@+id/onboarding_hero"
         android:layout_width="match_parent"
         android:layout_height="360dp">
+
         <com.mobile.trackerapp.TopCropImageView
             android:id="@+id/onboarding_image"
             android:layout_width="match_parent"
@@ -15,6 +21,28 @@
             android:layout_gravity="bottom"
             android:background="@drawable/bg_onboarding_fade" />
     </FrameLayout>
-    <TextView android:id="@+id/onboarding_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp" android:fontFamily="sans-serif" android:gravity="center" android:includeFontPadding="false" android:paddingHorizontal="24dp" android:textColor="@color/text_primary" android:textSize="20sp" android:textStyle="bold" />
-    <TextView android:id="@+id/onboarding_description" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="9dp" android:fontFamily="sans-serif" android:gravity="center" android:includeFontPadding="false" android:lineSpacingExtra="2dp" android:paddingHorizontal="34dp" android:textColor="#697080" android:textSize="14sp" />
+
+    <TextView android:id="@+id/onboarding_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:fontFamily="@font/inter"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:paddingHorizontal="34dp"
+        android:textColor="#0A0A0A"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView android:id="@+id/onboarding_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="9dp"
+        android:fontFamily="@font/inter"
+        android:textStyle="normal"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:paddingHorizontal="34dp"
+        android:textColor="#4F5765"
+        android:textSize="14sp" />
 </LinearLayout>

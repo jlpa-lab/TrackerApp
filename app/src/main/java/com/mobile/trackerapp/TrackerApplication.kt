@@ -1,5 +1,6 @@
 package com.mobile.trackerapp
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Context
@@ -27,10 +28,15 @@ class TrackerApplication : AdsMultiDexApplication(), Application.ActivityLifecyc
     private var currentActivity = WeakReference<Activity>(null)
     lateinit var appLifecycleObserver: AppLifecycleObserver
         private set
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        lateinit var instance: TrackerApplication
 
+    }
     override fun onCreate() {
         super.onCreate()
         registerActivityLifecycleCallbacks(this)
+        instance = this
         appLifecycleObserver = AppLifecycleObserver(this) { currentActivity.get() }
         ProcessLifecycleOwner.get().lifecycle.addObserver(appLifecycleObserver)
         //FirebaseApp.initializeApp(this)
@@ -49,6 +55,7 @@ class TrackerApplication : AdsMultiDexApplication(), Application.ActivityLifecyc
         initBilling()
 
     }
+
 
     override fun onActivityResumed(activity: Activity) {
         // WeakReference prevents the application from retaining a destroyed Activity.

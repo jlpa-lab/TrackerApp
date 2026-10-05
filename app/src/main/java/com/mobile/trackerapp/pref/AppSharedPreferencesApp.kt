@@ -1,7 +1,8 @@
-package com.itg.template.data.pref
+package com.mobile.trackerapp.pref
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.itg.template.data.pref.AppSharedPref
 
 class AppSharedPreferencesApp(context: Context) : AppSharedPref {
 

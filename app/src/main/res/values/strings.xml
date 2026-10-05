@@ -46,4 +46,13 @@
     <string name="back">Back</string>
     <string name="home">Home</string>
     <string name="press_back_again_to_exit">Press back again to exit</string>
+    <string name="onboarding_title_1">Find Your Family in a Crowd</string>
+    <string name="onboarding_des_1">See the live location of people who share their location with you, all on one map.</string>
+    <string name="onboarding_title_2">Stay Connected</string>
+    <string name="txt_uninstall">Uninstall</string>
+    <string name="onboarding_des_2">Create a private circle with family and friends for simple, secure location sharing.2</string>
+    <string name="onboarding_title_3">Know When They Arrive</string>
+    <string name="onboarding_des_3">Get notified when someone arrives at or leaves an important place</string>
+    <string name="onboarding_title_4">Explore Around You4</string>
+    <string name="onboarding_des_4">Find nearby places and use helpful GPS tools wherever you go</string>
 </resources>

@@ -6,12 +6,23 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import com.ads.module.ads.wrapper.ApNativeAd
+import com.facebook.shimmer.ShimmerFrameLayout
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.populateNativeAdView
+import com.mobile.trackerapp.bases.goneView
+import com.mobile.trackerapp.bases.visibleView
+import com.mobile.trackerapp.databinding.ActivityUninstallConfirmBinding
+import com.mobile.trackerapp.ui.BaseActivity
+import com.mobile.trackerapp.utils.Routes
 
 /** First shortcut screen, giving the user a chance to keep the app. */
-class UninstallConfirmActivity : Activity() {
+class UninstallConfirmActivity : BaseActivity<ActivityUninstallConfirmBinding>() {
+    override fun getLayoutActivity() = R.layout.activity_uninstall_confirm
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -21,7 +32,7 @@ class UninstallConfirmActivity : Activity() {
             isAppearanceLightStatusBars = true
             isAppearanceLightNavigationBars = true
         }
-        setContentView(R.layout.activity_uninstall_confirm)
+        setContentView(mBinding.root)
         applySystemInsets(findViewById(R.id.uninstall_confirm_root))
         Log.d("AppEvent", "MainActivity_uninstall_screen_01")
 
@@ -52,5 +63,33 @@ class UninstallConfirmActivity : Activity() {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         })
         finish()
+    }
+
+    override fun initViews() {
+        super.initViews()
+        AdsManager.loadNativeConfirmUninstall(this, R.layout.layout_native_ad_medium)
+    }
+
+    override fun observerData() {
+        super.observerData()
+        AdsManager.nativeConfirmUninstallAdLive.observe(this) { ad ->
+            renderConfirmUninstallAd(ad)
+        }
+    }
+    private fun renderConfirmUninstallAd(ad: ApNativeAd?) {
+        val frAds = mBinding.root.findViewById<FrameLayout>(R.id.fr_ads) ?: return
+        if (ad == null) {
+            frAds.goneView()
+            return
+        }
+        frAds.visibleView()
+        val shimmer = mBinding.root.findViewById<ShimmerFrameLayout>(R.id.shimmer_ads)
+        if (shimmer != null) {
+            populateNativeAdView(this, ad, frAds, shimmer)
+        }
+    }
+
+    override fun onBackPressed() {
+        Routes.startMainActivity(this)
     }
 }
