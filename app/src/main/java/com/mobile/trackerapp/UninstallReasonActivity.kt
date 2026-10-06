@@ -5,9 +5,11 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.RadioGroup
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -44,11 +46,17 @@ class UninstallReasonActivity : BaseActivity<ActivityUninstallReasonBinding>() {
         }
         findViewById<View>(R.id.uninstall_button).setOnClickListener {
             // Android owns the final confirmation and package removal.
-            val selected = findViewById<RadioGroup>(R.id.uninstall_reason_group)
-                .findViewById<View>(findViewById<RadioGroup>(R.id.uninstall_reason_group).checkedRadioButtonId)
-                ?.tag?.toString() ?: "not_selected"
-            Log.d("AppEvent", "Uninstall02_uninstall_$selected")
-            startActivity(Intent(Intent.ACTION_DELETE, Uri.parse("package:$packageName")))
+            try {
+                val intent = Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    "package:${packageName}".toUri()
+                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+            } catch (_: Exception) {
+            }
+            finish()
+
+//            startActivity(Intent(Intent.ACTION_DELETE, Uri.parse("package:$packageName")))
         }
     }
     override fun initViews() {
