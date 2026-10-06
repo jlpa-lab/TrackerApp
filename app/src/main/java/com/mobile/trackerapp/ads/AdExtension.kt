@@ -47,7 +47,7 @@ fun populateNativeAdView(
             height = clampedHeightDp.dpToPx(activity).toInt()
 
         }
-        applyCtaColor(ctaButton, config?.colorCTA ?: "default")
+        applyCtaColor(ctaButton, config?.colorCTA?.takeUnless { it == "default" } ?: "#0EC708")
     }
 
     // Dynamic component reordering and visibility control

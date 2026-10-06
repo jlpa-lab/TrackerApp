@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import com.ads.module.ads.wrapper.ApNativeAd
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.mobile.trackerapp.ads.AdsManager
@@ -33,6 +34,7 @@ class UninstallConfirmActivity : BaseActivity<ActivityUninstallConfirmBinding>()
             isAppearanceLightNavigationBars = true
         }
         setContentView(mBinding.root)
+        mBinding.root.findViewById<View>(R.id.fr_ads)?.updateLayoutParams<android.view.ViewGroup.MarginLayoutParams> { bottomMargin = 0 }
         applySystemInsets(findViewById(R.id.uninstall_confirm_root))
         Log.d("AppEvent", "MainActivity_uninstall_screen_01")
 

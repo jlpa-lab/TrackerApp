@@ -13,6 +13,7 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import com.ads.module.ads.wrapper.ApNativeAd
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.populateNativeAdView
@@ -35,6 +36,7 @@ class UninstallReasonActivity : BaseActivity<ActivityUninstallReasonBinding>() {
             isAppearanceLightNavigationBars = true
         }
         setContentView(mBinding.root)
+        mBinding.root.findViewById<View>(R.id.fr_ads)?.updateLayoutParams<android.view.ViewGroup.MarginLayoutParams> { bottomMargin = 0 }
         applySystemInsets(findViewById(R.id.uninstall_reason_root))
         Log.d("AppEvent", "MainActivity_uninstall_screen_02")
 
