@@ -5,126 +5,144 @@
     <data>
 
     </data>
-<LinearLayout
-    android:id="@+id/uninstall_reason_root"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:orientation="vertical"
-    android:paddingHorizontal="0dp">
-
-    <include layout="@layout/view_uninstall_toolbar" />
-
-    <ImageView
-        android:layout_width="120dp"
-        android:layout_height="105dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@null"
-        android:scaleType="centerInside"
-        android:src="@drawable/uninstall_reason_art" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:fontFamily="sans-serif"
-        android:gravity="center"
-        android:paddingHorizontal="16dp"
-        android:includeFontPadding="false"
-        android:text="@string/uninstall_sorry_title"
-        android:textColor="#101114"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:paddingHorizontal="16dp"
-        android:text="@string/uninstall_question"
-        android:textColor="@color/text_primary"
-        android:textSize="15sp" />
-
-    <RadioGroup
-        android:id="@+id/uninstall_reason_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginHorizontal="16dp">
-
-        <RadioButton
-            android:id="@+id/reason_feature"
-            style="@style/UninstallReasonOption"
-            android:checked="true"
-            android:tag="feature_not_working"
-            android:text="@string/reason_feature" />
-
-        <RadioButton
-            android:id="@+id/reason_ads"
-            style="@style/UninstallReasonOption"
-            android:tag="too_many_ads"
-            android:text="@string/reason_ads" />
-
-        <RadioButton
-            android:id="@+id/reason_not_needed"
-            style="@style/UninstallReasonOption"
-            android:tag="not_needed"
-            android:text="@string/reason_not_needed" />
-
-        <RadioButton
-            android:id="@+id/reason_other"
-            style="@style/UninstallReasonOption"
-            android:tag="other"
-            android:text="@string/reason_other" />
-    </RadioGroup>
 
     <LinearLayout
+        android:id="@+id/uninstall_reason_root"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:layout_marginHorizontal="16dp"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/cancel_button"
-            style="@style/UninstallSecondaryButton"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="@string/cancel" />
+            android:orientation="vertical">
 
-        <Space
-            android:layout_width="16dp"
-            android:layout_height="1dp" />
+            <include layout="@layout/view_uninstall_toolbar" />
 
-        <TextView
-            android:id="@+id/uninstall_button"
-            style="@style/UninstallPrimaryButton"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:text="@string/uninstall" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:contentDescription="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_uninstall_image" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/inter"
+                android:gravity="center_horizontal"
+                android:includeFontPadding="false"
+                android:paddingHorizontal="24dp"
+                android:text="@string/uninstall_sorry_title"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/inter_regular"
+                android:gravity="center_horizontal"
+                android:paddingHorizontal="24dp"
+                android:text="@string/uninstall_question"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <RadioGroup
+                android:id="@+id/uninstall_reason_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp">
+
+                <RadioButton
+                    android:id="@+id/reason_feature"
+                    style="@style/UninstallReasonOption"
+                    android:paddingVertical="10dp"
+                    android:tag="feature_not_working"
+                    android:text="@string/reason_feature" />
+
+                <RadioButton
+                    android:id="@+id/reason_ads"
+                    style="@style/UninstallReasonOption"
+                    android:checked="true"
+                    android:paddingVertical="10dp"
+                    android:tag="too_many_ads"
+                    android:text="@string/reason_ads" />
+
+                <RadioButton
+                    android:id="@+id/reason_not_needed"
+                    style="@style/UninstallReasonOption"
+                    android:paddingVertical="10dp"
+                    android:tag="not_needed"
+                    android:text="@string/reason_not_needed" />
+
+                <RadioButton
+                    android:id="@+id/reason_other"
+                    style="@style/UninstallReasonOption"
+                    android:paddingVertical="10dp"
+                    android:tag="other"
+                    android:text="@string/reason_other" />
+            </RadioGroup>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/cancel_button"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_continue_uninstall"
+                    android:fontFamily="@font/inter"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/cancel"
+                    android:textAllCaps="false"
+                    android:textColor="#08A331"
+                    android:textSize="14sp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/uninstall_button"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_keep_phone_tracker"
+                    android:fontFamily="@font/inter"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/uninstall"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/fr_ads"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <include
+                android:id="@+id/shimmer_ads"
+                layout="@layout/layout_shimmer_native_medium" />
+        </FrameLayout>
     </LinearLayout>
-
-    <Space
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <!-- CHANGE: this container is measured against the full screen width. -->
-    <FrameLayout
-        android:id="@+id/fr_ads"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:orientation="vertical"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <include
-            android:id="@+id/shimmer_ads"
-            layout="@layout/layout_shimmer_native_medium" />
-    </FrameLayout>
-</LinearLayout>
 </layout>

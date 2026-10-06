@@ -13,62 +13,91 @@
     android:orientation="vertical"
     android:paddingHorizontal="0dp">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
     <include layout="@layout/view_uninstall_toolbar" />
 
     <ImageView
-        android:layout_width="150dp"
-        android:layout_height="110dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="14dp"
         android:contentDescription="@null"
         android:scaleType="centerInside"
-        android:src="@drawable/uninstall_keep_art" />
+        android:src="@drawable/ic_confirm_uninstall" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="22dp"
-        android:fontFamily="sans-serif"
-        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/inter"
+        android:gravity="center_horizontal"
         android:includeFontPadding="false"
         android:paddingHorizontal="24dp"
         android:text="@string/uninstall_keep_title"
-        android:textColor="#101114"
-        android:textSize="17sp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:lineSpacingExtra="2dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_horizontal"
+        android:fontFamily="@font/inter_regular"
         android:paddingHorizontal="24dp"
         android:text="@string/uninstall_keep_description"
-        android:textColor="#697080"
-        android:textSize="15sp" />
+        android:textColor="#4F5765"
+        android:textSize="14sp" />
 
     <Space
-        android:layout_width="1dp"
-        android:layout_height="28dp" />
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/keep_app_button"
-        style="@style/UninstallPrimaryButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
         android:layout_marginHorizontal="16dp"
-        android:text="@string/keep_phone_tracker" />
+        android:background="@drawable/bg_keep_phone_tracker"
+        android:fontFamily="@font/inter"
+        android:text="@string/keep_phone_tracker"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/continue_uninstall_button"
-        style="@style/UninstallSecondaryButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="12dp"
-        android:text="@string/continue_to_uninstall" />
+        android:background="@drawable/bg_continue_uninstall"
+        android:fontFamily="@font/inter"
+        android:text="@string/continue_to_uninstall"
+        android:textAllCaps="false"
+        android:textColor="#08A331"
+        android:textSize="14sp" />
+
+<!--    <TextView-->
+<!--        android:id="@+id/keep_app_button"-->
+<!--        style="@style/UninstallPrimaryButton"-->
+<!--        android:text="@string/keep_phone_tracker" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/continue_uninstall_button"-->
+<!--        style="@style/UninstallSecondaryButton"-->
+<!--        android:layout_marginTop="12dp"-->
+<!--        android:text="@string/continue_to_uninstall" />-->
 
     <Space
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
+    </LinearLayout>
 
     <!-- CHANGE: this container is measured against the full screen width. -->
     <FrameLayout
