@@ -142,7 +142,7 @@
 
             <include
                 android:id="@+id/shimmer_ads"
-                layout="@layout/layout_shimmer_native_medium" />
+                layout="@layout/layout_shimmer_native_language" />
         </FrameLayout>
     </LinearLayout>
 </layout>

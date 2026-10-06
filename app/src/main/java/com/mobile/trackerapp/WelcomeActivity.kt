@@ -1,5 +1,6 @@
 package com.mobile.trackerapp
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.appcompat.app.AppCompatActivity
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.app.AppConstants
+import com.mobile.trackerapp.ui.PhoneLocatorActivity
+import com.mobile.trackerapp.ui.TrackFriendActivity
 
 /** No-ad welcome screen displayed after returning from the background. */
 class WelcomeActivity : AppCompatActivity() {
@@ -20,6 +23,18 @@ class WelcomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        when (intent.getStringExtra(AppConstants.FROM_SHORTCUT)) {
+            AppConstants.ACTION_OPEN_PHONE_LOCATOR -> {
+                startActivity(Intent(this, PhoneLocatorActivity::class.java))
+                finish()
+                return
+            }
+            AppConstants.ACTION_OPEN_TRACK_FRIEND -> {
+                startActivity(Intent(this, TrackFriendActivity::class.java))
+                finish()
+                return
+            }
+        }
         WindowCompat.setDecorFitsSystemWindows(window, false)
         // CHANGE: keep the Welcome Back screen immersive by hiding the device navigation bar.
         @Suppress("DEPRECATION")

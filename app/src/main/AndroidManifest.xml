@@ -33,6 +33,8 @@
             android:exported="true" />
         <activity android:name=".UninstallReasonActivity" />
         <activity android:name=".WelcomeActivity" />
+        <activity android:name=".ui.PhoneLocatorActivity" android:exported="true" />
+        <activity android:name=".ui.TrackFriendActivity" android:exported="true" />
 
         <activity
             android:name=".SplashActivity"

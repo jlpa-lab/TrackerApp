@@ -99,7 +99,7 @@ class OnboardingPageFragment : BaseFragment<FragmentOnboardingPageBinding>() {
                     requireActivity(),
                     ad,
                     mBinding.layoutAds,
-                    mBinding.shimmerAds.shimmerNativeMedium
+                    mBinding.shimmerAds.shimmerNativeLanguage
                 )
             } else {
                 mBinding.layoutAds.invisibleView()

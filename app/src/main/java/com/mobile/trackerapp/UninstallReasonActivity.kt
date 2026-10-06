@@ -61,7 +61,8 @@ class UninstallReasonActivity : BaseActivity<ActivityUninstallReasonBinding>() {
     }
     override fun initViews() {
         super.initViews()
-        AdsManager.loadNativeSurvey(this, R.layout.layout_native_ad_medium)
+        // Keep the Reason screen ad identical in size and composition to Confirm.
+        AdsManager.loadNativeSurvey(this, R.layout.layout_native_uninstall_reason)
     }
 
     override fun observerData() {

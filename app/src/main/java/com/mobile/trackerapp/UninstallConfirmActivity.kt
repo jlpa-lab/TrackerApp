@@ -67,7 +67,7 @@ class UninstallConfirmActivity : BaseActivity<ActivityUninstallConfirmBinding>()
 
     override fun initViews() {
         super.initViews()
-        AdsManager.loadNativeConfirmUninstall(this, R.layout.layout_native_ad_medium)
+        AdsManager.loadNativeConfirmUninstall(this, R.layout.layout_native_uninstall_confirm)
     }
 
     override fun observerData() {

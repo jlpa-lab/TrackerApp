@@ -1,12 +1,12 @@
 package com.mobile.trackerapp.onboarding
 
 import android.os.Build
+import com.ads.module.ads.ERainAd
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
-import com.ads.module.ads.ERainAd
 import com.mobile.trackerapp.onboarding.adapter.OnboardingAdapter
 import com.mobile.trackerapp.onboarding.model.OnboardingItem
 import com.mobile.trackerapp.onboarding.viewmodel.OnboardingViewModel
@@ -39,7 +39,6 @@ class OnBoardingActivity : BaseActivity<ActivityOnboardingBinding>() {
     override fun initViews() {
         initPage()
         initOnboardingItems()
-        applyUninstallWidgetShortcutsFromRemoteConfig()
 
         mBinding.root.postDelayed({
             AdsManager.loadNativeOnboarding4(
@@ -58,12 +57,11 @@ class OnBoardingActivity : BaseActivity<ActivityOnboardingBinding>() {
         }, 100L)
     }
 
-    private fun applyUninstallWidgetShortcutsFromRemoteConfig() {
+    private fun registerShortcutsAfterOnboarding() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return
-        if (ERainAd.getInstance().getShouldDisplayWidgetUninstall(
-                RemoteConfigUtils.getOnEnableUninstallWidget())) {
-            ShortcutManager.initShortCut(this@OnBoardingActivity)
-        }
+        // Remote Config is intentionally bypassed for now. Register all three
+        // shortcuts immediately after onboarding, matching the reference timing.
+        ShortcutManager.initShortCut(this@OnBoardingActivity)
     }
 
     override fun observerData() {
@@ -131,6 +129,10 @@ class OnBoardingActivity : BaseActivity<ActivityOnboardingBinding>() {
                 positionIndicator = 1
             )
         )
+        if (isNetwork(this@OnBoardingActivity) && ERainAd.getInstance().getShouldDisplayNativeOnboardingFull1(
+                AdRemoteConfig.native_onboarding_fullscreen_1_3.enableUaCheck))
+            onboardingItems.add(OnboardingItem(isHasNativeFull = true))
+
         onboardingItems.add(
             OnboardingItem(
                 title = R.string.onboarding_title_3,
@@ -141,15 +143,6 @@ class OnBoardingActivity : BaseActivity<ActivityOnboardingBinding>() {
                 positionIndicator = 2,
             )
         )
-
-        if (isNetwork(this@OnBoardingActivity) && ERainAd.getInstance().getShouldDisplayNativeOnboardingFull1(
-                AdRemoteConfig.native_onboarding_fullscreen_1_3.enableUaCheck))
-            onboardingItems.add(
-                OnboardingItem(
-                    isHasNativeFull = true
-                )
-            )
-
 
         onboardingItems.add(
             OnboardingItem(
@@ -166,6 +159,7 @@ class OnBoardingActivity : BaseActivity<ActivityOnboardingBinding>() {
     }
 
     private fun startNextActivity() {
+        registerShortcutsAfterOnboarding()
         appSharedPref.firstOnBoarding = false
         AdsManager.showInterOnboarding(this) {
             Routes.startMainActivity(this)

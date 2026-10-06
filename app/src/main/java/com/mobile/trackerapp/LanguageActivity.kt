@@ -1,9 +1,6 @@
 package com.mobile.trackerapp
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,8 +14,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.ads.module.ads.wrapper.ApNativeAd
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
@@ -62,8 +57,6 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
         Log.d("AppEvent", "LanguageActivity")
       //  FirebaseAnalytics.getInstance(this).logEvent("LanguageActivity", null)
       //  configureRemoteConfig()
-        requestNotificationPermission()
-
         confirmButton = mBinding.confirmLanguage
         populateLanguages()
 
@@ -133,37 +126,6 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
         }
     }
 
-    private fun requestNotificationPermission() {
-        // Android 13+ requires notification permission at runtime.
-        if (
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
-            PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                NOTIFICATION_PERMISSION_REQUEST
-            )
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == NOTIFICATION_PERMISSION_REQUEST) {
-            val granted = grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED
-//            FirebaseAnalytics.getInstance(this).logEvent(
-//                if (granted) "LanguageActivity_notification_allowed"
-//                else "LanguageActivity_notification_denied",
-//                null
-//            )
-        }
-    }
-
     override fun onDestroy() {
         handler.removeCallbacks(revealConfirmation)
         super.onDestroy()
@@ -204,7 +166,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
             this,
             ad,
             mBinding.flAds,
-            mBinding.shimmerAds.shimmerNativeSmall
+            mBinding.shimmerAds.shimmerNativeLanguage
         )
     }
 

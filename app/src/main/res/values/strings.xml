@@ -40,6 +40,12 @@
     <string name="uninstall">Uninstall</string>
     <string name="shortcut_uninstall_short">Uninstall</string>
     <string name="shortcut_uninstall_long">Open uninstall options</string>
+    <string name="shortcut_phone_locator_short">Phone Locator</string>
+    <string name="shortcut_phone_locator_long">Open Phone Locator</string>
+    <string name="shortcut_track_friend_short">Track Friend</string>
+    <string name="shortcut_track_friend_long">Open Track Friend</string>
+    <string name="feature_phone_locator">Phone Locator</string>
+    <string name="feature_track_friend">Track Friend</string>
     <string name="welcome_back_title">Welcome Back</string>
     <string name="welcome_back_description">Easily track down phones\nand individuals.</string>
     <string name="start">Start</string>
