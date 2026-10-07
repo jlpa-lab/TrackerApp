@@ -30,15 +30,22 @@
         <activity android:name=".onboarding.OnBoardingActivity" />
         <activity
             android:name=".UninstallConfirmActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
-        <activity android:name=".UninstallReasonActivity" />
-        <activity android:name=".WelcomeActivity" />
-        <activity android:name=".ui.PhoneLocatorActivity" android:exported="true" />
-        <activity android:name=".ui.TrackFriendActivity" android:exported="true" />
+        <activity android:name=".UninstallReasonActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".WelcomeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.PhoneLocatorActivity"
+            android:screenOrientation="portrait"
+            android:exported="true" />
+        <activity android:name=".ui.TrackFriendActivity"
+            android:screenOrientation="portrait" android:exported="true" />
 
         <activity
             android:name=".SplashActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:label="@string/app_name"
             android:theme="@style/Theme.Splash">
             <intent-filter>

@@ -100,4 +100,8 @@ class UninstallReasonActivity : BaseActivity<ActivityUninstallReasonBinding>() {
         }
     }
 
+      override fun onActivityBackPressed() {
+          openHome()
+       }
+
 }
