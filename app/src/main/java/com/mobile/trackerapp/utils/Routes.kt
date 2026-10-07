@@ -8,6 +8,7 @@ import com.mobile.trackerapp.MainActivity
 
 import com.mobile.trackerapp.SplashActivity
 import com.mobile.trackerapp.UninstallConfirmActivity
+import com.mobile.trackerapp.WelcomeActivity
 import com.mobile.trackerapp.app.AppConstants
 import com.mobile.trackerapp.onboarding.OnBoardingActivity
 import kotlin.jvm.java
@@ -60,5 +61,9 @@ object Routes {
             fromActivity.startActivity(this)
         }
 
-
+    fun startWelcomeActivity(fromActivity: Activity) =
+        Intent(fromActivity, WelcomeActivity::class.java).apply {
+            putExtra(AppConstants.KEY_TRACKING_SCREEN_FROM, fromActivity::class.java.simpleName)
+            fromActivity.startActivity(this)
+        }
 }

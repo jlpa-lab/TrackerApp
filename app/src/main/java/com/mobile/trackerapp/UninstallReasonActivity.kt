@@ -40,8 +40,7 @@ class UninstallReasonActivity : BaseActivity<ActivityUninstallReasonBinding>() {
         applySystemInsets(findViewById(R.id.uninstall_reason_root))
         Log.d("AppEvent", "MainActivity_uninstall_screen_02")
 
-        findViewById<View>(R.id.back_button).setOnClickListener { finish() }
-        findViewById<View>(R.id.home_button).setOnClickListener { openHome() }
+        findViewById<View>(R.id.back_button).setOnClickListener { openHome() }
         findViewById<View>(R.id.cancel_button).setOnClickListener {
             Log.d("AppEvent", "Uninstall02_cancel")
             openHome()

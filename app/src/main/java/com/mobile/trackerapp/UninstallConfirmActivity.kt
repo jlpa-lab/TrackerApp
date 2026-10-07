@@ -38,8 +38,7 @@ class UninstallConfirmActivity : BaseActivity<ActivityUninstallConfirmBinding>()
         applySystemInsets(findViewById(R.id.uninstall_confirm_root))
         Log.d("AppEvent", "MainActivity_uninstall_screen_01")
 
-        findViewById<View>(R.id.back_button).setOnClickListener { finish() }
-        findViewById<View>(R.id.home_button).setOnClickListener { openHome() }
+        findViewById<View>(R.id.back_button).setOnClickListener { openHome() }
         findViewById<View>(R.id.keep_app_button).setOnClickListener {
             Log.d("AppEvent", "Uninstall01_keep_phone_tracker")
             openHome()

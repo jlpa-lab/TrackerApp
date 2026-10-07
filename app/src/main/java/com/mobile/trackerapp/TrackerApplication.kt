@@ -18,27 +18,28 @@ import com.ads.module.ads.ERainAd
 import com.ads.module.billing.AppPurchase
 import com.ads.module.config.AdjustConfig
 import com.ads.module.config.ERainAdConfig
-import com.google.firebase.FirebaseApp
 import com.itg.devconfig.DevConfig
-import com.mobile.trackerapp.BuildConfig
 import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.app.AppActivityLifecycleCallbacks
+import com.mobile.trackerapp.app.AppLifecycleObserver
 
 /** Tracks the visible activity so application-level resume navigation stays safe. */
-class TrackerApplication : AdsMultiDexApplication(), Application.ActivityLifecycleCallbacks {
-    private var currentActivity = WeakReference<Activity>(null)
+class TrackerApplication : AdsMultiDexApplication() {
+
     lateinit var appLifecycleObserver: AppLifecycleObserver
         private set
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var instance: TrackerApplication
 
+        @SuppressLint("StaticFieldLeak")
+        var currentActivity: Activity? = null
     }
     override fun onCreate() {
         super.onCreate()
-        registerActivityLifecycleCallbacks(this)
         instance = this
-        appLifecycleObserver = AppLifecycleObserver(this) { currentActivity.get() }
-        ProcessLifecycleOwner.get().lifecycle.addObserver(appLifecycleObserver)
+        ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycleObserver())
+        registerActivityLifecycleCallbacks(AppActivityLifecycleCallbacks())
         //FirebaseApp.initializeApp(this)
         MobileAds.initialize(this) {}
         DevConfig.init(
@@ -55,23 +56,6 @@ class TrackerApplication : AdsMultiDexApplication(), Application.ActivityLifecyc
         initBilling()
 
     }
-
-
-    override fun onActivityResumed(activity: Activity) {
-        // WeakReference prevents the application from retaining a destroyed Activity.
-        currentActivity = WeakReference(activity)
-    }
-
-    override fun onActivityDestroyed(activity: Activity) {
-        if (activity is WelcomeActivity) appLifecycleObserver.onWelcomeClosed()
-        if (currentActivity.get() === activity) currentActivity.clear()
-    }
-
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
-    override fun onActivityStarted(activity: Activity) = Unit
-    override fun onActivityPaused(activity: Activity) = Unit
-    override fun onActivityStopped(activity: Activity) = Unit
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
 
     private fun initAds() {
         val environment =

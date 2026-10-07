@@ -136,15 +136,15 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
         getConfigSuccess = true
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        ERainAd.getInstance().onCheckShowSplashWhenFail(this, object : AdCallback() {
-//            override fun onNextAction() {
-//                super.onNextAction()
-//                moveActivity()
-//            }
-//        }, 1000)
-//    }
+    override fun onResume() {
+        super.onResume()
+        ERainAd.getInstance().onCheckShowSplashWhenFail(this@SplashActivity, object : AdCallback() {
+            override fun onNextAction() {
+                super.onNextAction()
+                moveActivity()
+            }
+        }, 1000)
+    }
 
     private fun checkRemoteConfigResult() {
        // AdRemoteConfig.initialize(this, RemoteConfigUtils.getAdRemoteConfig())

@@ -15,14 +15,4 @@
         android:paddingLeft="16dp"
         android:src="@drawable/ic_back" />
 
-    <ImageView
-        android:id="@+id/home_button"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:clickable="true"
-        android:contentDescription="@string/home"
-        android:focusable="true"
-        android:paddingEnd="16dp"
-        android:src="@drawable/ic_home" />
 </FrameLayout>
