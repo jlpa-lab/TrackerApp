@@ -46,6 +46,7 @@ class UninstallConfirmActivity : BaseActivity<ActivityUninstallConfirmBinding>()
         findViewById<View>(R.id.continue_uninstall_button).setOnClickListener {
             Log.d("AppEvent", "Uninstall01_continue_to_uninstall")
             startActivity(Intent(this, UninstallReasonActivity::class.java))
+            finish()
         }
     }
 
@@ -90,7 +91,7 @@ class UninstallConfirmActivity : BaseActivity<ActivityUninstallConfirmBinding>()
         }
     }
 
-    override fun onBackPressed() {
-        Routes.startMainActivity(this)
+    override fun onActivityBackPressed() {
+        openHome()
     }
 }
