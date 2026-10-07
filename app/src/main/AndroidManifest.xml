@@ -27,7 +27,9 @@
             tools:ignore="LockedOrientationActivity"
             android:theme="@style/Theme.Splash"/>
 
-        <activity android:name=".onboarding.OnBoardingActivity" />
+        <activity android:name=".onboarding.OnBoardingActivity"
+            android:screenOrientation="portrait"
+            android:exported="true" />
         <activity
             android:name=".UninstallConfirmActivity"
             android:screenOrientation="portrait"
