@@ -1,4 +1,4 @@
-package com.itg.template.data.event
+package com.mobile.trackerapp.data.event
 
 object EventTracking {
     const val SPLASH = "splash_scr_view"
@@ -16,3 +16,10 @@ object EventTracking {
 
     const val HOME_SCREEN = "home_scr_view"
 }
+
+
+
+
+
+
+

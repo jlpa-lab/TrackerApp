@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="phone_locator_screen_inset">16dp</dimen>
     <dimen name="button_height">@dimen/_44sdp</dimen>
     <dimen name="padding_button_height">@dimen/_12sdp</dimen>
 
@@ -11,3 +12,6 @@
 
     <dimen name="space_horizontal_common">@dimen/_12sdp</dimen>
 </resources>
+
+
+

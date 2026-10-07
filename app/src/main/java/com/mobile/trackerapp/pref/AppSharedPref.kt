@@ -1,4 +1,4 @@
-package com.itg.template.data.pref
+package com.mobile.trackerapp.pref
 
 import android.content.SharedPreferences
 
@@ -20,3 +20,10 @@ interface AppSharedPref {
 
     var isRate: Boolean
 }
+
+
+
+
+
+
+

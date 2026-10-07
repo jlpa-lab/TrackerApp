@@ -1,4 +1,10 @@
 package com.mobile.trackerapp
+import com.mobile.trackerapp.ui.home.HomeActivity
+import com.mobile.trackerapp.ui.splash.SplashActivity
+import com.mobile.trackerapp.ui.welcome.WelcomeActivity
+import com.mobile.trackerapp.ui.language.LanguageActivity
+import com.mobile.trackerapp.ui.uninstall.ConfirmUninstallActivity
+import com.mobile.trackerapp.ui.uninstall.ReasonActivity
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -98,3 +104,12 @@ class TrackerApplication : AdsMultiDexApplication() {
         return systemContext.getString(resId)
     }
 }
+
+
+
+
+
+
+
+
+

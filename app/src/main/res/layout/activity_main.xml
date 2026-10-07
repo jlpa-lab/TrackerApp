@@ -1,16 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:padding="24dp"
-        android:text="@string/home_coming_soon"
-        android:textColor="@color/text_primary"
-        android:textSize="26sp"
-        android:textStyle="bold" />
-</FrameLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/home_bg" android:fitsSystemWindows="true">
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GPS" android:textColor="#008D31" android:textSize="32sp" android:textStyle="bold"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=" Tracker" android:textColor="@color/home_text_dark" android:textSize="32sp" android:textStyle="bold"/>
+            </LinearLayout>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Your location dashboard" android:textColor="@color/home_text_subtitle" android:textSize="18sp"/>
+            <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:background="@drawable/bg_live_card" android:padding="16dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toStartOf="@id/live_illustration" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Live Location" android:textColor="@android:color/white" android:textSize="24sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Track your loved ones&#10;in real time." android:textColor="@android:color/white" android:textSize="14sp"/>
+                    <TextView android:id="@+id/open_live_map" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="@drawable/bg_pill_white" android:padding="12dp" android:text="Open live map" android:textColor="@color/home_green_button_text" android:textStyle="bold"/>
+                </LinearLayout>
+                <ImageView android:id="@+id/live_illustration" android:layout_width="0dp" android:layout_height="0dp" android:scaleType="centerInside" android:src="@drawable/home_live_location" app:layout_constraintWidth_percent="0.42" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
+                <LinearLayout android:id="@+id/action_phone_locator" android:layout_width="0dp" android:layout_height="0dp" android:background="@drawable/bg_phone_locator" android:orientation="vertical" android:padding="16dp" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@id/action_right">
+                    <ImageView android:layout_width="match_parent" android:layout_height="144dp" android:adjustViewBounds="true" android:src="@drawable/home_phone_locator"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Phone Locator" android:textSize="17sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Track number easily&#10;with real-time" android:textColor="@color/home_text_muted" android:textSize="14sp"/>
+                </LinearLayout>
+                <LinearLayout android:id="@+id/action_right" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:orientation="vertical" app:layout_constraintStart_toEndOf="@id/action_phone_locator" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent">
+                    <LinearLayout android:id="@+id/action_track_friend" android:clickable="true" android:focusable="true" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="vertical" android:padding="16dp" android:background="@drawable/bg_track_friend"><ImageView android:layout_width="match_parent" android:layout_height="80dp" android:src="@drawable/home_track_friend"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Track Friend" android:textSize="16sp" android:textStyle="bold"/></LinearLayout>
+                    <Space android:layout_width="match_parent" android:layout_height="8dp"/>
+                    <LinearLayout android:id="@+id/action_shared_connection" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="vertical" android:padding="16dp" android:background="@drawable/bg_shared_connection" android:clickable="true" android:focusable="true"><ImageView android:layout_width="match_parent" android:layout_height="80dp" android:src="@drawable/home_shared_connection"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Shared Connection" android:textSize="16sp" android:textStyle="bold"/></LinearLayout>
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Explore tools" android:textColor="@color/home_text_dark" android:textSize="21sp" android:textStyle="bold" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"/><TextView android:id="@+id/view_all_tools" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="View All" android:textColor="@color/home_green_button_text" android:textStyle="bold" android:clickable="true" android:focusable="true" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"/></androidx.constraintlayout.widget.ConstraintLayout>
+            <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:columnCount="2" android:rowCount="2">
+                <include layout="@layout/home_tool_tile" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+                <include layout="@layout/home_tool_tile_nearby" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+                <include layout="@layout/home_tool_tile_traffic" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+                <include layout="@layout/home_tool_tile_zone" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+            </GridLayout>
+        </LinearLayout>
+    </ScrollView>
+    <include layout="@layout/home_bottom_nav" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+</LinearLayout>

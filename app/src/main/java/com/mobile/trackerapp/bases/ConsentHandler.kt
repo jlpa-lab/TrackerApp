@@ -7,7 +7,7 @@ import com.google.android.ump.ConsentInformation
 import com.google.android.ump.FormError
 import com.itg.iaumodule.IAdConsentCallBack
 import com.itg.iaumodule.ITGAdConsent
-import com.itg.template.data.pref.AppSharedPref
+import com.mobile.trackerapp.pref.AppSharedPref
 import com.mobile.trackerapp.BuildConfig
 import com.mobile.trackerapp.app.AppConstants
 import com.mobile.trackerapp.utils.ITGTrackingHelper
@@ -143,4 +143,12 @@ class ConsentHandler(
         else -> ITGTrackingHelper.CONSENT_ERROR_1
     }
 }
+
+
+
+
+
+
+
+
 

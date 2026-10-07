@@ -52,3 +52,10 @@ fun Context.getSystemLocaleString(@StringRes resId: Int): String {
     val systemContext = createConfigurationContext(config)
     return systemContext.getString(resId)
 }
+
+
+
+
+
+
+

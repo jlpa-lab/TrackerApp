@@ -141,3 +141,11 @@ fun ERainAd.populateNativeAdView(
     adPlaceHolder.removeAllViews()
     adPlaceHolder.addView(adView)
 }
+
+
+
+
+
+
+
+

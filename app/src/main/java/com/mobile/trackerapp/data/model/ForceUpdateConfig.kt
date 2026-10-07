@@ -1,4 +1,4 @@
-package com.itg.template.data.model
+package com.mobile.trackerapp.data.model
 
 import androidx.annotation.Keep
 
@@ -11,4 +11,12 @@ data class ForceUpdateConfig(
     val minVersionCode: Int = 0,
     val force: Boolean = false
 )
+
+
+
+
+
+
+
+
 

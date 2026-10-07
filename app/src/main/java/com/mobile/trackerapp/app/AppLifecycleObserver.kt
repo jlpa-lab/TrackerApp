@@ -5,14 +5,14 @@ import androidx.lifecycle.LifecycleOwner
 import com.ads.module.admob.AppOpenManager
 import com.ads.module.ads.ERainAd
 import com.ads.module.billing.AppPurchase
-import com.mobile.trackerapp.LanguageActivity
-import com.mobile.trackerapp.SplashActivity
+import com.mobile.trackerapp.ui.language.LanguageActivity
+import com.mobile.trackerapp.ui.splash.SplashActivity
 import com.mobile.trackerapp.TrackerApplication
-import com.mobile.trackerapp.UninstallReasonActivity
-import com.mobile.trackerapp.WelcomeActivity
+import com.mobile.trackerapp.ui.uninstall.ReasonActivity
+import com.mobile.trackerapp.ui.welcome.WelcomeActivity
 import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.inter_welcome
-import com.mobile.trackerapp.onboarding.OnBoardingActivity
+import com.mobile.trackerapp.ui.onboarding.OnBoardingActivity
 import com.mobile.trackerapp.utils.Routes
 import kotlin.jvm.java
 
@@ -24,7 +24,7 @@ class AppLifecycleObserver : DefaultLifecycleObserver {
         LanguageActivity::class.java,
         OnBoardingActivity::class.java,
         WelcomeActivity::class.java,
-        UninstallReasonActivity::class.java,
+        ReasonActivity::class.java,
     )
 
     override fun onStart(owner: LifecycleOwner) {

@@ -27,3 +27,11 @@ object ResumeAdsEntryRule {
     fun shouldShowWelcomeOnResume(): Boolean =
         currentMode() == ResumeAdsEntryMode.WELCOME && !AdRemoteConfig.open_resume.isEnable
 }
+
+
+
+
+
+
+
+

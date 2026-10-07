@@ -7,7 +7,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
-import com.itg.template.data.model.ForceUpdateConfig
+import com.mobile.trackerapp.data.model.ForceUpdateConfig
 
 import com.mobile.trackerapp.BuildConfig
 import com.mobile.trackerapp.TrackerApplication
@@ -197,3 +197,10 @@ object RemoteConfigUtils {
         AppConstants.DEFAULT_TIME_DELAY_SHOW_LANGUAGE_DONE_BUTTON
     )
 }
+
+
+
+
+
+
+

@@ -12,3 +12,11 @@ data class AdUnitConfig(
     val positionCTA: String = "BOTTOM",
     val components: List<String> = listOf("icon_headline", "body", "media", "cta")
 )
+
+
+
+
+
+
+
+

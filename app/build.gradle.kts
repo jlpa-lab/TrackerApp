@@ -1,4 +1,10 @@
 import org.gradle.kotlin.dsl.implementation
+import java.util.Properties
+
+val localProperties = Properties().apply {
+    val propertiesFile = rootProject.file("local.properties")
+    if (propertiesFile.exists()) propertiesFile.inputStream().use(::load)
+}
 
 plugins {
     alias(libs.plugins.android.application)
@@ -19,6 +25,7 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+        manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY", "")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -76,6 +83,13 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
   //  kapt(libs.hilt.compiler)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+      implementation("com.googlecode.libphonenumber:libphonenumber:8.13.55")
+    implementation("com.googlecode.libphonenumber:geocoder:2.229")
+    implementation("com.googlecode.libphonenumber:prefixmapper:2.229")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)

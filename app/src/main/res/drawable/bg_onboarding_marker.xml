@@ -3,3 +3,7 @@
     <solid android:color="@color/tracker_green" />
     <stroke android:width="5dp" android:color="@android:color/white" />
 </shape>
+
+
+
+

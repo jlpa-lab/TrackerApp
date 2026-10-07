@@ -39,3 +39,10 @@ abstract class BaseFragment<VB : ViewDataBinding> : Fragment() {
 
     open fun observerData() {}
 }
+
+
+
+
+
+
+

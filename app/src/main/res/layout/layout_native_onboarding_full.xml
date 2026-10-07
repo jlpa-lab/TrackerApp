@@ -111,3 +111,6 @@
             tools:text="Install" />
     </LinearLayout>
 </com.google.android.gms.ads.nativead.NativeAdView>
+
+
+

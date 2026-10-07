@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="home_bg">#EEF7F0</color>
+    <color name="home_green_title">#008D31</color>
+    <color name="home_green_button_text">#008F2D</color>
+    <color name="home_see_all">#00952E</color>
+    <color name="home_text_dark">#0A101F</color>
+    <color name="home_text_subtitle">#787E8D</color>
+    <color name="home_text_muted">#7B808A</color>
+    <color name="home_nav_active">#08A331</color>
+    <color name="home_nav_inactive">#484C52</color>
+</resources>

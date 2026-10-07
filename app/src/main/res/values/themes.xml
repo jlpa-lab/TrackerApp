@@ -44,6 +44,11 @@
         <item name="android:textSize">15sp</item>
     </style>
 
+    <style name="PhoneLocatorScreenInset">
+        <item name="android:layout_marginStart">@dimen/phone_locator_screen_inset</item>
+        <item name="android:layout_marginEnd">@dimen/phone_locator_screen_inset</item>
+    </style>
+
     <style name="UninstallReasonOption" parent="android:style/Widget.CompoundButton.RadioButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -86,3 +91,7 @@
         <item name="android:windowActionBar">false</item>
     </style>
 </resources>
+
+
+
+

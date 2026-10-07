@@ -3,3 +3,7 @@
     <path android:fillColor="#FFFFFF" android:fillAlpha="0.4" android:pathData="M24,13a11,11 0,0 1,11 11h-3a8,8 0,0 0,-8 -8zM24,19a5,5 0,0 1,5 5h-3a2,2 0,0 0,-2 -2z" />
     <path android:fillColor="#FFB300" android:pathData="M24,22a3,3 0,1 1,0 6a3,3 0,1 1,0 -6" />
 </vector>
+
+
+
+

@@ -2,7 +2,7 @@ package com.mobile.trackerapp.pref
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.itg.template.data.pref.AppSharedPref
+import com.mobile.trackerapp.pref.AppSharedPref
 
 class AppSharedPreferencesApp(context: Context) : AppSharedPref {
 
@@ -54,3 +54,10 @@ class AppSharedPreferencesApp(context: Context) : AppSharedPref {
         set(value) = editor.putBoolean(IS_RATE, value).apply()
 
 }
+
+
+
+
+
+
+

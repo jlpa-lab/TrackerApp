@@ -205,3 +205,10 @@ data class AdRemoteConfig(
     val reward_example: AdUnitConfig
         get() = getAdUnit("reward_example")
 }
+
+
+
+
+
+
+

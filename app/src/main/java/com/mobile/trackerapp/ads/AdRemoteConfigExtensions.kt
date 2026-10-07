@@ -76,3 +76,10 @@ val AdRemoteConfig.Companion.inter_welcome: AdUnitConfig
 
 val AdRemoteConfig.Companion.reward_example: AdUnitConfig
     get() = getInstance().reward_example
+
+
+
+
+
+
+

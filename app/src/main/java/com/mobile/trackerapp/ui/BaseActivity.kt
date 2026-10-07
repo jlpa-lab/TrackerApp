@@ -21,7 +21,7 @@ import androidx.databinding.ViewDataBinding
 import com.ads.module.admob.Admob
 import com.ads.module.ads.wrapper.ApInterstitialAd
 import com.ads.module.funtion.AdCallback
-import com.itg.template.data.pref.AppSharedPref
+import com.mobile.trackerapp.pref.AppSharedPref
 import com.mobile.trackerapp.app.AppConstants
 import com.mobile.trackerapp.pref.AppSharedPreferencesApp
 import java.util.Locale
@@ -169,3 +169,11 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity() {
 //        }
 //    }
 }
+
+
+
+
+
+
+
+
