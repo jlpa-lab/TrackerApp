@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">Phone Tracker</string>
+    <string name="app_name">Location &amp; Phone Tracker</string>
     <string name="tracker_marker">Current tracked person</string>
     <string name="location_shared">●  Location shared</string>
     <string name="splash_tagline">Stay close, wherever they go.</string>
     <string name="splash_disclaimer">This action may contain ads</string>
     <string name="splash_status">TRACE SYSTEM READY</string>
-    <string name="splash_content_description">Phone Tracker splash screen</string>
+    <string name="splash_content_description">Location &amp; Phone Tracker splash screen</string>
     <string name="welcome_title">Welcome</string>
     <string name="welcome_message">Your basic Android app is ready.</string>
     <string name="language_title">Language</string>
