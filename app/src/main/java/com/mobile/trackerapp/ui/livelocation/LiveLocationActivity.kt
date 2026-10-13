@@ -51,8 +51,6 @@ open class LiveLocationActivity : FragmentActivity(), OnMapReadyCallback {
             findViewById<View>(R.id.friend_empty_state).visibility = View.GONE
             findViewById<View>(R.id.friend_people_button).setOnClickListener { toggleFriendsPanel() }
             findViewById<View>(R.id.friend_add_button).setOnClickListener { startActivity(Intent(this, TrackFriendRequestsActivity::class.java)) }
-            findViewById<View>(R.id.friend_received_button).setOnClickListener { startActivity(Intent(this, TrackFriendRequestsActivity::class.java).putExtra("request_tab", "received")) }
-            findViewById<View>(R.id.friend_sent_button).setOnClickListener { startActivity(Intent(this, TrackFriendRequestsActivity::class.java).putExtra("request_tab", "sent")) }
         }
         address = findViewById(R.id.live_address)
         findViewById<TextView>(R.id.share_location).setOnClickListener { shareLocation() }

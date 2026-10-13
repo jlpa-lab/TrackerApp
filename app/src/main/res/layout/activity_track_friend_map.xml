@@ -24,7 +24,7 @@
             <TextView android:id="@+id/map_zoom_in" android:layout_width="64dp" android:layout_height="64dp" android:gravity="center" android:text="+" android:textSize="28sp" android:background="@drawable/bg_map_control"/>
             <TextView android:id="@+id/map_zoom_out" android:layout_width="64dp" android:layout_height="64dp" android:layout_marginTop="8dp" android:gravity="center" android:text="−" android:textSize="28sp" android:background="@drawable/bg_map_control"/>
             <ImageView android:id="@+id/map_focus" android:layout_width="64dp" android:layout_height="64dp" android:layout_marginTop="8dp" android:padding="16dp" android:src="@drawable/ic_location_focus_green" android:contentDescription="Focus on map" android:background="@drawable/bg_map_control"/>
-            <TextView android:id="@+id/friend_people_button" android:layout_width="64dp" android:layout_height="64dp" android:layout_marginTop="8dp" android:gravity="center" android:text="♣" android:textSize="28sp" android:textColor="@color/home_green_button_text" android:contentDescription="Friends" android:background="@drawable/bg_map_control"/>
+            <ImageView android:id="@+id/friend_people_button" android:layout_width="64dp" android:layout_height="64dp" android:layout_marginTop="8dp" android:gravity="center" android:padding="18dp" android:src="@drawable/ic_people_group" android:contentDescription="Friends" android:background="@drawable/bg_map_control"/>
         </LinearLayout>
     </FrameLayout>
     <View android:id="@+id/self_location_controls" android:layout_width="1dp" android:layout_height="1dp" android:visibility="gone"/>
@@ -38,7 +38,5 @@
         <LinearLayout android:id="@+id/friend_rows" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"/>
         <TextView android:id="@+id/friend_empty_message" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="No friends are sharing their location yet." android:textSize="14sp" android:textColor="@color/home_text_subtitle"/>
         <TextView android:id="@+id/friend_add_button" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center" android:padding="14dp" android:text="Add friend                 ›" android:textSize="17sp" android:textStyle="bold" android:textColor="@color/home_text_dark" android:background="@drawable/bg_phone_input"/>
-        <TextView android:id="@+id/friend_received_button" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:gravity="center" android:padding="14dp" android:text="View received requests  ›" android:textSize="17sp" android:textStyle="bold" android:textColor="@color/home_text_dark" android:background="@drawable/bg_phone_input"/>
-        <TextView android:id="@+id/friend_sent_button" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:gravity="center" android:padding="14dp" android:text="View sent requests  ›" android:textSize="17sp" android:textStyle="bold" android:textColor="@color/home_text_dark" android:background="@drawable/bg_phone_input"/>
     </LinearLayout>
 </LinearLayout>

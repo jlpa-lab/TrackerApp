@@ -1,0 +1,4 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="28dp" android:height="28dp" android:viewportWidth="28" android:viewportHeight="28">
+    <path android:fillColor="@color/home_green_button_text" android:pathData="M10,12A5,5 0,1 0,10 2A5,5 0,0 0,10 12M18,13A4,4 0,1 0,18 5A4,4 0,0 0,18 13M10,14C5.6,14 2,17.6 2,22V24H18V22C18,17.6 14.4,14 10,14M18,15C16.8,15 15.7,15.3 14.8,15.8C16.8,17.4 18,19.6 18,22V24H26V21C26,17.7 22.4,15 18,15Z"/>
+</vector>
