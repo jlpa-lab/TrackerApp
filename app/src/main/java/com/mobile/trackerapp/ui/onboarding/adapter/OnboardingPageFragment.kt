@@ -118,7 +118,11 @@ class OnboardingPageFragment : BaseFragment<FragmentOnboardingPageBinding>() {
     }
 
     private fun updateLayout() {
-        Glide.with(this).load(onboardingItem.imageResId).into(mBinding.imgOnboarding)
+        // These are local, page-specific drawable resources. Clear any previous
+        // request before binding so ViewPager2/Glide cannot briefly reuse the
+        // neighbouring page's image when the user moves from page 1 to page 2.
+        Glide.with(this).clear(mBinding.imgOnboarding)
+        mBinding.imgOnboarding.setImageResource(onboardingItem.imageResId)
         mBinding.tvTitle.text = getString(onboardingItem.title)
         mBinding.tvDes.text = getString(onboardingItem.description)
         mBinding.btnNext.text = getString(onboardingItem.textButton)

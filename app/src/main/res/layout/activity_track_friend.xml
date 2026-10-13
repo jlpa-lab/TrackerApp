@@ -107,6 +107,19 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/track_friend_view_map"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_phone_input"
+                    android:gravity="center"
+                    android:padding="14dp"
+                    android:text="View friend locations"
+                    android:textColor="@color/home_green_button_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
                     android:id="@+id/track_friend_requests"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

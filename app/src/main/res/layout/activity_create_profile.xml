@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#F5FAFE">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="‹  Create Profile" android:textSize="25sp" android:textStyle="bold" android:textColor="#17213A"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="28dp" android:text="Enter Your Name" android:textStyle="bold" android:textColor="#17213A"/>
+        <EditText android:id="@+id/profile_name" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="8dp" android:hint="Enter Your Name" android:singleLine="true" android:padding="16dp" android:background="@drawable/bg_phone_input"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="Choose an avatar" android:textSize="16sp" android:textStyle="bold" android:textColor="#17213A"/>
+        <GridLayout android:id="@+id/avatar_grid" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:columnCount="4" android:useDefaultMargins="true">
+            <TextView android:id="@+id/avatar_1" android:layout_width="0dp" android:layout_height="64dp" android:layout_columnWeight="1" android:gravity="center" android:text="🙂" android:textSize="30sp" android:background="@drawable/bg_connection_icon"/>
+            <TextView android:id="@+id/avatar_2" android:layout_width="0dp" android:layout_height="64dp" android:layout_columnWeight="1" android:gravity="center" android:text="😎" android:textSize="30sp" android:background="@drawable/bg_connection_icon"/>
+            <TextView android:id="@+id/avatar_3" android:layout_width="0dp" android:layout_height="64dp" android:layout_columnWeight="1" android:gravity="center" android:text="🤗" android:textSize="30sp" android:background="@drawable/bg_connection_icon"/>
+            <TextView android:id="@+id/avatar_4" android:layout_width="0dp" android:layout_height="64dp" android:layout_columnWeight="1" android:gravity="center" android:text="🦊" android:textSize="30sp" android:background="@drawable/bg_connection_icon"/>
+        </GridLayout>
+        <TextView android:id="@+id/profile_continue" android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="28dp" android:gravity="center" android:text="Continue" android:textSize="16sp" android:textStyle="bold" android:textColor="#FFFFFF" android:background="@drawable/bg_live_share"/>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="180dp" android:gravity="center" android:text="Your profile helps your family recognize you when sharing locations." android:textColor="#78839A" android:textSize="13sp"/>
+    </LinearLayout>
+</ScrollView>

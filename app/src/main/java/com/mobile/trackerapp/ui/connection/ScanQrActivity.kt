@@ -6,6 +6,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import android.widget.TextView
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.zxing.BinaryBitmap
@@ -27,28 +32,25 @@ class ScanQrActivity : AppCompatActivity() {
         }
     }
 
-    private val qrScanner = registerForActivityResult(ScanContract()) { result ->
-        val content = result.contents
-        if (!content.isNullOrBlank()) returnCode(content)
-        else Toast.makeText(this, "No QR code was scanned", Toast.LENGTH_SHORT).show()
-    }
+    private lateinit var barcodeView: DecoratedBarcodeView
+    private var flashlightOn = false
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         setContentView(R.layout.activity_scan_qr)
+        barcodeView = findViewById(R.id.scan_barcode_view)
+        barcodeView.decodeSingle { result -> result.text?.takeIf { it.isNotBlank() }?.let(::returnCode) }
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST) else barcodeView.resume()
         findViewById<View>(R.id.scan_back).setOnClickListener { finish() }
-        findViewById<View>(R.id.scan_camera).setOnClickListener {
-            qrScanner.launch(ScanOptions().apply {
-                setDesiredBarcodeFormats(ScanOptions.QR_CODE)
-                setPrompt("Scan your friend's invite QR code")
-                setBeepEnabled(false)
-                setOrientationLocked(false)
-            })
-        }
+        findViewById<View>(R.id.scan_flash).setOnClickListener { flashlightOn = !flashlightOn; if (flashlightOn) barcodeView.setTorchOn() else barcodeView.setTorchOff(); findViewById<TextView>(R.id.scan_flash).text = if (flashlightOn) "▣  Flashlight on" else "▣  Flashlight off" }
         findViewById<View>(R.id.scan_gallery).setOnClickListener {
             galleryPicker.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).setType("image/*").addCategory(Intent.CATEGORY_OPENABLE))
         }
     }
+
+    override fun onResume() { super.onResume(); if (::barcodeView.isInitialized && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) barcodeView.resume() }
+    override fun onPause() { if (::barcodeView.isInitialized) barcodeView.pause(); super.onPause() }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) { super.onRequestPermissionsResult(requestCode, permissions, grantResults); if (requestCode == CAMERA_REQUEST && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) barcodeView.resume() else Toast.makeText(this, "Camera permission is needed to scan QR codes", Toast.LENGTH_LONG).show() }
 
     private fun decodeQr(uri: Uri): String? {
         return try {
@@ -79,5 +81,6 @@ class ScanQrActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_SCANNED_CODE = "scanned_invite_code"
         private const val MAX_IMAGE_SIDE = 1600
+        private const val CAMERA_REQUEST = 71
     }
 }
