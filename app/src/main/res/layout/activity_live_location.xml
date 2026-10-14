@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/home_bg" android:fitsSystemWindows="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="16dp" android:paddingEnd="16dp" android:paddingTop="16dp" android:paddingBottom="12dp">
+        <TextView android:id="@+id/live_back" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="‹" android:textSize="38sp" android:textColor="@color/home_text_dark" android:paddingEnd="16dp"/>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+            <TextView android:id="@+id/live_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Live Location" android:textSize="32sp" android:textStyle="bold" android:textColor="@color/home_text_dark"/>
+            <TextView android:id="@+id/live_subtitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Stay close, wherever you are" android:textSize="18sp" android:textColor="@color/home_text_subtitle"/>
+        </LinearLayout>
+    </LinearLayout>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <FrameLayout android:id="@+id/live_map" android:layout_width="match_parent" android:layout_height="match_parent"/>
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="end|top" android:orientation="vertical" android:gravity="end" android:layout_margin="16dp">
+            <ImageView android:id="@+id/map_layers_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_map_layers" android:contentDescription="Map layers" android:padding="16dp" android:background="@drawable/bg_map_control"/>
+            <LinearLayout android:id="@+id/map_layers_menu" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone" android:layout_marginTop="8dp">
+                <TextView android:id="@+id/map_normal" android:layout_width="96dp" android:layout_height="wrap_content" android:text="Normal" android:textStyle="bold" android:padding="10dp" android:background="@drawable/bg_map_pill"/>
+                <TextView android:id="@+id/map_satellite" android:layout_width="96dp" android:layout_height="wrap_content" android:text="Satellite" android:padding="10dp" android:layout_marginTop="4dp" android:background="@drawable/bg_map_pill"/>
+                <TextView android:id="@+id/map_terrain" android:layout_width="96dp" android:layout_height="wrap_content" android:text="Terrain" android:padding="10dp" android:layout_marginTop="4dp" android:background="@drawable/bg_map_pill"/>
+                <TextView android:id="@+id/map_hybrid" android:layout_width="96dp" android:layout_height="wrap_content" android:text="Hybrid" android:padding="10dp" android:layout_marginTop="4dp" android:background="@drawable/bg_map_pill"/>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="end|bottom" android:orientation="vertical" android:layout_margin="16dp">
+            <TextView android:id="@+id/map_zoom_in" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+" android:textSize="28sp" android:gravity="center" android:padding="16dp" android:background="@drawable/bg_map_control"/>
+            <TextView android:id="@+id/map_zoom_out" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="−" android:textSize="28sp" android:gravity="center" android:padding="16dp" android:background="@drawable/bg_map_control"/>
+            <ImageView android:id="@+id/map_focus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:src="@drawable/ic_location_focus_green" android:contentDescription="Focus on my location" android:padding="16dp" android:background="@drawable/bg_map_control"/>
+        </LinearLayout>
+        <ImageView android:id="@+id/map_friends" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="end|bottom" android:layout_marginEnd="16dp" android:layout_marginBottom="220dp" android:padding="18dp" android:src="@drawable/ic_nav_connection" android:tint="@color/home_green_button_text" android:background="@drawable/bg_map_control" android:contentDescription="Friend requests" />
+    </FrameLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="16dp" android:paddingEnd="16dp" android:paddingTop="8dp" android:paddingBottom="16dp">
+        <TextView android:id="@+id/live_address" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Waiting for your location…" android:textColor="@color/home_text_subtitle" android:textSize="14sp" android:paddingBottom="8dp"/>
+        <TextView android:id="@+id/share_location" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:drawableStart="@drawable/ic_location_pin_white" android:drawablePadding="12dp" android:padding="16dp" android:text="Share Location Address" android:textColor="@android:color/white" android:textSize="18sp" android:textStyle="bold" android:background="@drawable/bg_live_share"/>
+    </LinearLayout>
+</LinearLayout>
