@@ -15,6 +15,9 @@
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="app_color">#08A331</color>
+    <color name="light_app_color">#EEFAF5</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>
 
 

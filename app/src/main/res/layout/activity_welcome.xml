@@ -51,7 +51,7 @@
             android:text="@string/welcome_back_title"
             android:textColor="#0E1423"
             android:textSize="28sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/inter_bold" />
 
         <TextView
             android:layout_width="match_parent"

@@ -21,7 +21,7 @@
             android:text="Shared Connection"
             android:textColor="@color/home_text_dark"
             android:textSize="30sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/inter_bold" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
                 android:text="Share your connection"
                 android:textColor="@color/home_text_dark"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:fontFamily="@font/inter_bold" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -66,7 +66,7 @@
                 android:text="Share invite"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:fontFamily="@font/inter_bold" />
 
             <TextView
                 android:id="@+id/connection_show_qr"
@@ -79,7 +79,7 @@
                 android:text="Show my QR code"
                 android:textColor="@color/home_green_button_text"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:fontFamily="@font/inter_bold" />
         </LinearLayout>
 
         <LinearLayout
@@ -96,7 +96,7 @@
                 android:text="Your connections"
                 android:textColor="@color/home_text_dark"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:fontFamily="@font/inter_bold" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -117,7 +117,7 @@
                 android:text="Friend requests"
                 android:textColor="@color/home_green_button_text"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:fontFamily="@font/inter_bold" />
         </LinearLayout>
 
         <TextView

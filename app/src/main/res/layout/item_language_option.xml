@@ -25,7 +25,7 @@
             android:includeFontPadding="false"
             android:textColor="#111827"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/inter_bold" />
 
         <TextView
             android:id="@+id/language_english_name"

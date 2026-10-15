@@ -26,14 +26,15 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical">
 
-                <TextView
+                <ImageView
                     android:id="@+id/track_friend_back"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:gravity="center"
-                    android:text="‹"
-                    android:textColor="@color/home_text_dark"
-                    android:textSize="32sp" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:contentDescription="Back"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_back_chevron"  />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -45,16 +46,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Track Friend"
-                        android:textColor="@color/home_text_dark"
-                        android:textSize="30sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/home_phone_locator_text"
+                        android:textSize="22sp"
+                        android:fontFamily="@font/inter_bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Your people, connected safely"
                         android:textColor="@color/home_text_subtitle"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/inter_regular"
+                        android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -80,9 +82,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="No friends sharing location"
-                    android:textColor="@color/home_text_dark"
+                    android:textColor="@color/home_phone_locator_text"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:fontFamily="@font/inter_bold" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -102,9 +104,9 @@
                     android:gravity="center"
                     android:padding="14dp"
                     android:text="Connect with a friend"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:fontFamily="@font/inter_bold" />
 
                 <TextView
                     android:id="@+id/track_friend_requests"
@@ -117,7 +119,7 @@
                     android:text="View friend requests"
                     android:textColor="@color/home_green_button_text"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:fontFamily="@font/inter_bold" />
             </LinearLayout>
 
             <TextView
@@ -128,6 +130,7 @@
                 android:padding="14dp"
                 android:text="Live friend tracking is not active until the secure connection service is configured. No location is being sent from this screen."
                 android:textColor="@color/home_text_subtitle"
+                android:fontFamily="@font/inter_regular"
                 android:textSize="13sp" />
         </LinearLayout>
     </ScrollView>

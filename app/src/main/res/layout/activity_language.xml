@@ -27,7 +27,7 @@
             android:text="@string/language_title"
             android:textColor="#0C1121"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/inter_bold" />
 
         <ImageView
             android:id="@+id/confirm_language"
