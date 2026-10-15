@@ -71,28 +71,6 @@
 
                 <include layout="@layout/settings_terms_row" />
             </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:gravity="center"
-                android:text="GPS Tracker · Version 1.0.0"
-                android:fontFamily="@font/inter_regular"
-                android:textColor="@color/home_text_subtitle"
-                android:textSize="12sp" />
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:gravity="center"
-                android:fontFamily="@font/inter_regular"
-                android:text="Your everyday location companion"
-                android:textColor="@color/home_text_subtitle"
-                android:textSize="12sp" />
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

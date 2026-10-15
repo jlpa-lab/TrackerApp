@@ -1,0 +1,5 @@
+<resources>
+    <item name="request_list" type="id" />
+    <item name="scan_friend_qr" type="id" />
+    <item name="connection_backend_note" type="id" />
+</resources>

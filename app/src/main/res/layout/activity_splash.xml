@@ -36,7 +36,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/inter"
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:text="@string/app_name"

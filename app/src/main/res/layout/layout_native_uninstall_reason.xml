@@ -55,7 +55,6 @@
                 android:layout_marginStart="2dp"
                 android:textColor="#000000"
                 android:textSize="13dp"
-                android:fontFamily="@font/inter_bold"
                 app:layout_constraintEnd_toEndOf="@id/ad_headline"
                 app:layout_constraintStart_toStartOf="@id/ad_headline"
                 app:layout_constraintTop_toBottomOf="@id/ad_headline"

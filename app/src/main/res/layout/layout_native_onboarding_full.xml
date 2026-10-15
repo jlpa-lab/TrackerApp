@@ -78,7 +78,6 @@
                 android:layout_marginTop="2dp"
                 android:textColor="@color/color_9E9E9E"
                 android:textSize="12sp"
-                android:fontFamily="@font/inter_bold"
                 app:layout_constraintEnd_toEndOf="@id/ad_headline"
                 app:layout_constraintStart_toStartOf="@id/ad_icon"
                 app:layout_constraintTop_toBottomOf="@id/ad_headline"

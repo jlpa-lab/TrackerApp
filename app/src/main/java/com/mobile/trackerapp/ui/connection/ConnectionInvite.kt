@@ -16,7 +16,7 @@ object ConnectionInvite {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val existing = prefs.getString(KEY_CODE, null)
         if (!existing.isNullOrBlank()) return existing
-        val generated = UUID.randomUUID().toString().replace("-", "").take(8).uppercase()
+        val generated = UUID.randomUUID().toString().replace("-", "").take(6).uppercase()
         prefs.edit().putString(KEY_CODE, generated).apply()
         return generated
     }

@@ -5,8 +5,10 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
@@ -18,6 +20,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.content.Context
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -30,6 +33,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.BuildConfig
 import com.mobile.trackerapp.ui.DashboardActivity
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -46,7 +50,11 @@ private data class NearbyPlace(
     val address: String,
     val latitude: Double,
     val longitude: Double,
-    val distanceMeters: Float
+    val distanceMeters: Float,
+    val imageUrl: String?,
+    val rating: String?,
+    val reviewCount: String?,
+    val openingHours: String?
 )
 
 /** Nearby search backed by live OpenStreetMap data, with routes opened in the installed maps app. */
@@ -76,6 +84,8 @@ class NearbyActivity : DashboardActivity() {
     private var searchTask: Runnable? = null
     private var suppressTextListener = false
     private var currentQuery = ""
+    private var showAllResults = false
+    private var latestPlaces: List<NearbyPlace> = emptyList()
     @Volatile private var activeConnection: HttpURLConnection? = null
 
     private val categoriesLauncher = 7102
@@ -84,6 +94,7 @@ class NearbyActivity : DashboardActivity() {
         super.onCreate(state)
         window.statusBarColor = Color.rgb(246, 251, 248)
         window.navigationBarColor = Color.rgb(246, 251, 248)
+        window.setBackgroundDrawable(ColorDrawable(Color.rgb(246, 251, 248)))
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
@@ -95,6 +106,17 @@ class NearbyActivity : DashboardActivity() {
         suppressTextListener = false
         updateChips()
         if (hasLocationPermission()) obtainLocationAndSearch() else showLocationPermissionState()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Restore the activity window after returning from an external maps app.
+        window.statusBarColor = Color.rgb(246, 251, 248)
+        window.navigationBarColor = Color.rgb(246, 251, 248)
+        window.setBackgroundDrawable(ColorDrawable(Color.rgb(246, 251, 248)))
+        @Suppress("DEPRECATION")
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        hideNavigationBar()
     }
 
     private fun buildScreen(): View {
@@ -359,21 +381,26 @@ class NearbyActivity : DashboardActivity() {
     }
 
     private fun fetchPlaces(query: String, origin: Location): List<NearbyPlace> {
-        val connection = URL(OVERPASS_ENDPOINT).openConnection() as HttpURLConnection
-        synchronized(networkLock) { activeConnection = connection }
-        connection.requestMethod = "POST"
-        connection.connectTimeout = CONNECT_TIMEOUT_MS
-        connection.readTimeout = READ_TIMEOUT_MS
-        connection.doOutput = true
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-        connection.setRequestProperty("Accept", "application/json")
-        connection.setRequestProperty("User-Agent", "TrackerApp-Nearby/1.0")
-        try {
-            val body = "data=" + URLEncoder.encode(query, Charsets.UTF_8.name())
-            connection.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
-            val status = connection.responseCode
-            if (status !in 200..299) throw IllegalStateException("Places service returned HTTP $status")
-            val json = connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+        if (BuildConfig.GOOGLE_PLACES_API_KEY.isNotBlank()) {
+            runCatching { fetchGooglePlaces(origin, query) }.getOrNull()?.takeIf { it.isNotEmpty() }?.let { return it }
+        }
+        var lastError: Exception? = null
+        for (endpoint in OVERPASS_ENDPOINTS) {
+            val connection = URL(endpoint).openConnection() as HttpURLConnection
+            synchronized(networkLock) { activeConnection = connection }
+            connection.requestMethod = "POST"
+            connection.connectTimeout = CONNECT_TIMEOUT_MS
+            connection.readTimeout = READ_TIMEOUT_MS
+            connection.doOutput = true
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+            connection.setRequestProperty("Accept", "application/json")
+            connection.setRequestProperty("User-Agent", "TrackerApp-Nearby/1.0")
+            try {
+                val body = "data=" + URLEncoder.encode(query, Charsets.UTF_8.name())
+                connection.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
+                val status = connection.responseCode
+                if (status !in 200..299) throw IllegalStateException("Places service returned HTTP $status")
+                val json = connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
             val elements = JSONObject(json).optJSONArray("elements") ?: return emptyList()
             val places = ArrayList<NearbyPlace>()
             for (index in 0 until elements.length()) {
@@ -392,12 +419,106 @@ class NearbyActivity : DashboardActivity() {
                 val address = listOf(street, tags.optString("addr:suburb"), tags.optString("addr:city"))
                     .filter { it.isNotBlank() }.distinct().joinToString(", ")
                     .ifBlank { tags.optString("addr:full").ifBlank { type } }
-                places.add(NearbyPlace("${item.optString("type")}_${item.optLong("id")}", name, type, address, lat, lon, distance))
+                places.add(NearbyPlace(
+                    "${item.optString("type")}_${item.optLong("id")}", name, type, address, lat, lon, distance,
+                    tags.optString("image").takeIf { it.startsWith("http") }
+                        ?: tags.optString("wikimedia_commons").takeIf { it.startsWith("http") },
+                    null, null, null
+                ))
             }
-            return places.distinctBy { it.id }.sortedBy { it.distanceMeters }.take(MAX_RESULTS)
+                return places.distinctBy { it.id }.filter { it.distanceMeters <= SEARCH_RADIUS_METERS }.sortedBy { it.distanceMeters }.take(MAX_RESULTS)
+            } catch (error: Exception) {
+                lastError = error
+            } finally {
+                connection.disconnect()
+                synchronized(networkLock) { if (activeConnection === connection) activeConnection = null }
+            }
+        }
+        runCatching { fetchPhotonPlaces(origin, currentQuery.ifBlank { categorySearchName(selectedCategory) }) }
+            .getOrNull()?.takeIf { it.isNotEmpty() }?.let { return it }
+        throw lastError ?: IllegalStateException("Nearby places are unavailable")
+    }
+
+    private fun fetchGooglePlaces(origin: Location, query: String): List<NearbyPlace> {
+        val includedType = when (selectedCategory) {
+            "Coffee" -> "cafe"
+            "Food" -> "restaurant"
+            "Gas" -> "gas_station"
+            else -> null
+        }
+        val body = JSONObject().apply {
+            put("maxResultCount", MAX_RESULTS)
+            put("locationRestriction", JSONObject().put("circle", JSONObject().apply {
+                put("center", JSONObject().put("latitude", origin.latitude).put("longitude", origin.longitude))
+                put("radius", SEARCH_RADIUS_METERS.toDouble())
+            }))
+            includedType?.let { put("includedTypes", org.json.JSONArray().put(it)) }
+            if (query.isNotBlank() && includedType == null) put("textQuery", query)
+        }
+        val connection = URL("https://places.googleapis.com/v1/places:searchNearby").openConnection() as HttpURLConnection
+        return try {
+            connection.requestMethod = "POST"
+            connection.connectTimeout = CONNECT_TIMEOUT_MS
+            connection.readTimeout = READ_TIMEOUT_MS
+            connection.doOutput = true
+            connection.setRequestProperty("Content-Type", "application/json")
+            connection.setRequestProperty("X-Goog-Api-Key", BuildConfig.GOOGLE_PLACES_API_KEY)
+            connection.setRequestProperty("X-Goog-FieldMask", "places.id,places.displayName,places.location,places.primaryType,places.formattedAddress,places.rating,places.userRatingCount,places.currentOpeningHours.openNow,places.photos")
+            connection.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
+            if (connection.responseCode !in 200..299) throw IllegalStateException("Google Places returned HTTP ${connection.responseCode}")
+            val places = JSONObject(connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }).optJSONArray("places") ?: return emptyList()
+            buildList {
+                for (index in 0 until places.length()) {
+                    val item = places.optJSONObject(index) ?: continue
+                    val location = item.optJSONObject("location") ?: continue
+                    val lat = location.optDouble("latitude", Double.NaN)
+                    val lon = location.optDouble("longitude", Double.NaN)
+                    val name = item.optJSONObject("displayName")?.optString("text").orEmpty()
+                    if (name.isBlank()) continue
+                    if (!lat.isFinite() || !lon.isFinite()) continue
+                    val point = Location("google").apply { latitude = lat; longitude = lon }
+                    val photoName = item.optJSONArray("photos")?.optJSONObject(0)?.optString("name").orEmpty()
+                    add(NearbyPlace(
+                        item.optString("id"), name, item.optString("primaryType").replace('_', ' ').ifBlank { selectedCategory },
+                        item.optString("formattedAddress").ifBlank { selectedCategory }, lat, lon, origin.distanceTo(point),
+                        photoName.takeIf { it.isNotBlank() }?.let { "https://places.googleapis.com/v1/$it/media?maxWidthPx=160&key=${BuildConfig.GOOGLE_PLACES_API_KEY}" },
+                        item.optDouble("rating", Double.NaN).takeIf { it.isFinite() }?.let { String.format(Locale.getDefault(), "%.1f", it) },
+                        item.optInt("userRatingCount", 0).takeIf { it > 0 }?.toString(),
+                        if (item.optJSONObject("currentOpeningHours")?.has("openNow") == true) if (item.optJSONObject("currentOpeningHours")?.optBoolean("openNow") == true) "Open now" else "Closed" else null
+                    ))
+                }
+            }.filter { it.distanceMeters <= SEARCH_RADIUS_METERS }.sortedBy { it.distanceMeters }.take(MAX_RESULTS)
+        } finally { connection.disconnect() }
+    }
+
+    private fun fetchPhotonPlaces(origin: Location, searchTerm: String): List<NearbyPlace> {
+        val endpoint = URL("https://photon.komoot.io/api/?q=${URLEncoder.encode(searchTerm, Charsets.UTF_8.name())}&lat=${origin.latitude}&lon=${origin.longitude}&limit=$MAX_RESULTS")
+        val connection = endpoint.openConnection() as HttpURLConnection
+        return try {
+            connection.connectTimeout = CONNECT_TIMEOUT_MS
+            connection.readTimeout = READ_TIMEOUT_MS
+            connection.setRequestProperty("Accept", "application/json")
+            connection.setRequestProperty("User-Agent", "TrackerApp-Nearby/1.0")
+            val features = JSONObject(connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }).optJSONArray("features") ?: return emptyList()
+            buildList {
+                for (index in 0 until features.length()) {
+                    val feature = features.optJSONObject(index) ?: continue
+                    val geometry = feature.optJSONObject("geometry")?.optJSONArray("coordinates") ?: continue
+                    if (geometry.length() < 2) continue
+                    val lon = geometry.optDouble(0, Double.NaN)
+                    val lat = geometry.optDouble(1, Double.NaN)
+                    if (!lat.isFinite() || !lon.isFinite()) continue
+                    val properties = feature.optJSONObject("properties") ?: continue
+                    val name = properties.optString("name").trim().takeIf { it.isNotBlank() } ?: continue
+                    val location = Location("photon").apply { latitude = lat; longitude = lon }
+                    val type = properties.optString("type").replace('_', ' ').replaceFirstChar { it.uppercase() }.ifBlank { selectedCategory }
+                    val address = listOf(properties.optString("street"), properties.optString("city"))
+                        .filter { it.isNotBlank() }.joinToString(", ").ifBlank { type }
+                    add(NearbyPlace("photon_$index", name, type, address, lat, lon, origin.distanceTo(location), null, null, null, null))
+                }
+            }.filter { it.distanceMeters <= SEARCH_RADIUS_METERS }.sortedBy { it.distanceMeters }.take(MAX_RESULTS)
         } finally {
             connection.disconnect()
-            synchronized(networkLock) { if (activeConnection === connection) activeConnection = null }
         }
     }
 
@@ -409,6 +530,8 @@ class NearbyActivity : DashboardActivity() {
     }
 
     private fun showPlaces(places: List<NearbyPlace>, query: String) {
+        latestPlaces = places
+        showAllResults = false
         results.removeAllViews()
         loading.visibility = View.GONE
         statePanel.visibility = if (places.isEmpty()) View.VISIBLE else View.GONE
@@ -427,7 +550,26 @@ class NearbyActivity : DashboardActivity() {
             }
             return
         }
-        places.forEach { place -> results.addView(placeCard(place), LinearLayout.LayoutParams(-1, wrap()).apply { bottomMargin = dp(8) }) }
+        renderPlaces()
+    }
+
+    private fun renderPlaces() {
+        results.removeAllViews()
+        val visiblePlaces = if (showAllResults) latestPlaces else latestPlaces.take(INITIAL_RESULT_COUNT)
+        visiblePlaces.forEach { place ->
+            results.addView(placeCard(place), LinearLayout.LayoutParams(-1, wrap()).apply { bottomMargin = dp(8) })
+        }
+        if (!showAllResults && latestPlaces.size > INITIAL_RESULT_COUNT) {
+            val viewMore = label("View more (${latestPlaces.size - INITIAL_RESULT_COUNT})", 14f, green, true).apply {
+                gravity = Gravity.CENTER
+                setPadding(dp(16), dp(12), dp(16), dp(12))
+                background = bordered(Color.WHITE, Color.rgb(229, 237, 233), dp(14))
+                isClickable = true
+                isFocusable = true
+                setOnClickListener { showAllResults = true; renderPlaces() }
+            }
+            results.addView(viewMore, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(2); bottomMargin = dp(8) })
+        }
     }
 
     private fun placeCard(place: NearbyPlace): View = LinearLayout(this).apply {
@@ -441,11 +583,45 @@ class NearbyActivity : DashboardActivity() {
             textSize = 23f; gravity = Gravity.CENTER
             background = rounded(pale, dp(12))
         }
-        addView(glyph, LinearLayout.LayoutParams(dp(52), dp(58)).apply { marginEnd = dp(10) })
+        val photo = ImageView(this@NearbyActivity).apply {
+            scaleType = ImageView.ScaleType.CENTER_CROP
+            background = rounded(pale, dp(12))
+            contentDescription = "Photo of ${place.name}"
+        }
+        val thumbnail = FrameLayout(this@NearbyActivity).apply {
+            addView(photo, FrameLayout.LayoutParams(-1, -1))
+            addView(glyph, FrameLayout.LayoutParams(-1, -1))
+        }
+        addView(thumbnail, LinearLayout.LayoutParams(dp(52), dp(58)).apply { marginEnd = dp(10) })
+        place.imageUrl?.let { imageUrl ->
+            worker.execute {
+                runCatching {
+                    (URL(imageUrl).openConnection() as HttpURLConnection).run {
+                        connectTimeout = 5000; readTimeout = 8000
+                        inputStream.use { BitmapFactory.decodeStream(it) }
+                    }
+                }.getOrNull()?.let { bitmap -> runOnUiThread {
+                    if (!isFinishing && !isDestroyed) {
+                        photo.setImageBitmap(bitmap)
+                        glyph.visibility = View.GONE
+                    }
+                } }
+            }
+        }
         val details = LinearLayout(this@NearbyActivity).apply { orientation = LinearLayout.VERTICAL }
         details.addView(label(place.name, 15f, ink, true).apply { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END })
-        details.addView(label("${place.kind}  ·  ${formatDistance(place.distanceMeters)}", 12f, muted), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(3) })
-        details.addView(label(place.address, 12f, green, true).apply { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(3) })
+        val rating = place.rating?.let { "★ $it${place.reviewCount?.let { count -> " ($count)" } ?: ""}" } ?: "Rating unavailable"
+        val status = when {
+            place.openingHours == "24/7" -> "Open now"
+            place.openingHours != null -> "Hours listed"
+            else -> "Hours unavailable"
+        }
+        if (place.rating != null || place.openingHours != null) {
+            details.addView(label("$rating  ·  ${place.kind}", 12f, muted), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(3) })
+            details.addView(label("$status  ·  ${formatDistance(place.distanceMeters)}  ·  ${walkingTime(place.distanceMeters)} min walk", 12f, green, true).apply { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(3) })
+        } else {
+            details.addView(label("${place.kind}  ·  ${formatDistance(place.distanceMeters)}  ·  ${walkingTime(place.distanceMeters)} min walk", 12f, muted), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(3) })
+        }
         addView(details, LinearLayout.LayoutParams(0, wrap(), 1f))
         val direction = label("➤", 20f, green, true).apply {
             gravity = Gravity.CENTER
@@ -459,17 +635,23 @@ class NearbyActivity : DashboardActivity() {
     }
 
     private fun openDirections(place: NearbyPlace) {
-        val navigation = Uri.parse("google.navigation:q=${place.latitude},${place.longitude}")
-        val mapsIntent = Intent(Intent.ACTION_VIEW, navigation).setPackage("com.google.android.apps.maps")
+        val search = Uri.encode("${place.name}, ${place.latitude}, ${place.longitude}")
+        val location = Uri.parse("https://www.google.com/maps/search/?api=1&query=$search")
         try {
-            if (mapsIntent.resolveActivity(packageManager) != null) startActivity(mapsIntent)
-            else startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.openstreetmap.org/directions?to=${place.latitude}%2C${place.longitude}")))
+            val mapsIntent = Intent(Intent.ACTION_VIEW, location).setPackage("com.google.android.apps.maps")
+            if (mapsIntent.resolveActivity(packageManager) != null) {
+                startActivity(mapsIntent)
+            } else {
+                startActivity(Intent(Intent.ACTION_VIEW, location))
+            }
+            overridePendingTransition(0, 0)
         } catch (_: Exception) {
-            Toast.makeText(this, "No maps app is available for directions.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "No maps app is available.", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun formatDistance(meters: Float): String = if (meters < 1000) "${meters.roundToInt()} m" else String.format(Locale.getDefault(), "%.1f km", meters / 1000f)
+    private fun walkingTime(meters: Float): Int = maxOf(1, (meters / 80f).roundToInt())
     private fun categorySearchName(category: String) = when (category) { "Coffee" -> "cafes"; "Gas" -> "fuel stations"; else -> category.lowercase(Locale.getDefault()) }
 
     private fun showLocationPermissionState() {
@@ -554,10 +736,15 @@ class NearbyActivity : DashboardActivity() {
         private const val STATE_QUERY = "nearby_query"
         private const val SEARCH_RADIUS_METERS = 5000
         private const val MAX_RESULTS = 30
+        private const val INITIAL_RESULT_COUNT = 5
         private const val SEARCH_DEBOUNCE_MS = 600L
-        private const val CONNECT_TIMEOUT_MS = 10_000
-        private const val READ_TIMEOUT_MS = 25_000
-        private const val OVERPASS_ENDPOINT = "https://overpass-api.de/api/interpreter"
+        private const val CONNECT_TIMEOUT_MS = 6_000
+        private const val READ_TIMEOUT_MS = 12_000
+        private val OVERPASS_ENDPOINTS = listOf(
+            "https://overpass-api.de/api/interpreter",
+            "https://overpass.kumi.systems/api/interpreter",
+            "https://overpass.private.coffee/api/interpreter"
+        )
         private val networkLock = Any()
     }
 }
