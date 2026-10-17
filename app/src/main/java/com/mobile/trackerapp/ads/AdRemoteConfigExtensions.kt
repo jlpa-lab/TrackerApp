@@ -9,6 +9,12 @@ val AdRemoteConfig.Companion.inter_splash_uninstall: AdUnitConfig
 val AdRemoteConfig.Companion.banner_splash: AdUnitConfig
     get() = getInstance().banner_splash
 
+val AdRemoteConfig.Companion.banner_all: AdUnitConfig
+    get() = getInstance().banner_all
+
+ val AdRemoteConfig.Companion.inter_home: AdUnitConfig
+    get() = getInstance().inter_home
+
 val AdRemoteConfig.Companion.banner_splash_uninstall: AdUnitConfig
     get() = getInstance().banner_splash_uninstall
 

@@ -18,6 +18,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
+import com.mobile.trackerapp.databinding.ActivityPhoneLocatorBinding
+import com.mobile.trackerapp.databinding.ActivitySplashBinding
 import java.util.Locale
 
 class PhoneLocatorActivity : AppCompatActivity() {
@@ -26,12 +31,15 @@ class PhoneLocatorActivity : AppCompatActivity() {
     private var selectedDialCode = "+84"
     private var currentNumber = ""
 
+    private lateinit var binding: ActivityPhoneLocatorBinding
+
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        binding = ActivityPhoneLocatorBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         WindowCompat.setDecorFitsSystemWindows(window, true)
-        setContentView(R.layout.activity_phone_locator)
         showForm()
-
+        loadSplashBanner()
         val input = findViewById<EditText>(R.id.phone_input)
         input.background = null
         val clear = findViewById<View>(R.id.phone_clear)
@@ -71,6 +79,13 @@ class PhoneLocatorActivity : AppCompatActivity() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+    }
+
+    private fun loadSplashBanner() {
+        val bannerConfig =  AdRemoteConfig.banner_all
+        AdsManager.loadBanner(
+            this, bannerConfig, binding.frBanner, isCollapse = false
+        )
     }
 
     // ---------- screen state helpers ----------

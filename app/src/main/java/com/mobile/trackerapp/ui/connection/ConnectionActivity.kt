@@ -16,7 +16,16 @@ import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.appcompat.widget.SwitchCompat
+import com.ads.module.ads.wrapper.ApNativeAd
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
+import com.mobile.trackerapp.ads.banner_splash
+import com.mobile.trackerapp.ads.banner_splash_uninstall
+import com.mobile.trackerapp.ads.populateNativeAdView
+import com.mobile.trackerapp.bases.ext.isNetwork
+import com.mobile.trackerapp.bases.visibleView
 import com.mobile.trackerapp.ui.DashboardActivity
 
 class ConnectionActivity : DashboardActivity() {
@@ -81,5 +90,6 @@ class ConnectionActivity : DashboardActivity() {
         }
         startActivity(Intent.createChooser(send, "Share friend invite"))
     }
+
     companion object { private const val LOCATION_PERMISSION_REQUEST = 84 }
 }

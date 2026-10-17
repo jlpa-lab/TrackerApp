@@ -44,6 +44,8 @@ object AdsManager {
     val nativeHomeAdLive = MutableLiveData<ApNativeAd?>()
     var interWelcomeAdLive = MutableLiveData<ApInterstitialAd?>()
     private val loadingNativeAds = mutableSetOf<MutableLiveData<ApNativeAd?>>()
+
+    var interHomeAdLive = MutableLiveData<ApInterstitialAd?>()
     // Auto-resolve config for each loaded native ad
     private val adConfigMap = mutableMapOf<ApNativeAd, AdUnitConfig>()
     fun getAdConfig(ad: ApNativeAd): AdUnitConfig? = adConfigMap[ad]
@@ -80,9 +82,7 @@ object AdsManager {
             .loadNativeAdResultCallback(activity, config.id, layoutRes, object : AdCallback() {
                 override fun onNativeAdLoaded(nativeAd: ApNativeAd) {
                     super.onNativeAdLoaded(nativeAd)
-                    synchronized(loadingNativeAds) { loadingNativeAds.remove(liveData) }
                     adConfigMap[nativeAd] = config
-                    Timber.tag("AdFlowLog").d("AD LOAD SUCCESS: ${config.id}")
                     liveData.postValue(nativeAd)
                 }
 
@@ -339,6 +339,61 @@ object AdsManager {
         }
     }
 
+
+    fun loadInterHome(context: Context, ignoreLimit: Boolean = false) {
+        val cached = interHomeAdLive.value?.takeIf { it.isReady }
+        val request = MutableLiveData<ApInterstitialAd?>()
+        interHomeAdLive = request
+        fun emit(ad: ApInterstitialAd?) {
+            request.value = ad
+        }
+        val config = AdRemoteConfig.inter_home
+        if (!config.isEnable
+            || AppPurchase.getInstance().isPurchased(context)
+            || (!ignoreLimit && !ERainAd.getInstance()
+                .getShouldDisplayInterWelcomeBack(config.enableUaCheck))
+        ) {
+            emit(null)
+            return
+        }
+        if (cached != null) {
+            emit(cached)
+            return
+        }
+        var loaded: ApInterstitialAd? = null
+        loaded = ERainAd.getInstance().getInterstitialAds(context, config.id, object : AdCallback() {
+            override fun onApInterstitialLoad(apInterstitialAd: ApInterstitialAd?) {
+                super.onApInterstitialLoad(apInterstitialAd)
+                emit(apInterstitialAd ?: loaded)
+            }
+
+            override fun onAdFailedToLoad(adError: LoadAdError?) {
+                super.onAdFailedToLoad(adError)
+                emit(null)
+            }
+        })
+        if (loaded?.isReady == true) emit(loaded)
+    }
+
+    fun showInterHome(context: Context, ignoreLimit: Boolean = false, onAction: () -> Unit) {
+        val interstitial = interHomeAdLive.value
+        val allowShow = ignoreLimit || ERainAd.getInstance()
+            .getShouldDisplayInterWelcomeBack(AdRemoteConfig.inter_home.enableUaCheck)
+        if (interstitial != null && interstitial.isReady && !AppPurchase.getInstance()
+                .isPurchased(context) && allowShow
+        ) {
+            ERainAd.getInstance()
+                .forceShowInterstitial(context, interstitial, object : AdCallback() {
+                    override fun onNextAction() {
+                        super.onNextAction()
+                        interHomeAdLive = MutableLiveData()
+                        onAction()
+                    }
+                }, false)
+        } else {
+            onAction()
+        }
+    }
     fun loadAndShowReward(
         activity: Activity,
         onSuccess: () -> Unit,

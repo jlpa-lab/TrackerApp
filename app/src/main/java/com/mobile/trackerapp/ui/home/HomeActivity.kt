@@ -2,11 +2,20 @@ package com.mobile.trackerapp.ui.home
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.ads.module.ads.ERainAd
+import com.ads.module.funtion.AdCallback
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.inter_home
+import com.mobile.trackerapp.ads.inter_splash
+import com.mobile.trackerapp.ads.inter_splash_uninstall
+import com.mobile.trackerapp.bases.ext.isNetwork
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.populateNativeAdView
 import com.mobile.trackerapp.databinding.ActivityMainBinding
@@ -23,6 +32,7 @@ import com.mobile.trackerapp.ui.phonelocator.PhoneLocatorActivity
 import com.mobile.trackerapp.ui.livelocation.LiveLocationActivity
 import com.mobile.trackerapp.ui.tracker.TrackFriendMapActivity
 import com.mobile.trackerapp.ui.tracker.TrackFriendActivity
+import com.mobile.trackerapp.utils.Routes
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -40,7 +50,12 @@ class HomeActivity : AppCompatActivity() {
         observeNativeHomeAd()
         //hideNavigationBar()
         findViewById<android.view.View>(R.id.open_live_map).setOnClickListener { startActivity(Intent(this, com.mobile.trackerapp.ui.livelocation.LiveLocationActivity::class.java)) }
-        findViewById<android.view.View>(R.id.action_phone_locator).setOnClickListener { startActivity(Intent(this, PhoneLocatorActivity::class.java)) }
+        findViewById<android.view.View>(R.id.action_phone_locator).setOnClickListener {
+            AdsManager.showInterHome(this) {
+                startActivity(Intent(this, PhoneLocatorActivity::class.java))
+            }
+
+        }
         findViewById<android.view.View>(R.id.action_track_friend).setOnClickListener {
             startActivity(Intent(this, TrackFriendMapActivity::class.java))
         }

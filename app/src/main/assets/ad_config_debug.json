@@ -4,12 +4,23 @@
     "isEnable": true,
     "enable_ua_check": false
   },
+  "inter_home": {
+    "id": "ca-app-pub-3940256099942544/1033173712",
+    "isEnable": true,
+    "enable_ua_check": false
+  },
   "inter_splash_uninstall": {
     "id": "ca-app-pub-3940256099942544/1033173712",
     "isEnable": true,
     "enable_ua_check": false
   },
   "banner_splash": {
+    "id": "ca-app-pub-3940256099942544/9214589741",
+    "isEnable": true,
+    "reloadIntervalSeconds": 30,
+    "enable_ua_check": false
+  },
+  "banner_all": {
     "id": "ca-app-pub-3940256099942544/9214589741",
     "isEnable": true,
     "reloadIntervalSeconds": 30,

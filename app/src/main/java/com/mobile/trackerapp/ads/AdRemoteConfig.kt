@@ -204,6 +204,12 @@ data class AdRemoteConfig(
 
     val reward_example: AdUnitConfig
         get() = getAdUnit("reward_example")
+
+    val banner_all: AdUnitConfig
+        get() = getAdUnit("banner_all")
+
+    val inter_home: AdUnitConfig
+        get() = getAdUnit("inter_home")
 }
 
 
