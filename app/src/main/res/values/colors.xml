@@ -18,6 +18,8 @@
     <color name="light_app_color">#EEFAF5</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="green_dot">#A5E9BC</color>
+    <color name="friend_request_bg">#F2F7F2</color>
 </resources>
 
 

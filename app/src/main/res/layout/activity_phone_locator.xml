@@ -2,21 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/home_bg"
     android:clipChildren="false"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     android:clipToPadding="false">
 
     <!-- ================= HEADER ================= -->
 
     <LinearLayout
-        style="@style/PhoneLocatorScreenInset"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:paddingTop="16dp"
-        android:layout_marginHorizontal="16dp"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="12dp">
 
         <ImageView
             android:id="@+id/phone_back"
@@ -25,11 +33,14 @@
             android:clickable="true"
             android:contentDescription="Back"
             android:focusable="true"
-            android:padding="8dp"
+            android:paddingEnd="8dp"
             android:src="@drawable/ic_back_chevron" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
@@ -51,22 +62,22 @@
                 android:fontFamily="@font/inter_regular"
                 android:textSize="13sp" />
         </LinearLayout>
-
+        </LinearLayout>
     <!-- ================= STATE 1: ENTER NUMBER ================= -->
     <LinearLayout
         android:id="@+id/phone_form"
-        style="@style/PhoneLocatorScreenInset"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="0dp"
+        android:padding="16dp"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="16dp"
             android:background="@drawable/bg_phone_card"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -129,7 +140,7 @@
                     android:selectAllOnFocus="false"
                     android:textColorHighlight="@android:color/transparent"
                     android:maxLines="1"
-                    android:paddingStart="12dp"
+                    android:paddingStart="8dp"
                     android:paddingTop="12dp"
                     android:paddingEnd="8dp"
                     android:paddingBottom="12dp"
@@ -216,7 +227,8 @@
     <!-- ================= STATE 2: NO RESULTS ================= -->
     <LinearLayout
         android:id="@+id/phone_result"
-        style="@style/PhoneLocatorScreenInset"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -274,7 +286,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:background="@drawable/bg_phone_no_result_icon"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
             android:src="@drawable/ic_phone_no_result" />
@@ -363,7 +374,8 @@
     <!-- ================= STATE 3: DETAILS ================= -->
     <LinearLayout
         android:id="@+id/phone_details"
-        style="@style/PhoneLocatorScreenInset"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -382,8 +394,8 @@
 
             <ImageView
                 android:id="@+id/details_avatar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:background="@drawable/bg_phone_no_result_icon"
                 android:contentDescription="Avatar"
                 android:padding="22dp"
@@ -449,6 +461,7 @@
                     android:id="@+id/details_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="123456789"
                     android:layout_marginStart="12dp"
                     android:fontFamily="@font/inter_medium"
                     android:textColor="@color/home_phone_locator_text"
@@ -494,9 +507,12 @@
                     android:paddingBottom="16dp">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:padding="12dp"
+                        android:scaleType="centerInside"
                         android:background="@drawable/bg_phone_circle_green"
+                        app:tint="@color/white"
                         android:src="@drawable/ic_phone_call"/>
 
                     <TextView
@@ -506,8 +522,7 @@
                         android:text="Call"
                         android:textColor="@color/home_phone_locator_text"
                         android:textSize="13sp"
-                        android:fontFamily="@font/inter_semibold"
-                        android:fontFamily="@font/inter_bold" />
+                        android:fontFamily="@font/inter_semibold" />
                 </LinearLayout>
 
                 <!-- SMS -->
@@ -526,8 +541,10 @@
                     android:paddingBottom="16dp">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:padding="12dp"
+                        android:scaleType="centerInside"
                         android:background="@drawable/bg_phone_circle_peach"
                         android:src="@drawable/ic_phone_sms" />
 
@@ -560,6 +577,8 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:padding="12dp"
+                        android:scaleType="centerInside"
                         android:background="@drawable/bg_phone_circle_blue"
                         android:src="@drawable/ic_phone_navigate" />
 

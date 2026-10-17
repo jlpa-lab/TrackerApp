@@ -93,8 +93,7 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
 
         val header = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
         val back = ImageView(this).apply {
-            setImageResource(R.drawable.ic_phone_back)
-            imageTintList = android.content.res.ColorStateList.valueOf(dark)
+            setImageResource(R.drawable.ic_back_chevron)
             contentDescription = "Back"; isClickable = true; isFocusable = true
         }
         header.addView(back, LinearLayout.LayoutParams(dp(28), dp(28)).apply { marginEnd = dp(20) })

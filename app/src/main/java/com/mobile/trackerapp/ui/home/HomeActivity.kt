@@ -6,6 +6,7 @@ import android.os.Bundle
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ui.connection.ConnectionActivity
 import com.mobile.trackerapp.ui.connection.FriendRequestsActivity
+import com.mobile.trackerapp.ui.connection.ShareConnectionActivity
 import com.mobile.trackerapp.ui.settings.SettingsActivity
 import com.mobile.trackerapp.ui.tools.GpsToolsActivity
 import com.mobile.trackerapp.ui.tools.NearbyActivity

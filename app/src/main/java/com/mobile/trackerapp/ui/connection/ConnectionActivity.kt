@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.pm.PackageManager
+import androidx.appcompat.widget.SwitchCompat
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ui.DashboardActivity
 
@@ -41,12 +42,11 @@ class ConnectionActivity : DashboardActivity() {
         root.addView(content, LinearLayout.LayoutParams(-1, 0, 1f))
         root.addView(nav("Connection"), LinearLayout.LayoutParams(-1, wrap()))
         setContentView(root)
-        findViewById<TextView>(R.id.connection_share_invite).setOnClickListener { shareInvite() }
         findViewById<View>(R.id.connection_share_invite).setOnClickListener { startActivity(Intent(this, ShareConnectionActivity::class.java)) }
         findViewById<View>(R.id.connection_show_qr).setOnClickListener { startActivity(Intent(this, MyQrActivity::class.java)) }
         findViewById<View>(R.id.connection_manage_requests).setOnClickListener { startActivity(Intent(this, FriendRequestsActivity::class.java)) }
         val prefs = getSharedPreferences("tracker_location", MODE_PRIVATE)
-        val sharing = findViewById<Switch>(R.id.connection_location_switch)
+        val sharing = findViewById<SwitchCompat>(R.id.connection_location_switch)
         sharing.isChecked = prefs.getBoolean("enabled", false)
         updateSharingSummary(sharing.isChecked)
         sharing.setOnCheckedChangeListener { _, enabled ->

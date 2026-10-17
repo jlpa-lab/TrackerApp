@@ -50,8 +50,7 @@
             android:includeFontPadding="false"
             android:text="@string/welcome_back_title"
             android:textColor="#0E1423"
-            android:textSize="28sp"
-            android:fontFamily="@font/inter_bold" />
+            android:textSize="28sp" />
 
         <TextView
             android:layout_width="match_parent"

@@ -67,7 +67,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Your connection QR"
+                android:text="Your QR code"
                 android:textColor="@color/home_phone_locator_text"
                 android:textSize="16sp"
                 android:fontFamily="@font/inter_bold"/>
@@ -80,7 +80,7 @@
                 android:text="A friend can scan this code to read your local invite code."
                 android:textColor="@color/home_text_subtitle"
                 android:fontFamily="@font/inter_regular"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
 
             <ImageView
                 android:id="@+id/my_qr_image"
@@ -93,36 +93,92 @@
 
             <TextView
                 android:id="@+id/my_qr_code_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="9dp"
+                android:layout_height="9dp"
                 android:layout_marginTop="12dp"
+                android:fontFamily="@font/inter_bold"
                 android:textColor="@color/home_text_dark"
-                android:textSize="15sp"
-                android:fontFamily="@font/inter_bold" />
+                android:textSize="15sp" />
         </LinearLayout>
 
-        <TextView
+
+        <LinearLayout
+            android:id="@+id/my_qr_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_qr_status"
+            android:gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp">
+
+            <ImageView
+                android:layout_width="11dp"
+                android:layout_height="11dp"
+                android:src="@drawable/bg_scan_qr_circle"
+                android:tint="@color/app_color"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="Live Location sharing active"
+                android:textColor="@color/app_color"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/my_qr_share"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/bg_live_share"
+            android:clickable="true"
+            android:focusable="true"
             android:gravity="center"
-            android:padding="13dp"
-            android:text="Share invite code"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:fontFamily="@font/inter_bold" />
+            android:orientation="horizontal"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp">
 
-        <TextView
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_phone_search" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Share QR code"
+                android:fontFamily="@font/inter_bold"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_phone_tip"
-            android:padding="12dp"
-            android:text="This code is stored only on this device right now. Friend lookup, requests, and live location sharing will work after the app is connected to its production service."
-            android:textColor="@color/home_text_subtitle"
-            android:fontFamily="@font/inter_regular"
-            android:textSize="14sp"/>
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="14dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_privacy_shield"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="This code is stored only on this device right now. Friend lookup, requests, and live location sharing will work after the app is connected to its production service."
+                android:textColor="@color/home_text_subtitle"
+                android:textSize="11sp"
+                android:fontFamily="@font/inter_regular"/>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

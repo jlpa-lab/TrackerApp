@@ -28,7 +28,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/home_gps_title"
-                    android:fontFamily="@font/inter_bold"
                     android:textColor="@color/home_green_title"
                     android:textSize="22sp"
                     android:fontFamily="@font/inter_bold" />
@@ -50,10 +49,12 @@
                 android:textColor="@color/home_text_subtitle"
                 android:textSize="12sp" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:background="@drawable/bg_live_card"
                 android:padding="16dp">
 
@@ -62,6 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:orientation="vertical"
+                    android:layout_weight="0.6"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/live_illustration"
                     app:layout_constraintStart_toStartOf="parent"
@@ -72,8 +74,9 @@
                         android:layout_height="wrap_content"
                         android:text="@string/home_live_location"
                         android:textColor="@color/white"
-                        android:textSize="24sp"
-                        android:fontFamily="@font/inter_bold"
+                        android:textSize="23sp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
                         android:fontFamily="@font/inter_bold" />
 
                     <TextView
@@ -90,7 +93,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:background="@drawable/bg_pill_white"
-                        android:padding="12dp"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="16dp"
                         android:fontFamily="@font/inter_bold"
                         android:text="@string/home_open_live_map"
                         android:textColor="@color/home_green_button_text" />
@@ -98,27 +102,30 @@
 
                 <ImageView
                     android:id="@+id/live_illustration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
                     android:scaleType="centerInside"
+                    android:layout_weight="0.4"
                     android:src="@drawable/home_live_location"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:layout_marginTop="8dp">
 
                 <LinearLayout
                     android:id="@+id/action_phone_locator"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:background="@drawable/bg_phone_locator"
                     android:orientation="vertical"
                     android:padding="16dp"
+                    android:gravity="center_vertical"
+                    android:layout_gravity="center_vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/action_right"
                     app:layout_constraintStart_toStartOf="parent"
@@ -134,9 +141,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/home_phone_locator"
-                        android:fontFamily="@font/inter_bold"
                         android:textSize="14sp"
-                        android:textColor="@color/home_phone_locator"
+                        android:textColor="@color/home_phone_locator_text"
                         android:fontFamily="@font/inter_bold" />
 
                     <TextView
@@ -167,19 +173,20 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:gravity="center"
+                        android:layout_gravity="center"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="12dp">
 
                         <ImageView
                             android:layout_width="match_parent"
-                            android:layout_height="80dp"
+                            android:layout_height="60dp"
                             android:src="@drawable/home_track_friend" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Track Friend"
-                            android:textColor="@color/home_phone_locator"
+                            android:textColor="@color/home_phone_locator_text"
                             android:textSize="14sp"
                             android:fontFamily="@font/inter_bold" />
                     </LinearLayout>
@@ -196,19 +203,20 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:gravity="center"
+                        android:layout_gravity="center"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="12dp">
 
                         <ImageView
                             android:layout_width="match_parent"
-                            android:layout_height="80dp"
+                            android:layout_height="60dp"
                             android:src="@drawable/home_shared_connection" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Shared Connection"
-                            android:textColor="@color/home_phone_locator"
+                            android:textColor="@color/home_phone_locator_text"
                             android:textSize="14sp"
                             android:fontFamily="@font/inter_bold" />
                     </LinearLayout>
@@ -224,8 +232,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Explore tools"
-                    android:fontFamily="@font/inter_bold"
-                    android:textColor="@color/home_phone_locator"
+                    android:textColor="@color/home_phone_locator_text"
                     android:textSize="16sp"
                     android:fontFamily="@font/inter_bold"
                     app:layout_constraintStart_toStartOf="parent"

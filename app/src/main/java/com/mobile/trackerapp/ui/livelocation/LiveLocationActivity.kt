@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.graphics.Color
 import android.graphics.Typeface
 import android.view.Gravity
+import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -45,7 +46,7 @@ open class LiveLocationActivity : FragmentActivity(), OnMapReadyCallback {
         if (!friendsOnly) { getSharedPreferences("tracker_location", MODE_PRIVATE).edit().putBoolean("enabled", true).apply(); androidx.core.content.ContextCompat.startForegroundService(this, Intent(this, LocationSharingService::class.java)) }
         intent.getStringExtra("screen_title")?.let { findViewById<TextView>(R.id.live_title).text = it }
         intent.getStringExtra("screen_subtitle")?.let { findViewById<TextView>(R.id.live_subtitle).text = it }
-        findViewById<TextView>(R.id.live_back).setOnClickListener { finish() }
+        findViewById<ImageView>(R.id.live_back).setOnClickListener { finish() }
         if (friendsOnly) {
             findViewById<View>(R.id.self_location_controls).visibility = View.GONE
             findViewById<View>(R.id.friend_empty_state).visibility = View.GONE
@@ -53,15 +54,15 @@ open class LiveLocationActivity : FragmentActivity(), OnMapReadyCallback {
             findViewById<View>(R.id.friend_add_button).setOnClickListener { startActivity(Intent(this, TrackFriendRequestsActivity::class.java)) }
         }
         address = findViewById(R.id.live_address)
-        findViewById<TextView>(R.id.share_location).setOnClickListener { shareLocation() }
+        findViewById<View>(R.id.share_location).setOnClickListener { shareLocation() }
         val layers = findViewById<LinearLayout>(R.id.map_layers_menu)
         findViewById<View>(R.id.map_layers_button).setOnClickListener { layers.visibility = if (layers.visibility == View.VISIBLE) View.GONE else View.VISIBLE }
         findViewById<TextView>(R.id.map_normal).setOnClickListener { selectMapType(GoogleMap.MAP_TYPE_NORMAL, R.id.map_normal, layers) }
         findViewById<TextView>(R.id.map_satellite).setOnClickListener { selectMapType(GoogleMap.MAP_TYPE_SATELLITE, R.id.map_satellite, layers) }
         findViewById<TextView>(R.id.map_terrain).setOnClickListener { selectMapType(GoogleMap.MAP_TYPE_TERRAIN, R.id.map_terrain, layers) }
         findViewById<TextView>(R.id.map_hybrid).setOnClickListener { selectMapType(GoogleMap.MAP_TYPE_HYBRID, R.id.map_hybrid, layers) }
-        findViewById<TextView>(R.id.map_zoom_in).setOnClickListener { if (::map.isInitialized) map.animateCamera(CameraUpdateFactory.zoomIn()) }
-        findViewById<TextView>(R.id.map_zoom_out).setOnClickListener { if (::map.isInitialized) map.animateCamera(CameraUpdateFactory.zoomOut()) }
+        findViewById<View>(R.id.map_zoom_in).setOnClickListener { if (::map.isInitialized) map.animateCamera(CameraUpdateFactory.zoomIn()) }
+        findViewById<View>(R.id.map_zoom_out).setOnClickListener { if (::map.isInitialized) map.animateCamera(CameraUpdateFactory.zoomOut()) }
         findViewById<View>(R.id.map_focus).setOnClickListener { lastLocation?.let { map.animateCamera(CameraUpdateFactory.newLatLng(it.let { LatLng(it.latitude, it.longitude) })) } }
         supportFragmentManager.beginTransaction().replace(R.id.live_map, SupportMapFragment.newInstance()).commit()
         supportFragmentManager.executePendingTransactions()
@@ -115,6 +116,3 @@ open class LiveLocationActivity : FragmentActivity(), OnMapReadyCallback {
     companion object { private const val REQUEST_LOCATION = 40 }
 }
 
-import android.graphics.Color
-import android.graphics.Typeface
-import android.view.Gravity
