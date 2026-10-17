@@ -100,7 +100,13 @@ class NearbyActivity : DashboardActivity() {
         hideNavigationBar()
         selectedCategory = state?.getString(STATE_CATEGORY) ?: "Coffee"
         currentQuery = state?.getString(STATE_QUERY).orEmpty()
-        setContentView(buildScreen())
+        val binding = com.mobile.trackerapp.databinding.ActivityNearbyBinding.inflate(layoutInflater)
+        setContentView(binding.root); binding.nearbyBack.setOnClickListener { finish() }
+        search=binding.nearbySearch; clearSearch=binding.nearbyClear; chips=binding.nearbyChips; title=binding.nearbyTitle; count=binding.nearbyCount; results=binding.nearbyResults; statePanel=binding.nearbyStatePanel; stateIcon=binding.nearbyStateIcon; stateTitle=binding.nearbyStateTitle; stateDescription=binding.nearbyStateDescription; stateAction=binding.nearbyStateAction; loading=binding.nearbyLoading
+        listOf("Coffee","Food","Gas","More").forEachIndexed { index, name -> chips.getChildAt(index).setOnClickListener { if(name=="More") openCategories() else chooseCategory(name) } }
+        clearSearch.setOnClickListener { suppressTextListener=true; search.text?.clear(); suppressTextListener=false; currentQuery=""; updateClearVisibility(); if(hasLocationPermission()) queryCurrentSelection() }
+        search.setOnEditorActionListener { _, action, _ -> if(action==EditorInfo.IME_ACTION_SEARCH){ runSearchNow(); true } else false }
+        search.addTextChangedListener(SimpleTextWatcher { if(!suppressTextListener){ currentQuery=search.text?.toString()?.trim().orEmpty(); updateClearVisibility(); searchTask?.let(main::removeCallbacks); if(currentQuery.length>=2) searchTask=Runnable { if(hasLocationPermission()) requestPlaces(currentQuery) else showLocationPermissionState() }.also { main.postDelayed(it, SEARCH_DEBOUNCE_MS) } else if(currentQuery.isEmpty()&&hasLocationPermission()) searchTask=Runnable { queryCurrentSelection() }.also { main.postDelayed(it, SEARCH_DEBOUNCE_MS) } } })
         suppressTextListener = true
         search.setText(currentQuery)
         suppressTextListener = false
@@ -117,140 +123,6 @@ class NearbyActivity : DashboardActivity() {
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
-    }
-
-    private fun buildScreen(): View {
-        val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setBackgroundColor(Color.rgb(246, 251, 248)); fitsSystemWindows = true }
-        val scroll = ScrollView(this).apply { isFillViewport = true; clipToPadding = false }
-        val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(10), dp(16), dp(22)) }
-        scroll.addView(content, android.view.ViewGroup.LayoutParams(-1, -2))
-        root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
-
-        val header = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        val back = ImageView(this).apply {
-            setImageResource(R.drawable.ic_phone_back)
-            imageTintList = android.content.res.ColorStateList.valueOf(ink)
-            contentDescription = "Back"
-            isClickable = true; isFocusable = true
-            setOnClickListener { finish() }
-        }
-        header.addView(back, LinearLayout.LayoutParams(dp(28), dp(34)).apply { marginEnd = dp(14) })
-        val headings = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        headings.addView(label("Nearby", 25f, ink, true))
-        headings.addView(label("Find the places you need, close by", 14f, muted).apply { setPadding(0, dp(2), 0, 0) })
-        header.addView(headings, LinearLayout.LayoutParams(0, wrap(), 1f))
-        content.addView(header)
-
-        val searchBox = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(12), dp(3), dp(8), dp(3))
-            background = bordered(Color.WHITE, Color.rgb(229, 237, 233), dp(14))
-        }
-        searchBox.addView(label("⌕", 27f, muted, true).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(dp(32), dp(44)))
-        search = EditText(this).apply {
-            hint = "Search places or an address"
-            textSize = 15f
-            setTextColor(ink); setHintTextColor(muted)
-            setSingleLine(true)
-            imeOptions = EditorInfo.IME_ACTION_SEARCH
-            setPadding(dp(4), 0, dp(4), 0)
-            background = null
-            setOnEditorActionListener { _, action, _ ->
-                if (action == EditorInfo.IME_ACTION_SEARCH) {
-                    (getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.hideSoftInputFromWindow(windowToken, 0)
-                    runSearchNow()
-                    true
-                } else false
-            }
-        }
-        searchBox.addView(search, LinearLayout.LayoutParams(0, dp(44), 1f))
-        clearSearch = label("×", 23f, muted).apply {
-            gravity = Gravity.CENTER
-            contentDescription = "Clear search"
-            visibility = View.GONE
-            isClickable = true; isFocusable = true
-            setOnClickListener {
-                suppressTextListener = true
-                search.text?.clear()
-                suppressTextListener = false
-                currentQuery = ""
-                updateClearVisibility()
-                if (hasLocationPermission()) queryCurrentSelection()
-            }
-        }
-        searchBox.addView(clearSearch, LinearLayout.LayoutParams(dp(30), dp(44)))
-        search.addTextChangedListener(SimpleTextWatcher {
-            if (suppressTextListener) return@SimpleTextWatcher
-            currentQuery = search.text?.toString()?.trim().orEmpty()
-            updateClearVisibility()
-            searchTask?.let(main::removeCallbacks)
-            if (currentQuery.length >= 2) {
-                searchTask = Runnable { if (hasLocationPermission()) requestPlaces(currentQuery) else showLocationPermissionState() }
-                    .also { main.postDelayed(it, SEARCH_DEBOUNCE_MS) }
-            } else if (currentQuery.isEmpty() && hasLocationPermission()) {
-                searchTask = Runnable { queryCurrentSelection() }.also { main.postDelayed(it, SEARCH_DEBOUNCE_MS) }
-            }
-        })
-        content.addView(searchBox, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(16) })
-
-        val chipScroll = android.widget.HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; clipToPadding = false }
-        chips = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        listOf("Coffee", "Food", "Gas", "More").forEach { chipName ->
-            val chip = label("${NearbyCategoryCatalog.iconFor(chipName)}  $chipName", 14f, muted, true).apply {
-                gravity = Gravity.CENTER
-                setPadding(dp(13), dp(10), dp(13), dp(10))
-                isClickable = true; isFocusable = true
-                setOnClickListener { if (chipName == "More") openCategories() else chooseCategory(chipName) }
-            }
-            chips.addView(chip, LinearLayout.LayoutParams(wrap(), wrap()).apply { marginEnd = dp(8) })
-        }
-        chipScroll.addView(chips)
-        content.addView(chipScroll, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
-
-        val section = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        title = label("Coffee near you", 18f, ink, true)
-        count = label("", 13f, green, true)
-        section.addView(title, LinearLayout.LayoutParams(0, wrap(), 1f))
-        section.addView(count)
-        content.addView(section, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(16); bottomMargin = dp(9) })
-
-        results = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        content.addView(results, LinearLayout.LayoutParams(-1, wrap()))
-        statePanel = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-            setPadding(dp(20), dp(27), dp(20), dp(24))
-            background = bordered(Color.WHITE, Color.rgb(229, 237, 233), dp(16))
-        }
-        stateIcon = label("⌖", 30f, green, true).apply {
-            gravity = Gravity.CENTER
-            setPadding(dp(12), dp(8), dp(12), dp(8))
-            background = rounded(pale, dp(32))
-        }
-        stateTitle = label("Finding places nearby…", 17f, ink, true).apply { gravity = Gravity.CENTER }
-        stateDescription = label("Using your location to find nearby matches.", 13f, muted).apply { gravity = Gravity.CENTER }
-        loading = ProgressBar(this).apply { indeterminateTintList = android.content.res.ColorStateList.valueOf(green) }
-        stateAction = label("", 14f, Color.WHITE, true).apply {
-            gravity = Gravity.CENTER
-            setPadding(dp(18), dp(11), dp(18), dp(11))
-            background = rounded(green, dp(24))
-            isClickable = true; isFocusable = true
-            visibility = View.GONE
-        }
-        statePanel.addView(stateIcon)
-        statePanel.addView(stateTitle, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(13) })
-        statePanel.addView(stateDescription, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(5) })
-        statePanel.addView(loading, LinearLayout.LayoutParams(wrap(), wrap()).apply { topMargin = dp(14) })
-        statePanel.addView(stateAction, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(16) })
-        content.addView(statePanel, LinearLayout.LayoutParams(-1, wrap()))
-
-        content.addView(label("Distances are measured from your location.", 12f, muted), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
-        content.addView(label("© OpenStreetMap contributors", 11f, muted).apply {
-            setPadding(0, dp(3), 0, dp(5))
-            isClickable = true
-            setOnClickListener { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.openstreetmap.org/copyright"))) }
-        })
-        return root
     }
 
     private fun chooseCategory(name: String) {

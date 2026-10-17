@@ -52,121 +52,14 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
         window.navigationBarColor = android.graphics.Color.rgb(246, 251, 248)
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-        setContentView(buildScreen())
+        val binding = com.mobile.trackerapp.databinding.ActivityLevelMeterBinding.inflate(layoutInflater)
+        setContentView(binding.root); binding.levelBack.setOnClickListener { finish() }
+        modeTitle = binding.levelModeTitle; pitchValue = binding.levelPitch; rollValue = binding.levelRoll
+        instrument = InstrumentView(); binding.levelInstrumentHost.addView(instrument, android.widget.FrameLayout.LayoutParams(-1, -1))
+        holdButton = binding.levelHold; holdButton.setOnClickListener { toggleHold() }; binding.levelCalibrate.setOnClickListener { calibrate() }
+        modeButtons = listOf(binding.levelModeSurface, binding.levelModeHorizontal, binding.levelModeVertical)
+        modeButtons.forEachIndexed { index, button -> button.setOnClickListener { selectMode(Mode.entries[index]) } }
         renderReading(currentReading)
-    }
-
-    private fun buildScreen(): View {
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(android.graphics.Color.rgb(246, 251, 248))
-            fitsSystemWindows = true
-        }
-        val scroll = ScrollView(this).apply { isFillViewport = true; clipToPadding = false }
-        val content = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(18), dp(10), dp(18), dp(18))
-        }
-        scroll.addView(content, android.view.ViewGroup.LayoutParams(-1, -2))
-        root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
-
-        val header = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        val back = ImageView(this).apply {
-            setImageResource(R.drawable.ic_phone_back)
-            imageTintList = android.content.res.ColorStateList.valueOf(ink)
-            contentDescription = "Back"
-        }
-        header.addView(back, LinearLayout.LayoutParams(dp(28), dp(28)).apply { marginEnd = dp(18) })
-        back.setOnClickListener { finish() }
-        header.addView(TextView(this).apply {
-            text = "Level Meter"; textSize = 26f; setTextColor(ink); typeface = android.graphics.Typeface.DEFAULT_BOLD
-        }, LinearLayout.LayoutParams(0, wrap(), 1f))
-        content.addView(header)
-
-        val intro = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        intro.addView(ImageView(this).apply {
-            setImageResource(R.drawable.tool_level_meter)
-            scaleType = ImageView.ScaleType.FIT_CENTER
-            contentDescription = "Level meter"
-        }, LinearLayout.LayoutParams(dp(34), dp(34)).apply { marginEnd = dp(12) })
-        val introCopy = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        introCopy.addView(text("Find the perfect balance", 16f, ink, true))
-        introCopy.addView(text("Measure the angle of any surface", 13f, muted).apply { setPadding(0, dp(2), 0, 0) })
-        intro.addView(introCopy)
-        content.addView(intro, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
-
-        val tabBar = LinearLayout(this).apply {
-            gravity = Gravity.CENTER
-            setPadding(dp(4), dp(4), dp(4), dp(4))
-            background = rounded(android.graphics.Color.rgb(237, 244, 240), dp(28).toFloat())
-        }
-        modeButtons = Mode.entries.map { item ->
-            text(item.title, 12f, muted, item == mode).apply {
-                gravity = Gravity.CENTER
-                setPadding(dp(5), dp(8), dp(5), dp(8))
-                background = rounded(if (item == mode) green else android.graphics.Color.TRANSPARENT, dp(24).toFloat())
-                setTextColor(if (item == mode) android.graphics.Color.WHITE else muted)
-                isClickable = true; isFocusable = true
-                setOnClickListener { selectMode(item) }
-            }.also { tabBar.addView(it, LinearLayout.LayoutParams(0, wrap(), 1f)) }
-        }
-        content.addView(tabBar, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(10) })
-
-        val instrumentCard = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(10), dp(8), dp(10), dp(6))
-            background = rounded(android.graphics.Color.rgb(255, 247, 223), dp(18).toFloat())
-        }
-        modeTitle = text(mode.instruction, 12f, ink, true).apply { gravity = Gravity.CENTER }
-        instrumentCard.addView(modeTitle, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(2) })
-        instrument = InstrumentView()
-        instrumentCard.addView(instrument, LinearLayout.LayoutParams(-1, wrap()))
-        content.addView(instrumentCard, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(8) })
-
-        val readingsCard = LinearLayout(this).apply {
-            gravity = Gravity.CENTER
-            background = borderedRounded(android.graphics.Color.rgb(253, 255, 254), android.graphics.Color.rgb(229, 237, 233), dp(16).toFloat())
-            setPadding(dp(10), dp(9), dp(10), dp(9))
-        }
-        val pitchColumn = readingColumn("Pitch · X axis")
-        pitchValue = pitchColumn.second
-        val divider = View(this).apply { setBackgroundColor(android.graphics.Color.rgb(231, 237, 234)) }
-        readingsCard.addView(pitchColumn.first, LinearLayout.LayoutParams(0, wrap(), 1f))
-        readingsCard.addView(divider, LinearLayout.LayoutParams(dp(1), dp(42)))
-        val rollColumn = readingColumn("Roll · Y axis")
-        rollValue = rollColumn.second
-        readingsCard.addView(rollColumn.first, LinearLayout.LayoutParams(0, wrap(), 1f))
-        content.addView(readingsCard, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(8) })
-
-        val accuracy = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        accuracy.addView(text("Accuracy tolerance", 11f, muted), LinearLayout.LayoutParams(0, wrap(), 1f))
-        accuracy.addView(text("±0.5°", 11f, ink, true))
-        content.addView(accuracy, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(5) })
-
-        val buttons = LinearLayout(this).apply { gravity = Gravity.CENTER; weightSum = 2f }
-        holdButton = actionButton("▣  Hold reading", false).apply { setOnClickListener { toggleHold() } }
-        val calibrate = actionButton("⟳  Calibrate", true).apply { setOnClickListener { calibrate() } }
-        buttons.addView(holdButton, LinearLayout.LayoutParams(0, wrap(), 1f).apply { marginEnd = dp(5) })
-        buttons.addView(calibrate, LinearLayout.LayoutParams(0, wrap(), 1f).apply { marginStart = dp(5) })
-        content.addView(buttons, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(8) })
-
-        val note = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(10), dp(8), dp(10), dp(8))
-            background = rounded(android.graphics.Color.rgb(235, 249, 242), dp(14).toFloat())
-        }
-        note.addView(ImageView(this).apply {
-            setImageResource(R.drawable.ic_phone_info)
-            imageTintList = android.content.res.ColorStateList.valueOf(green)
-            contentDescription = "Tip"
-        }, LinearLayout.LayoutParams(dp(17), dp(17)).apply { marginEnd = dp(8) })
-        note.addView(text("Place your phone flat on a firm surface. Calibrate on a known level surface before measuring.", 10f, muted))
-        content.addView(note, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(8) })
-
-        if (accelerometer == null) {
-            content.addView(text("This device does not have an accelerometer, so live leveling is unavailable.", 13f, android.graphics.Color.rgb(180, 65, 65)))
-        }
-        return root
     }
 
     private fun readingColumn(title: String): Pair<LinearLayout, TextView> {

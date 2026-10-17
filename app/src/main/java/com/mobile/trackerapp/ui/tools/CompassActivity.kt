@@ -64,111 +64,18 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
-        setContentView(buildScreen())
+        val binding = com.mobile.trackerapp.databinding.ActivityCompassBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.compassBack.setOnClickListener { finish() }
+        dial = CompassDialView()
+        binding.compassDialHost.addView(dial, android.widget.FrameLayout.LayoutParams(-1, -1))
+        headingValue = binding.compassHeading; directionValue = binding.compassDirection
+        coordinatesValue = binding.compassCoordinates; altitudeValue = binding.compassAltitude; accuracyValue = binding.compassAccuracy
+        binding.compassCalibrate.setOnClickListener { showCalibrationHelp() }
         renderHeading()
         renderLocation(null)
         renderAccuracy()
         if (!hasLocationPermission()) requestLocationPermission()
-    }
-
-    private fun buildScreen(): View {
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(android.graphics.Color.rgb(246, 251, 248))
-            fitsSystemWindows = true
-        }
-        val scroll = ScrollView(this).apply { isFillViewport = true; clipToPadding = false }
-        val content = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(18), dp(10), dp(18), dp(20))
-        }
-        scroll.addView(content, android.view.ViewGroup.LayoutParams(-1, -2))
-        root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
-
-        val header = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        val back = ImageView(this).apply {
-            setImageResource(R.drawable.ic_phone_back)
-            imageTintList = android.content.res.ColorStateList.valueOf(ink)
-            contentDescription = "Back"
-            isClickable = true
-            isFocusable = true
-            setOnClickListener { finish() }
-        }
-        header.addView(back, LinearLayout.LayoutParams(dp(28), dp(32)).apply { marginEnd = dp(16) })
-        header.addView(text("Compass", 28f, ink, true), LinearLayout.LayoutParams(0, wrap(), 1f))
-        content.addView(header)
-
-        val intro = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        intro.addView(ImageView(this).apply {
-            setImageResource(R.drawable.tool_compass)
-            scaleType = ImageView.ScaleType.FIT_CENTER
-            contentDescription = "Compass"
-        }, LinearLayout.LayoutParams(dp(42), dp(42)).apply { marginEnd = dp(12) })
-        val introText = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        introText.addView(text("Find your way with confidence", 18f, ink, true))
-        introText.addView(text("Your real-time direction finder", 15f, muted).apply { setPadding(0, dp(3), 0, 0) })
-        intro.addView(introText)
-        content.addView(intro, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(22) })
-
-        val compassCard = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER_HORIZONTAL
-            setPadding(dp(12), dp(12), dp(12), dp(14))
-            background = rounded(android.graphics.Color.rgb(235, 249, 243), dp(22).toFloat())
-        }
-        val headingRow = LinearLayout(this).apply {
-            gravity = Gravity.CENTER
-            setPadding(0, dp(3), 0, 0)
-        }
-        headingValue = text("—°", 40f, ink, true).apply { gravity = Gravity.CENTER_VERTICAL }
-        directionValue = text("N", 18f, green, true).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(8), dp(9), 0, 0)
-        }
-        headingRow.addView(headingValue)
-        headingRow.addView(directionValue)
-        compassCard.addView(headingRow, LinearLayout.LayoutParams(-1, wrap()))
-        dial = CompassDialView()
-        compassCard.addView(dial, LinearLayout.LayoutParams(-1, wrap()))
-        compassCard.addView(text("Magnetic north", 14f, muted).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(3) })
-        content.addView(compassCard, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(20) })
-
-        val details = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(7), dp(16), dp(7))
-            background = bordered(android.graphics.Color.WHITE, android.graphics.Color.rgb(224, 234, 228), dp(18))
-        }
-        val coordinateRow = detailRow("Coordinates").also { coordinatesValue = it.second }
-        val altitudeRow = detailRow("Altitude").also { altitudeValue = it.second }
-        details.addView(coordinateRow.first, LinearLayout.LayoutParams(-1, wrap()))
-        details.addView(altitudeRow.first, LinearLayout.LayoutParams(-1, wrap()))
-        content.addView(details, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(14) })
-
-        val accuracyRow = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        accuracyRow.addView(text("Sensor accuracy", 14f, muted), LinearLayout.LayoutParams(0, wrap(), 1f))
-        accuracyValue = text("● Checking", 14f, muted, true)
-        accuracyRow.addView(accuracyValue)
-        content.addView(accuracyRow, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(13) })
-
-        val calibrate = text("⊙  Calibrate compass", 16f, android.graphics.Color.WHITE, true).apply {
-            gravity = Gravity.CENTER
-            setPadding(dp(14), dp(14), dp(14), dp(14))
-            background = rounded(green, dp(30).toFloat())
-            isClickable = true
-            isFocusable = true
-            setOnClickListener { showCalibrationHelp() }
-        }
-        content.addView(calibrate, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(14) })
-
-        val tip = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(14), dp(13), dp(14), dp(13))
-            background = rounded(android.graphics.Color.rgb(235, 249, 243), dp(14).toFloat())
-        }
-        tip.addView(text("ⓘ", 20f, green, true), LinearLayout.LayoutParams(wrap(), wrap()).apply { marginEnd = dp(10) })
-        tip.addView(text("Move your phone in a figure eight to calibrate. Keep away from magnets and metal.", 13f, muted))
-        content.addView(tip, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(14) })
-        return root
     }
 
     private fun detailRow(title: String): Pair<LinearLayout, TextView> {

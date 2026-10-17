@@ -81,7 +81,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/map_normal"
@@ -149,7 +150,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|bottom"
                 android:contentDescription="Friend requests"
-                android:src="@drawable/ic_nav_connection" />
+                android:src="@drawable/ic_nav_connection"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/map_zoom_in"

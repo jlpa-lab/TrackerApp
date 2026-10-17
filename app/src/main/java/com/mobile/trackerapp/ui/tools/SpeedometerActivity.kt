@@ -71,108 +71,15 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
         window.navigationBarColor = android.graphics.Color.rgb(246, 251, 248)
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-        setContentView(buildScreen())
+        val binding = com.mobile.trackerapp.databinding.ActivitySpeedometerBinding.inflate(layoutInflater)
+        setContentView(binding.root); binding.speedometerBack.setOnClickListener { finish() }
+        gauge = SpeedometerGauge(this); binding.speedometerGaugeHost.addView(gauge, android.widget.FrameLayout.LayoutParams(-1, -1))
+        status = binding.speedometerStatus; unit = binding.speedometerUnit; average = binding.speedometerAverage; maximum = binding.speedometerMaximum
+        distance = binding.speedometerDistance; tripState = binding.speedometerTripState; timer = binding.speedometerTimer; resetButton = binding.speedometerReset; startButton = binding.speedometerStart
+        unit.setOnClickListener { showUnitMenu(unit) }; resetButton.setOnClickListener { resetTrip() }; startButton.setOnClickListener { toggleTrip() }
         updateTripLabels()
         updateStats()
         if (!hasLocationPermission()) requestLocationPermission()
-    }
-
-    private fun buildScreen(): View {
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(android.graphics.Color.rgb(246, 251, 248))
-            fitsSystemWindows = true
-        }
-        val scroll = ScrollView(this).apply { isFillViewport = true; clipToPadding = false }
-        val content = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(20), dp(12), dp(20), dp(20))
-        }
-        scroll.addView(content, android.view.ViewGroup.LayoutParams(-1, -2))
-        root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
-
-        val header = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        val back = ImageView(this).apply {
-            setImageResource(R.drawable.ic_back_chevron)
-            contentDescription = "Back"; isClickable = true; isFocusable = true
-        }
-        header.addView(back, LinearLayout.LayoutParams(dp(28), dp(28)).apply { marginEnd = dp(20) })
-        back.setOnClickListener { finish() }
-        header.addView(TextView(this).apply {
-            text = "Speedometer"; textSize = 28f; setTextColor(dark); typeface = Typeface.DEFAULT_BOLD
-        }, LinearLayout.LayoutParams(0, wrap(), 1f))
-        content.addView(header)
-
-        val intro = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        intro.addView(ImageView(this).apply {
-            setImageResource(R.drawable.tool_speedometer)
-            scaleType = ImageView.ScaleType.FIT_CENTER
-            contentDescription = "Speedometer"
-        }, LinearLayout.LayoutParams(dp(40), dp(40)).apply { marginEnd = dp(14) })
-        val introCopy = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        introCopy.addView(label("Your speed, at a glance", 18f, dark, true))
-        introCopy.addView(label("Live speed powered by GPS", 15f, muted).apply { setPadding(0, dp(4), 0, 0) })
-        intro.addView(introCopy)
-        content.addView(intro, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(22) })
-
-        val statusBar = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(16), dp(10), dp(12), dp(10))
-            background = rounded(android.graphics.Color.rgb(235, 249, 242), dp(24).toFloat())
-        }
-        statusBar.addView(View(this).apply { background = rounded(green, dp(20).toFloat()) }, LinearLayout.LayoutParams(dp(8), dp(8)).apply { marginEnd = dp(8) })
-        status = label("Waiting for GPS", 15f, green)
-        statusBar.addView(status, LinearLayout.LayoutParams(0, wrap(), 1f))
-        unit = label("km/h⌄", 15f, green).apply {
-            gravity = Gravity.CENTER
-            setPadding(dp(14), dp(7), dp(14), dp(7))
-            background = rounded(android.graphics.Color.WHITE, dp(24).toFloat())
-            isClickable = true; isFocusable = true
-            setOnClickListener { showUnitMenu(this) }
-        }
-        statusBar.addView(unit)
-        content.addView(statusBar, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(18) })
-
-        gauge = SpeedometerGauge(this)
-        content.addView(gauge, LinearLayout.LayoutParams(-1, wrap()).apply {
-            topMargin = dp(12)
-        })
-        val stats = LinearLayout(this).apply {
-            gravity = Gravity.CENTER
-            setPadding(dp(8), dp(14), dp(8), dp(14))
-            background = borderedRounded(android.graphics.Color.rgb(253, 255, 254), android.graphics.Color.rgb(222, 232, 227), dp(22).toFloat())
-        }
-        average = statColumn(stats, "Average")
-        maximum = statColumn(stats, "Maximum")
-        distance = statColumn(stats, "Distance")
-        content.addView(stats, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(16) })
-
-        val tripInfo = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        tripState = label("Trip not started", 15f, muted)
-        timer = label("00:00:00", 15f, dark, true).apply { gravity = Gravity.END }
-        tripInfo.addView(tripState, LinearLayout.LayoutParams(0, wrap(), 1f))
-        tripInfo.addView(timer)
-        content.addView(tripInfo, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(14) })
-
-        val actions = LinearLayout(this).apply { gravity = Gravity.CENTER; weightSum = 2f }
-        resetButton = actionButton("⟲  Reset", false).apply { setOnClickListener { resetTrip() } }
-        startButton = actionButton("▷  Start", true).apply { setOnClickListener { toggleTrip() } }
-        actions.addView(resetButton, LinearLayout.LayoutParams(0, wrap(), 1f).apply { marginEnd = dp(8) })
-        actions.addView(startButton, LinearLayout.LayoutParams(0, wrap(), 1f).apply { marginStart = dp(8) })
-        content.addView(actions, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(14) })
-
-        val note = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(14), dp(12), dp(14), dp(12))
-            background = rounded(android.graphics.Color.rgb(235, 249, 242), dp(18).toFloat())
-        }
-        note.addView(ImageView(this).apply {
-            setImageResource(R.drawable.ic_speedometer_safety)
-            contentDescription = "Drive safely"
-        }, LinearLayout.LayoutParams(dp(24), dp(24)).apply { marginEnd = dp(12) })
-        note.addView(label("Keep location on for accurate readings. Stay focused on the road while driving.", 14f, muted))
-        content.addView(note, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(14) })
-        return root
     }
 
     private fun statColumn(parent: LinearLayout, title: String): TextView {

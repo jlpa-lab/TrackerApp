@@ -26,52 +26,13 @@ class GpsToolsActivity : DashboardActivity() {
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
-        setContentView(buildScreen())
-    }
-
-    private fun buildScreen(): View {
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.rgb(246, 251, 248))
-            fitsSystemWindows = true
-        }
-        val scroll = ScrollView(this).apply { isFillViewport = true; clipToPadding = false }
-        val content = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(18), dp(12), dp(18), dp(22))
-        }
-        scroll.addView(content, android.view.ViewGroup.LayoutParams(-1, -2))
-        root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
-
-        val header = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        val back = ImageView(this).apply {
-            setImageResource(R.drawable.ic_phone_back)
-            imageTintList = android.content.res.ColorStateList.valueOf(ink)
-            contentDescription = "Back"
-            isClickable = true
-            isFocusable = true
-            setOnClickListener { finish() }
-        }
-        header.addView(back, LinearLayout.LayoutParams(dp(28), dp(34)).apply { marginEnd = dp(14) })
-        val heading = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        heading.addView(text("GPS Tools", 28f, ink, true))
-        heading.addView(text("Your everyday navigation toolkit", 15f, muted).apply { setPadding(0, dp(3), 0, 0) })
-        header.addView(heading, LinearLayout.LayoutParams(0, wrap(), 1f))
-        content.addView(header, LinearLayout.LayoutParams(-1, wrap()).apply { bottomMargin = dp(18) })
-
-        val tools = listOf(
-            Tool("Compass", "Find your heading and orientation", R.drawable.tool_compass, CompassActivity::class.java),
-            Tool("Stopwatch", "Track time accurately", R.drawable.tool_stopwatch, StopwatchActivity::class.java),
-            Tool("Speedometer", "Track your current speed", R.drawable.tool_speedometer, SpeedometerActivity::class.java),
-            Tool("Area Codes", "Look up phone area codes by location", R.drawable.tool_area_codes, AreaCodesActivity::class.java),
-            Tool("Level Meter", "Check if a surface is flat or level", R.drawable.tool_level_meter, LevelMeterActivity::class.java)
-        )
-        tools.forEachIndexed { index, tool ->
-            content.addView(toolCard(tool), LinearLayout.LayoutParams(-1, wrap()).apply {
-                if (index > 0) topMargin = dp(8)
-            })
-        }
-        return root
+        val binding = com.mobile.trackerapp.databinding.ActivityGpsToolsBinding.inflate(layoutInflater)
+        setContentView(binding.root); binding.gpsToolsBack.setOnClickListener { finish() }
+        binding.gpsCompassRow.root.setOnClickListener { startActivity(Intent(this, CompassActivity::class.java)) }
+        binding.gpsStopwatchRow.root.setOnClickListener { startActivity(Intent(this, StopwatchActivity::class.java)) }
+        binding.gpsSpeedometerRow.root.setOnClickListener { startActivity(Intent(this, SpeedometerActivity::class.java)) }
+        binding.gpsAreaCodesRow.root.setOnClickListener { startActivity(Intent(this, AreaCodesActivity::class.java)) }
+        binding.gpsLevelMeterRow.root.setOnClickListener { startActivity(Intent(this, LevelMeterActivity::class.java)) }
     }
 
     private fun toolCard(tool: Tool): View = LinearLayout(this).apply {

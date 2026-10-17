@@ -69,100 +69,13 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
-        setContentView(buildScreen())
+        val binding = com.mobile.trackerapp.databinding.ActivityZoneAlertBinding.inflate(layoutInflater)
+        setContentView(binding.root); binding.zoneBack.setOnClickListener { finish() }; binding.zoneAdd.setOnClickListener { startActivity(Intent(this, CreateZoneActivity::class.java)) }
+        mapView = binding.zoneMap; mapMessage = binding.zoneMapMessage; zoneList = binding.zoneList; zoneCount = binding.zoneCount; statusTitle = binding.zoneStatusTitle; statusSubtitle = binding.zoneStatusSubtitle
+        mapMessage.setOnClickListener { requestForegroundLocation() }; mapMessage.visibility = if (hasForegroundLocation()) View.GONE else View.VISIBLE
         mapView.onCreate(state)
         mapView.getMapAsync(this)
         renderZones(store.all())
-    }
-
-    private fun buildScreen(): View {
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.rgb(246, 251, 248))
-            fitsSystemWindows = true
-        }
-        val scroll = ScrollView(this).apply { isFillViewport = true; clipToPadding = false }
-        val content = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(10), dp(16), dp(20))
-        }
-        scroll.addView(content, android.view.ViewGroup.LayoutParams(-1, -2))
-        root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
-
-        val header = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        val back = ImageView(this).apply {
-            setImageResource(R.drawable.ic_phone_back)
-            imageTintList = android.content.res.ColorStateList.valueOf(ink)
-            contentDescription = "Back"
-            isClickable = true; isFocusable = true
-            setOnClickListener { finish() }
-        }
-        header.addView(back, LinearLayout.LayoutParams(dp(28), dp(34)).apply { marginEnd = dp(14) })
-        val titleGroup = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        titleGroup.addView(text("Zone Alert", 25f, ink, true))
-        titleGroup.addView(text("Know when loved ones arrive or leave", 14f, muted).apply { setPadding(0, dp(2), 0, 0) })
-        header.addView(titleGroup, LinearLayout.LayoutParams(0, wrap(), 1f))
-        content.addView(header)
-
-        val summary = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(14), dp(12), dp(14), dp(12))
-            background = rounded(Color.rgb(237, 250, 245), dp(18)).also { it.setStroke(dp(1), Color.rgb(205, 240, 225)) }
-        }
-        val summaryText = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        statusTitle = text("Set up your safe zones", 18f, ink, true)
-        statusSubtitle = text("0 zones · Ready when you are", 13f, green)
-        summaryText.addView(statusTitle)
-        summaryText.addView(statusSubtitle, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(3) })
-        summary.addView(summaryText, LinearLayout.LayoutParams(0, wrap(), 1f))
-        summary.addView(text("🛡️", 32f, green))
-        content.addView(summary, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(14) })
-
-        val mapFrame = AspectMapFrame().apply {
-            background = rounded(Color.rgb(230, 239, 232), dp(18))
-            clipToOutline = true
-        }
-        mapView = MapView(this)
-        mapFrame.addView(mapView, FrameLayout.LayoutParams(-1, -1))
-        mapMessage = text("Enable location to see zones near you", 12f, ink, true).apply {
-            gravity = Gravity.CENTER
-            setPadding(dp(12), dp(9), dp(12), dp(9))
-            background = rounded(Color.WHITE, dp(24))
-            elevation = dp(3).toFloat()
-            isClickable = true
-            isFocusable = true
-            setOnClickListener { requestForegroundLocation() }
-            visibility = if (hasForegroundLocation()) View.GONE else View.VISIBLE
-        }
-        mapFrame.addView(mapMessage, FrameLayout.LayoutParams(wrap(), wrap(), Gravity.BOTTOM or Gravity.END).apply {
-            marginEnd = dp(12); bottomMargin = dp(12)
-        })
-        content.addView(mapFrame, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
-
-        val zonesHeader = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        zonesHeader.addView(text("My zones", 18f, ink, true), LinearLayout.LayoutParams(0, wrap(), 1f))
-        zoneCount = text("0 zones", 13f, muted)
-        zonesHeader.addView(zoneCount)
-        content.addView(zonesHeader, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12); bottomMargin = dp(8) })
-
-        zoneList = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        content.addView(zoneList, LinearLayout.LayoutParams(-1, wrap()))
-
-        val addZone = text("＋  Add a new zone", 16f, Color.WHITE, true).apply {
-            gravity = Gravity.CENTER
-            setPadding(dp(14), dp(14), dp(14), dp(14))
-            background = rounded(green, dp(28))
-            isClickable = true; isFocusable = true
-            setOnClickListener { startActivity(Intent(this@ZoneAlertActivity, CreateZoneActivity::class.java)) }
-        }
-        content.addView(addZone, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(8) })
-
-        val help = text("Entry and exit alerts are sent to this device when a monitored zone is crossed.", 12f, muted).apply {
-            gravity = Gravity.CENTER
-            setPadding(dp(8), dp(10), dp(8), dp(4))
-        }
-        content.addView(help, LinearLayout.LayoutParams(-1, wrap()))
-        return root
     }
 
     private fun renderZones(zones: List<ZoneRecord>) {

@@ -50,97 +50,12 @@ class TrafficAlertActivity : DashboardActivity(), OnMapReadyCallback {
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
-        setContentView(buildScreen())
+        val binding = com.mobile.trackerapp.databinding.ActivityTrafficAlertBinding.inflate(layoutInflater)
+        setContentView(binding.root); binding.trafficBack.setOnClickListener { finish() }
+        mapView = binding.trafficMap; locationHint = binding.trafficLocationHint
+        locationHint.setOnClickListener { requestLocationPermission() }; locationHint.visibility = if (hasLocationPermission()) View.GONE else View.VISIBLE
         mapView.onCreate(state)
         mapView.getMapAsync(this)
-    }
-
-    private fun buildScreen(): View {
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.rgb(246, 251, 248))
-            fitsSystemWindows = true
-        }
-        val scroll = ScrollView(this).apply { isFillViewport = true; clipToPadding = false }
-        val content = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(10), dp(16), dp(14))
-        }
-        scroll.addView(content, android.view.ViewGroup.LayoutParams(-1, -2))
-        root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
-
-        val header = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        val back = ImageView(this).apply {
-            setImageResource(R.drawable.ic_phone_back)
-            imageTintList = android.content.res.ColorStateList.valueOf(ink)
-            contentDescription = "Back"
-            isClickable = true
-            isFocusable = true
-            setOnClickListener { finish() }
-        }
-        header.addView(back, LinearLayout.LayoutParams(dp(28), dp(34)).apply { marginEnd = dp(14) })
-        val titleBlock = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        titleBlock.addView(label("Traffic Alert", 28f, ink, true))
-        titleBlock.addView(label("Stay one step ahead on the road", 15f, muted).apply { setPadding(0, dp(3), 0, 0) })
-        header.addView(titleBlock, LinearLayout.LayoutParams(0, wrap(), 1f))
-        content.addView(header)
-
-        val summary = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(16), dp(14), dp(14), dp(14))
-            background = rounded(Color.rgb(255, 241, 230), dp(22))
-        }
-        val summaryText = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        summaryText.addView(label("Live traffic around you", 20f, ink, true))
-        summaryText.addView(label("Current road conditions are shown on the map", 14f, Color.rgb(190, 83, 29)).apply { setPadding(0, dp(4), 0, 0) })
-        summary.addView(summaryText, LinearLayout.LayoutParams(0, wrap(), 1f))
-        summary.addView(label("🚗", 36f, ink), LinearLayout.LayoutParams(wrap(), wrap()).apply { marginStart = dp(8) })
-        content.addView(summary, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(14) })
-
-        val mapFrame = AspectMapFrame().apply {
-            clipToOutline = true
-            background = rounded(Color.rgb(236, 241, 240), dp(18))
-            elevation = dp(1).toFloat()
-        }
-        mapView = MapView(this)
-        mapFrame.addView(mapView, FrameLayout.LayoutParams(-1, -1))
-
-        val trafficTag = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(12), dp(8), dp(12), dp(8))
-            background = rounded(Color.WHITE, dp(24))
-            elevation = dp(3).toFloat()
-            addView(dot(green), LinearLayout.LayoutParams(dp(8), dp(8)).apply { marginEnd = dp(7) })
-            addView(label("Live traffic", 13f, ink, true))
-        }
-        mapFrame.addView(trafficTag, FrameLayout.LayoutParams(wrap(), wrap(), Gravity.TOP or Gravity.START).apply {
-            topMargin = dp(12); marginStart = dp(12)
-        })
-
-        locationHint = label("Enable location to center the traffic map", 12f, ink, true).apply {
-            gravity = Gravity.CENTER
-            setPadding(dp(13), dp(10), dp(13), dp(10))
-            background = rounded(Color.WHITE, dp(24))
-            elevation = dp(3).toFloat()
-            isClickable = true
-            isFocusable = true
-            setOnClickListener { requestLocationPermission() }
-            visibility = if (hasLocationPermission()) View.GONE else View.VISIBLE
-        }
-        mapFrame.addView(locationHint, FrameLayout.LayoutParams(wrap(), wrap(), Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL).apply {
-            bottomMargin = dp(14)
-        })
-        content.addView(mapFrame, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
-
-        val legend = LinearLayout(this).apply {
-            gravity = Gravity.CENTER
-            setPadding(0, dp(12), 0, dp(2))
-        }
-        addLegendItem(legend, Color.rgb(0, 166, 76), "Clear")
-        addLegendItem(legend, Color.rgb(239, 164, 45), "Moderate")
-        addLegendItem(legend, Color.rgb(239, 98, 82), "Heavy")
-        content.addView(legend, LinearLayout.LayoutParams(-1, wrap()))
-        return root
     }
 
     private fun addLegendItem(parent: LinearLayout, color: Int, title: String) {

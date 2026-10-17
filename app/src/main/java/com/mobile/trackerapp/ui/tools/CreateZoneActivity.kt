@@ -82,140 +82,16 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
         window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
         zoneId = intent.getLongExtra(EXTRA_ZONE_ID, NO_ZONE)
-        setContentView(buildScreen())
+        val binding = com.mobile.trackerapp.databinding.ActivityCreateZoneBinding.inflate(layoutInflater)
+        setContentView(binding.root); binding.createZoneBack.setOnClickListener { finish() }
+        mapView=binding.createZoneMap; zoneName=binding.createZoneName; searchInput=binding.createZoneSearch; addressText=binding.createZoneAddress; radiusText=binding.createZoneRadiusText; radiusBar=binding.createZoneRadius; safeButton=binding.createZoneSafe; dangerButton=binding.createZoneDanger; saveButton=binding.createZoneSave; enterCheck=binding.createZoneEnter; exitCheck=binding.createZoneExit; locationHint=binding.createZoneLocationHint
+        binding.createZoneSearchButton.setOnClickListener { searchLocation() }; binding.createZoneLocate.setOnClickListener { moveToCurrentLocation() }; safeButton.setOnClickListener { isSafe = true; renderTypeButtons() }; dangerButton.setOnClickListener { isSafe = false; renderTypeButtons() }; saveButton.setOnClickListener { saveZone() }
+        searchInput.setOnEditorActionListener { _, action, _ -> if (action == EditorInfo.IME_ACTION_SEARCH) { searchLocation(); true } else false }
+        radiusBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener { override fun onStartTrackingTouch(seekBar: SeekBar)=Unit; override fun onStopTrackingTouch(seekBar: SeekBar)=Unit; override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) { radiusMeters=(progress+1)*100; radiusText.text=if(radiusMeters==1000) "1 km" else "$radiusMeters m"; drawCircle() } })
+        renderTypeButtons()
         mapView.onCreate(state)
         mapView.getMapAsync(this)
         if (zoneId != NO_ZONE) loadZone(zoneId)
-    }
-
-    private fun buildScreen(): android.view.View {
-        val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setBackgroundColor(Color.rgb(246, 251, 248)); fitsSystemWindows = true }
-        val scroll = ScrollView(this).apply { isFillViewport = true; clipToPadding = false }
-        val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(10), dp(16), dp(20)) }
-        scroll.addView(content, android.view.ViewGroup.LayoutParams(-1, -2))
-        root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
-
-        val header = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        val back = ImageView(this).apply {
-            setImageResource(R.drawable.ic_phone_back)
-            imageTintList = android.content.res.ColorStateList.valueOf(ink)
-            contentDescription = "Back"; isClickable = true; isFocusable = true
-            setOnClickListener { finish() }
-        }
-        header.addView(back, LinearLayout.LayoutParams(dp(28), dp(34)).apply { marginEnd = dp(14) })
-        val titleBlock = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        titleBlock.addView(text(if (zoneId == NO_ZONE) "Add new zone" else "Edit zone", 24f, ink, true))
-        titleBlock.addView(text("Choose a place to keep your family safe", 13f, muted).apply { setPadding(0, dp(2), 0, 0) })
-        header.addView(titleBlock)
-        content.addView(header)
-
-        val searchRow = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(10), dp(3), dp(8), dp(3))
-            background = bordered(Color.WHITE, Color.rgb(229, 237, 233), dp(13))
-        }
-        searchInput = EditText(this).apply {
-            hint = "Search location or address"
-            textSize = 14f; setTextColor(ink); setHintTextColor(muted)
-            background = null; setSingleLine(true); imeOptions = EditorInfo.IME_ACTION_SEARCH
-            setPadding(dp(5), dp(10), dp(5), dp(10))
-            setOnEditorActionListener { _, action, _ ->
-                if (action == EditorInfo.IME_ACTION_SEARCH) { searchLocation(); true } else false
-            }
-        }
-        searchRow.addView(text("⌕", 23f, muted, true))
-        searchRow.addView(searchInput, LinearLayout.LayoutParams(0, wrap(), 1f))
-        val searchButton = text("Search", 13f, green, true).apply {
-            setPadding(dp(8), dp(8), dp(8), dp(8)); isClickable = true; isFocusable = true
-            setOnClickListener { searchLocation() }
-        }
-        searchRow.addView(searchButton)
-        content.addView(searchRow, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
-
-        val mapFrame = AspectMapFrame().apply { background = rounded(Color.rgb(232, 239, 234), dp(17)); clipToOutline = true }
-        mapView = MapView(this)
-        mapFrame.addView(mapView, FrameLayout.LayoutParams(-1, -1))
-        val centerPin = text("＋", 24f, green, true).apply {
-            gravity = Gravity.CENTER
-            background = rounded(Color.WHITE, dp(24))
-            elevation = dp(4).toFloat()
-        }
-        mapFrame.addView(centerPin, FrameLayout.LayoutParams(dp(38), dp(38), Gravity.CENTER))
-        val locate = text("◎", 22f, green, true).apply {
-            gravity = Gravity.CENTER
-            background = rounded(Color.WHITE, dp(12))
-            elevation = dp(4).toFloat()
-            isClickable = true; isFocusable = true
-            setOnClickListener { moveToCurrentLocation() }
-        }
-        mapFrame.addView(locate, FrameLayout.LayoutParams(dp(44), dp(44), Gravity.BOTTOM or Gravity.END).apply { marginEnd = dp(12); bottomMargin = dp(12) })
-        locationHint = text("Allow location or search for a place", 12f, ink, true).apply {
-            gravity = Gravity.CENTER
-            setPadding(dp(12), dp(8), dp(12), dp(8))
-            background = rounded(Color.WHITE, dp(22))
-            visibility = View.GONE
-        }
-        mapFrame.addView(locationHint, FrameLayout.LayoutParams(wrap(), wrap(), Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply { topMargin = dp(12) })
-        content.addView(mapFrame, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(10) })
-
-        addressText = text("Move the map to set your zone location", 12f, muted).apply { maxLines = 2; ellipsize = android.text.TextUtils.TruncateAt.END }
-        content.addView(addressText, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(7); bottomMargin = dp(10) })
-
-        content.addView(text("Zone name", 15f, ink, true))
-        zoneName = EditText(this).apply {
-            hint = "e.g. Home, School, Office"
-            textSize = 14f; setTextColor(ink); setHintTextColor(muted)
-            setSingleLine(true); setPadding(dp(12), dp(11), dp(12), dp(11))
-            background = bordered(Color.WHITE, Color.rgb(229, 237, 233), dp(13))
-        }
-        content.addView(zoneName, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(6) })
-
-        val radiusHeader = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        radiusHeader.addView(text("Zone radius", 15f, ink, true), LinearLayout.LayoutParams(0, wrap(), 1f))
-        radiusText = text("500 m", 14f, green, true)
-        radiusHeader.addView(radiusText)
-        content.addView(radiusHeader, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(13) })
-        radiusBar = SeekBar(this).apply { max = 9; progress = 4; progressTintList = android.content.res.ColorStateList.valueOf(green); thumbTintList = android.content.res.ColorStateList.valueOf(green) }
-        radiusBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onStartTrackingTouch(seekBar: SeekBar) = Unit
-            override fun onStopTrackingTouch(seekBar: SeekBar) = Unit
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                radiusMeters = (progress + 1) * 100
-                radiusText.text = if (radiusMeters == 1000) "1 km" else "$radiusMeters m"
-                drawCircle()
-            }
-        })
-        content.addView(radiusBar, LinearLayout.LayoutParams(-1, wrap()))
-        val range = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        range.addView(text("100 m", 11f, muted), LinearLayout.LayoutParams(0, wrap(), 1f))
-        range.addView(text("1,000 m", 11f, muted))
-        content.addView(range)
-
-        content.addView(text("Zone type", 15f, ink, true), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
-        val typeRow = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        safeButton = typeButton("♧  Safe Zone")
-        dangerButton = typeButton("⚠  Danger Zone")
-        typeRow.addView(safeButton, LinearLayout.LayoutParams(0, wrap(), 1f).apply { marginEnd = dp(5) })
-        typeRow.addView(dangerButton, LinearLayout.LayoutParams(0, wrap(), 1f).apply { marginStart = dp(5) })
-        content.addView(typeRow, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(7) })
-        safeButton.setOnClickListener { isSafe = true; renderTypeButtons() }
-        dangerButton.setOnClickListener { isSafe = false; renderTypeButtons() }
-
-        val alerts = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(12), dp(5), dp(12), dp(5)); background = bordered(Color.WHITE, Color.rgb(229, 237, 233), dp(14)) }
-        enterCheck = CheckBox(this).apply { text = "Alert on Enter · Notify when someone arrives"; textSize = 13f; isChecked = true; buttonTintList = android.content.res.ColorStateList.valueOf(green); setTextColor(ink) }
-        exitCheck = CheckBox(this).apply { text = "Alert on Exit · Notify when someone leaves"; textSize = 13f; isChecked = true; buttonTintList = android.content.res.ColorStateList.valueOf(green); setTextColor(ink) }
-        alerts.addView(enterCheck, LinearLayout.LayoutParams(-1, wrap()))
-        alerts.addView(exitCheck, LinearLayout.LayoutParams(-1, wrap()))
-        content.addView(alerts, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
-
-        saveButton = text("✓  Save Zone", 16f, Color.WHITE, true).apply {
-            gravity = Gravity.CENTER; setPadding(dp(14), dp(14), dp(14), dp(14))
-            background = rounded(green, dp(28)); alpha = 0.52f; isEnabled = false
-            isClickable = true; isFocusable = true; setOnClickListener { saveZone() }
-        }
-        content.addView(saveButton, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(14) })
-        renderTypeButtons()
-        return root
     }
 
     private fun typeButton(title: String) = text(title, 13f, muted, true).apply {
