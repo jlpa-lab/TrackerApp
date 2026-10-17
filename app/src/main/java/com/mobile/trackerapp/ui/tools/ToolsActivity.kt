@@ -28,9 +28,9 @@ class ToolsActivity : DashboardActivity() {
         root.findViewById<View>(R.id.tool_stopwatch_row).setOnClickListener {
             startActivity(android.content.Intent(this, StopwatchActivity::class.java))
         }
-//        root.findViewById<View>(R.id.tool_traffic_row).setOnClickListener {
-//            startActivity(android.content.Intent(this, TrafficAlertActivity::class.java))
-//        }
+        root.findViewById<View>(R.id.tool_traffic_row).setOnClickListener {
+            startActivity(android.content.Intent(this, TrafficAlertActivity::class.java))
+        }
         root.findViewById<View>(R.id.tool_zone_row).setOnClickListener {
             startActivity(android.content.Intent(this, ZoneAlertActivity::class.java))
         }

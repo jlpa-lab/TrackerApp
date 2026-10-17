@@ -71,7 +71,9 @@
         <activity android:name=".ui.connection.ScanQrActivity" />
         <activity android:name=".ui.connection.MyQrActivity" />
         <activity android:name=".ui.settings.SettingsActivity" />
-        <activity android:name=".ui.rating.RateAppActivity" />
+        <activity
+            android:name=".ui.rating.RateAppActivity"
+            android:theme="@style/Theme.TrackerApp.RateOverlay" />
 
         <receiver
             android:name=".ui.tools.ZoneGeofenceReceiver"

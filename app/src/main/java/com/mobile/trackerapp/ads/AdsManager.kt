@@ -43,6 +43,7 @@ object AdsManager {
     val nativePermissionAdLive = MutableLiveData<ApNativeAd?>()
     val nativeHomeAdLive = MutableLiveData<ApNativeAd?>()
     var interWelcomeAdLive = MutableLiveData<ApInterstitialAd?>()
+    private val loadingNativeAds = mutableSetOf<MutableLiveData<ApNativeAd?>>()
     // Auto-resolve config for each loaded native ad
     private val adConfigMap = mutableMapOf<ApNativeAd, AdUnitConfig>()
     fun getAdConfig(ad: ApNativeAd): AdUnitConfig? = adConfigMap[ad]
@@ -64,23 +65,38 @@ object AdsManager {
             || !activity.isNetworkAvailable()
             || !shouldDisplay
         ) {
+            synchronized(loadingNativeAds) { loadingNativeAds.remove(liveData) }
             liveData.postValue(null)
             return
         }
+
+        if (liveData.value != null) return
+        synchronized(loadingNativeAds) {
+            if (!loadingNativeAds.add(liveData)) return
+        }
+
+        Timber.tag("AdFlowLog").d("AD LOAD REQUESTED: ${config.id}")
         ERainAd.getInstance()
             .loadNativeAdResultCallback(activity, config.id, layoutRes, object : AdCallback() {
                 override fun onNativeAdLoaded(nativeAd: ApNativeAd) {
                     super.onNativeAdLoaded(nativeAd)
+                    synchronized(loadingNativeAds) { loadingNativeAds.remove(liveData) }
                     adConfigMap[nativeAd] = config
+                    Timber.tag("AdFlowLog").d("AD LOAD SUCCESS: ${config.id}")
                     liveData.postValue(nativeAd)
                 }
 
                 override fun onAdFailedToLoad(adError: LoadAdError?) {
                     super.onAdFailedToLoad(adError)
+                    synchronized(loadingNativeAds) { loadingNativeAds.remove(liveData) }
+                    Timber.tag("AdFlowLog").d("AD LOAD FAILED: ${config.id}: ${adError?.message}")
                     liveData.postValue(null)
                 }
             })
     }
+
+    fun isNativeAdLoading(liveData: MutableLiveData<ApNativeAd?>): Boolean =
+        synchronized(loadingNativeAds) { loadingNativeAds.contains(liveData) }
 
     fun loadNativeLanguage(activity: Activity, isFirst: Boolean, layoutRes: Int) {
         val config =
