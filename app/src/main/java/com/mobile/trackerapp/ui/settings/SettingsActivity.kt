@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.bindNativeAllAd
+import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ui.DashboardActivity
 import com.mobile.trackerapp.ui.language.LanguageActivity
 import com.mobile.trackerapp.ui.rating.RateAppActivity
@@ -18,6 +20,8 @@ class SettingsActivity : DashboardActivity() {
         root.findViewById<android.view.View>(R.id.settings_rate).setOnClickListener { startActivity(Intent(this, RateAppActivity::class.java)) }
         root.addView(nav("Setting"), LinearLayout.LayoutParams(-1, wrap()))
         setContentView(root)
+        AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
+        bindNativeAllAd(this, findViewById(R.id.native_all_container))
         hideNavigationBar()
     }
 }

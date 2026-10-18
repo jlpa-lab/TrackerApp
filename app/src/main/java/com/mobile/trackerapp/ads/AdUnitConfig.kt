@@ -5,6 +5,7 @@ import androidx.annotation.Keep
 data class AdUnitConfig(
     val id: String,
     val isEnable: Boolean,
+    val key: String = "",
     val enableUaCheck: Boolean = false,
     val reloadIntervalSeconds: Int? = null,
     val colorCTA: String = "default",

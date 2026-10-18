@@ -84,6 +84,28 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
         distance = binding.speedometerDistance; tripState = binding.speedometerTripState; timer =
             binding.speedometerTimer; resetButton = binding.speedometerReset; startButton =
             binding.speedometerStart
+        unit.setPadding(dp(10), dp(4), dp(10), dp(4))
+        unit.compoundDrawablePadding = dp(4)
+        resetButton.layoutParams = resetButton.layoutParams.apply { height = dp(44) }
+        startButton.layoutParams = startButton.layoutParams.apply { height = dp(44) }
+        resetButton.textSize = 12f
+        startButton.textSize = 12f
+        average.textSize = 21f
+        maximum.textSize = 21f
+        distance.textSize = 21f
+        (average.parent?.parent as? android.view.ViewGroup)?.let { stats ->
+            stats.setPadding(dp(8), dp(14), dp(8), dp(14))
+            for (index in 0 until stats.childCount) {
+                (stats.getChildAt(index) as? android.view.ViewGroup)?.let { column ->
+                    (column.getChildAt(0) as? TextView)?.textSize = 10f
+                    (column.getChildAt(2) as? TextView)?.textSize = 10f
+                    (column.getChildAt(1)?.layoutParams as? LinearLayout.LayoutParams)?.let { params ->
+                        params.topMargin = dp(5)
+                        column.getChildAt(1).layoutParams = params
+                    }
+                }
+            }
+        }
         unit.setOnClickListener { showUnitMenu(unit) }; resetButton.setOnClickListener { resetTrip() }; startButton.setOnClickListener { toggleTrip() }
         updateTripLabels()
         updateStats()
@@ -185,6 +207,10 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
         )
         resetButton.isEnabled = trip != TripState.NOT_STARTED
         resetButton.alpha = if (resetButton.isEnabled) 1f else 0.48f
+        resetButton.setTextColor(
+            if (resetButton.isEnabled) android.graphics.Color.rgb(0, 165, 72)
+            else android.graphics.Color.rgb(185, 192, 201)
+        )
         startButton.text = when (trip) {
             TripState.RUNNING -> "Ⅱ  Pause"
             TripState.PAUSED -> "▷  Resume"
@@ -194,7 +220,7 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
 
     private fun updateStats() {
         val factor = if (mph) 0.621371f else 1f
-        unit.text = if (mph) "mph⌄" else "km/h⌄"
+        unit.text = if (mph) "mph" else "km/h"
         average.text = if (speedSamples == 0) "—" else String.format(
             Locale.getDefault(),
             "%.0f",
@@ -260,7 +286,7 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
                 else -> null
             }
             if (provider == null) {
-                status.text = "Turn on location to connect GPS"
+            status.text = "●  Turn on location to connect GPS"
                 return
             }
             locationManager.requestLocationUpdates(provider, 500L, 0f, this, Looper.getMainLooper())
@@ -268,7 +294,7 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
             status.text = "GPS connected"
             locationManager.getLastKnownLocation(provider)?.let(::onLocationChanged)
         } catch (_: SecurityException) {
-            status.text = "Location permission needed"
+            status.text = "●  Location permission needed"
         }
     }
 
@@ -290,18 +316,18 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
             }
             previousTripLocation = Location(location)
         }
-        status.text = "GPS connected"
+        status.text = "●  GPS connected"
         updateStats()
     }
 
     @Deprecated("Deprecated in Android")
     override fun onStatusChanged(provider: String?, statusValue: Int, extras: Bundle?) = Unit
     override fun onProviderEnabled(provider: String) {
-        status.text = "GPS connected"
+        status.text = "●  GPS connected"
     }
 
     override fun onProviderDisabled(provider: String) {
-        status.text = "Turn on location to connect GPS"
+        status.text = "●  Turn on location to connect GPS"
     }
 
     override fun onPause() {
@@ -379,7 +405,7 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
             val side = min(width.toFloat(), height.toFloat())
             if (side <= 0f) return
             val cx = width / 2f
-            val cy = height * 0.58f
+            val cy = height * 0.50f
             val radius = side * 0.43f
             val stroke = radius * 0.045f
             canvas.drawCircle(cx, cy, radius + stroke * 2.5f, facePaint)
@@ -430,7 +456,7 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
             canvas.drawCircle(cx, cy, radius * 0.052f, hubPaint)
             canvas.drawCircle(cx, cy, radius * 0.026f, hubCenterPaint)
 
-            speedTextPaint.textSize = radius * 0.29f
+            speedTextPaint.textSize = 44f * resources.displayMetrics.scaledDensity
             canvas.drawText(
                 String.format(Locale.getDefault(), "%.0f", speed), cx,
                 cy + radius * 0.54f + speedTextPaint.textSize * 0.35f, speedTextPaint

@@ -23,6 +23,7 @@ import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.ads.banner_splash
 import com.mobile.trackerapp.ads.banner_splash_uninstall
+import com.mobile.trackerapp.ads.bindNativeAllAd
 import com.mobile.trackerapp.ads.populateNativeAdView
 import com.mobile.trackerapp.bases.ext.isNetwork
 import com.mobile.trackerapp.bases.visibleView
@@ -49,8 +50,11 @@ class ConnectionActivity : DashboardActivity() {
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         val content = layoutInflater.inflate(R.layout.activity_connection, root, false)
         root.addView(content, LinearLayout.LayoutParams(-1, 0, 1f))
+        root.addView(layoutInflater.inflate(R.layout.layout_native_all, root, false))
         root.addView(nav("Connection"), LinearLayout.LayoutParams(-1, wrap()))
         setContentView(root)
+        AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
+        bindNativeAllAd(this, findViewById(R.id.native_all_container))
         findViewById<View>(R.id.connection_share_invite).setOnClickListener { startActivity(Intent(this, ShareConnectionActivity::class.java)) }
         findViewById<View>(R.id.connection_show_qr).setOnClickListener { startActivity(Intent(this, MyQrActivity::class.java)) }
         findViewById<View>(R.id.connection_manage_requests).setOnClickListener { startActivity(Intent(this, FriendRequestsActivity::class.java)) }

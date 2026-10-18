@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ui.DashboardActivity
 import java.util.Locale
@@ -35,7 +36,10 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
     private lateinit var modeTitle: TextView
     private lateinit var pitchValue: TextView
     private lateinit var rollValue: TextView
-    private lateinit var holdButton: TextView
+    private lateinit var holdButton: LinearLayout
+    private lateinit var holdButtonLabel: TextView
+    private lateinit var holdButtonIcon: ImageView
+    private lateinit var tipText: TextView
     private lateinit var modeButtons: List<TextView>
     private var mode = Mode.SURFACE
     private var smoothX = 0f
@@ -56,9 +60,16 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
         setContentView(binding.root); binding.levelBack.setOnClickListener { finish() }
         modeTitle = binding.levelModeTitle; pitchValue = binding.levelPitch; rollValue = binding.levelRoll
         instrument = InstrumentView(); binding.levelInstrumentHost.addView(instrument, android.widget.FrameLayout.LayoutParams(-1, -1))
-        holdButton = binding.levelHold; holdButton.setOnClickListener { toggleHold() }; binding.levelCalibrate.setOnClickListener { calibrate() }
+        holdButton = binding.levelHold
+        holdButtonLabel = binding.levelHoldLabel
+        holdButtonIcon = binding.levelHoldIcon
+        tipText = binding.levelTipText
+        holdButton.setOnClickListener { toggleHold() }
+        binding.levelCalibrate.setOnClickListener { calibrate() }
         modeButtons = listOf(binding.levelModeSurface, binding.levelModeHorizontal, binding.levelModeVertical)
         modeButtons.forEachIndexed { index, button -> button.setOnClickListener { selectMode(Mode.entries[index]) } }
+        setHoldAppearance()
+        selectMode(mode)
         renderReading(currentReading)
     }
 
@@ -75,9 +86,11 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
         modeButtons.forEachIndexed { index, button ->
             val active = Mode.entries[index] == selected
             button.setTextColor(if (active) android.graphics.Color.WHITE else muted)
-            button.background = rounded(if (active) green else android.graphics.Color.TRANSPARENT, dp(24).toFloat())
+            button.typeface = resources.getFont(if (active) R.font.inter_semibold else R.font.inter_regular)
+            button.background = rounded(if (active) green else android.graphics.Color.TRANSPARENT, dp(9).toFloat())
         }
         modeTitle.text = selected.instruction
+        tipText.text = selected.tip
         instrument.mode = selected
         instrument.invalidate()
     }
@@ -85,10 +98,10 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
     private fun toggleHold() {
         if (heldReading == null) {
             heldReading = currentReading.copy()
-            holdButton.text = "▶  Resume reading"
+            setHoldAppearance()
         } else {
             heldReading = null
-            holdButton.text = "▣  Hold reading"
+            setHoldAppearance()
             renderReading(currentReading)
         }
         instrument.invalidate()
@@ -98,7 +111,7 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
         calibrationX = smoothX
         calibrationY = smoothY
         heldReading = null
-        holdButton.text = "▣  Hold reading"
+        setHoldAppearance()
         currentReading = Reading(0f, 0f)
         renderReading(currentReading)
         android.widget.Toast.makeText(this, "Calibrated to current position", android.widget.Toast.LENGTH_SHORT).show()
@@ -138,8 +151,15 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
         rollValue.text = String.format(Locale.getDefault(), "%.1f°", reading.y)
         instrument.reading = reading
         instrument.isLevel = abs(reading.x) < LEVEL_THRESHOLD && abs(reading.y) < LEVEL_THRESHOLD
+        modeTitle.text = if (instrument.isLevel) mode.instruction else "${mode.title} needs adjustment"
         instrument.mode = mode
         instrument.invalidate()
+    }
+
+    private fun setHoldAppearance() {
+        val isHeld = heldReading != null
+        holdButtonLabel.text = if (isHeld) "Resume reading" else "Hold reading"
+        holdButtonIcon.setImageResource(if (isHeld) R.drawable.ic_level_resume else R.drawable.ic_level_lock)
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) = Unit
@@ -168,10 +188,10 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
 
     private data class Reading(val x: Float, val y: Float)
 
-    private enum class Mode(val title: String, val instruction: String) {
-        SURFACE("Surface", "Surface is level"),
-        HORIZONTAL("Horizontal", "Horizontal is level"),
-        VERTICAL("Vertical", "Vertical is plumb")
+    private enum class Mode(val title: String, val instruction: String, val tip: String) {
+        SURFACE("Surface", "Surface is level", "Place your phone flat on a surface. Calibrate on a known level surface before measuring."),
+        HORIZONTAL("Horizontal", "Horizontal is level", "Place your phone on its long edge. Calibrate on a known level surface before measuring."),
+        VERTICAL("Vertical", "Vertical is plumb", "Place your phone upright. Calibrate on a known vertical surface before measuring.")
     }
 
     private inner class InstrumentView : View(this@LevelMeterActivity) {
@@ -181,8 +201,7 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
         private val white = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.WHITE; style = Paint.Style.FILL }
         private val guide = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.rgb(232, 219, 177); style = Paint.Style.STROKE; strokeCap = Paint.Cap.ROUND }
         private val faint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.rgb(238, 228, 199); style = Paint.Style.STROKE }
-        private val bubblePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = green; style = Paint.Style.FILL }
-        private val bubbleCore = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.rgb(0, 125, 57); style = Paint.Style.FILL }
+        private val bubbleDrawable = ContextCompat.getDrawable(this@LevelMeterActivity, R.drawable.ic_level_bubble)
         private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = muted; textAlign = Paint.Align.CENTER; typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.NORMAL) }
         private val tick = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.rgb(231, 217, 180); strokeCap = Paint.Cap.ROUND }
 
@@ -209,16 +228,16 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
             faint.strokeWidth = (w * 0.002f).coerceAtLeast(1f)
             textPaint.textSize = w * 0.027f
             val limit = if (mode == Mode.SURFACE) min(w, h) * 0.34f else w * 0.37f
-            val dotRadius = min(w, h) * 0.036f
+            val bubbleRadius = dp(16).toFloat()
             val dx = when (mode) {
-                Mode.SURFACE -> (-reading.x / 45f * limit).coerceIn(-limit, limit)
-                Mode.HORIZONTAL -> (reading.x / 45f * limit).coerceIn(-limit, limit)
+                Mode.SURFACE -> (-reading.x / 45f * limit).coerceIn(-limit + bubbleRadius, limit - bubbleRadius)
+                Mode.HORIZONTAL -> (reading.x / 45f * limit).coerceIn(-limit + bubbleRadius, limit - bubbleRadius)
                 Mode.VERTICAL -> 0f
             }
             val dy = when (mode) {
-                Mode.SURFACE -> (reading.y / 45f * limit).coerceIn(-limit, limit)
+                Mode.SURFACE -> (reading.y / 45f * limit).coerceIn(-limit + bubbleRadius, limit - bubbleRadius)
                 Mode.HORIZONTAL -> 0f
-                Mode.VERTICAL -> (reading.y / 45f * limit).coerceIn(-limit, limit)
+                Mode.VERTICAL -> (reading.y / 45f * limit).coerceIn(-limit + bubbleRadius, limit - bubbleRadius)
             }
 
             when (mode) {
@@ -235,8 +254,7 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
                         canvas.drawText(label, centerX + cos(a).toFloat() * radius * 1.06f,
                             centerY + sin(a).toFloat() * radius * 1.06f + textPaint.textSize * 0.35f, textPaint)
                     }
-                    canvas.drawCircle(centerX + dx, centerY + dy, dotRadius, bubblePaint)
-                    canvas.drawCircle(centerX + dx, centerY + dy, dotRadius * 0.38f, bubbleCore)
+                    drawBubble(canvas, centerX + dx, centerY + dy, bubbleRadius)
                 }
                 Mode.HORIZONTAL -> {
                     val tube = RectF(w * 0.08f, centerY - h * 0.15f, w * 0.92f, centerY + h * 0.15f)
@@ -249,8 +267,7 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
                         val length = if (major) tube.height() * 0.42f else tube.height() * 0.22f
                         canvas.drawLine(x, centerY - length / 2f, x, centerY + length / 2f, tick)
                     }
-                    canvas.drawCircle(centerX, centerY, dotRadius * 0.46f, bubbleCore)
-                    canvas.drawCircle((centerX + dx).coerceIn(tube.left + dotRadius, tube.right - dotRadius), centerY, dotRadius, bubblePaint)
+                    drawBubble(canvas, (centerX + dx).coerceIn(tube.left + bubbleRadius, tube.right - bubbleRadius), centerY, bubbleRadius)
                     canvas.drawText(String.format(Locale.getDefault(), "%.1f°", reading.x), centerX, h * 0.18f, textPaint)
                     canvas.drawText("X axis", centerX, h * 0.94f, textPaint)
                 }
@@ -265,12 +282,23 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
                         val length = if (major) tube.width() * 0.42f else tube.width() * 0.22f
                         canvas.drawLine(centerX - length / 2f, y, centerX + length / 2f, y, tick)
                     }
-                    canvas.drawCircle(centerX, centerY, dotRadius * 0.46f, bubbleCore)
-                    canvas.drawCircle(centerX, (centerY + dy).coerceIn(tube.top + dotRadius, tube.bottom - dotRadius), dotRadius, bubblePaint)
+                    drawBubble(canvas, centerX, (centerY + dy).coerceIn(tube.top + bubbleRadius, tube.bottom - bubbleRadius), bubbleRadius)
                     canvas.drawText("Y axis", w * 0.82f, centerY + textPaint.textSize * 0.35f, textPaint)
                     canvas.drawText(String.format(Locale.getDefault(), "%.1f°", reading.y), w * 0.18f, centerY + textPaint.textSize * 0.35f, textPaint)
                 }
             }
+        }
+
+        private fun drawBubble(canvas: Canvas, x: Float, y: Float, radius: Float) {
+            val drawable = bubbleDrawable ?: return
+            val diameter = (radius * 2f).toInt()
+            drawable.setBounds(
+                (x - radius).toInt(),
+                (y - radius).toInt(),
+                (x - radius).toInt() + diameter,
+                (y - radius).toInt() + diameter
+            )
+            drawable.draw(canvas)
         }
     }
 

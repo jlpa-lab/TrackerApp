@@ -58,27 +58,28 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="16dp"
-           android:paddingVertical="16dp">
+            android:paddingVertical="16dp">
 
             <include
                 android:id="@+id/gps_compass_row"
-                layout="@layout/tool_row_compass" />
+                layout="@layout/gps_tool_row_compass" />
 
             <include
                 android:id="@+id/gps_stopwatch_row"
-                layout="@layout/tool_row_stopwatch" />
+                layout="@layout/gps_tool_row_stopwatch" />
 
             <include
                 android:id="@+id/gps_speedometer_row"
-                layout="@layout/tool_row_speedometer" />
+                layout="@layout/gps_tool_row_speedometer" />
 
             <include
                 android:id="@+id/gps_area_codes_row"
-                layout="@layout/tool_row_area" />
+                layout="@layout/gps_tool_row_area" />
 
             <include
                 android:id="@+id/gps_level_meter_row"
-                layout="@layout/tool_row_level" />
+                layout="@layout/gps_tool_row_level" />
         </LinearLayout>
     </ScrollView>
+    <include layout="@layout/layout_native_all" />
 </LinearLayout>

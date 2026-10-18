@@ -93,6 +93,9 @@ class OnBoardingActivity : BaseActivity<ActivityOnboardingBinding>() {
 
         mBinding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
+                if (position in onboardingItems.indices && onboardingItems[position].isHasNativeOnPage4) {
+                    AdsManager.loadNativeHome(this@OnBoardingActivity, R.layout.layout_native_home)
+                }
 //                ITGTrackingHelper.logEvent(when(position){
 //                    0 -> { EventTracking.ONBOARDING_FIRST}
 //                    1 -> { EventTracking.ONBOARDING_SECOND}

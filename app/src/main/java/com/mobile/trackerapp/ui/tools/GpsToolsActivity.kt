@@ -10,7 +10,12 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.bindNativeAllAd
+import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ui.DashboardActivity
 
 /** Collection of the app's GPS and navigation tools. */
@@ -26,8 +31,17 @@ class GpsToolsActivity : DashboardActivity() {
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         val binding = com.mobile.trackerapp.databinding.ActivityGpsToolsBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.gpsToolsBack.setOnClickListener { finish() }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.setPadding(view.paddingLeft, statusBarInset, view.paddingRight, 0)
+            insets
+        }
+        ViewCompat.requestApplyInsets(binding.root)
+        AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
+        bindNativeAllAd(this, findViewById(R.id.native_all_container))
         binding.gpsCompassRow.root.setOnClickListener { startActivity(Intent(this, CompassActivity::class.java)) }
         binding.gpsStopwatchRow.root.setOnClickListener { startActivity(Intent(this, StopwatchActivity::class.java)) }
         binding.gpsSpeedometerRow.root.setOnClickListener { startActivity(Intent(this, SpeedometerActivity::class.java)) }

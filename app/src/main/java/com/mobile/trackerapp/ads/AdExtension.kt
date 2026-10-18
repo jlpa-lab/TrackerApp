@@ -15,6 +15,7 @@ import com.google.android.gms.ads.nativead.NativeAdView
 import com.mobile.trackerapp.R
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.mobile.trackerapp.bases.ext.dpToPx
 
 /**
@@ -36,6 +37,25 @@ fun populateNativeAdView(
     val adView = LayoutInflater.from(activity)
         .inflate(apNativeAd.layoutCustomNative, null) as NativeAdView
 
+    if (config?.key == "native_all") {
+        adView.findViewById<View>(R.id.ad_container)
+            ?.setBackgroundResource(R.drawable.bg_native_ads_compact)
+
+        adView.findViewById<TextView>(R.id.ad_icon)?.apply {
+            setBackgroundResource(R.drawable.bg_home_ad_badge)
+            minWidth = activity.resources.getDimensionPixelSize(R.dimen.native_ad_badge_min_width)
+            minHeight = activity.resources.getDimensionPixelSize(R.dimen.native_ad_badge_min_height)
+            setPadding(
+                activity.resources.getDimensionPixelSize(R.dimen.native_ad_badge_padding_horizontal),
+                activity.resources.getDimensionPixelSize(R.dimen.native_ad_badge_padding_vertical),
+                activity.resources.getDimensionPixelSize(R.dimen.native_ad_badge_padding_horizontal),
+                activity.resources.getDimensionPixelSize(R.dimen.native_ad_badge_padding_vertical)
+            )
+            setTextColor(Color.WHITE)
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+        }
+    }
+
     containerShimmerLoading.stopShimmer()
     containerShimmerLoading.visibility = View.GONE
     adPlaceHolder.visibility = View.VISIBLE
@@ -45,6 +65,9 @@ fun populateNativeAdView(
             val rawHeightDp = config?.heightCTA ?: 45
             val clampedHeightDp = rawHeightDp.coerceIn(36, 52)
             height = clampedHeightDp.dpToPx(activity).toInt()
+            if (config?.key == "native_all" && this is ViewGroup.MarginLayoutParams) {
+                bottomMargin = 10.dpToPx(activity).toInt()
+            }
 
         }
         applyCtaColor(ctaButton, config?.colorCTA?.takeUnless { it == "default" } ?: "#0EC708")

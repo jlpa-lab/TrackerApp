@@ -31,7 +31,7 @@ class AdRemoteConfigJsonAdapterFactory : JsonAdapter.Factory {
                 reader.beginObject()
                 while (reader.hasNext()) {
                     val key = reader.nextName()
-                    adsMap[key] = readAdUnitConfig(reader)
+                    adsMap[key] = readAdUnitConfig(reader, key)
                 }
                 reader.endObject()
                 return AdRemoteConfig(ads = adsMap)
@@ -45,7 +45,7 @@ class AdRemoteConfigJsonAdapterFactory : JsonAdapter.Factory {
                 mapAdapter.toJson(writer, value.ads)
             }
 
-            private fun readAdUnitConfig(reader: JsonReader): AdUnitConfig {
+            private fun readAdUnitConfig(reader: JsonReader, key: String): AdUnitConfig {
                 var id = ""
                 var isEnable = false
                 var enableUaCheck = false
@@ -72,6 +72,7 @@ class AdRemoteConfigJsonAdapterFactory : JsonAdapter.Factory {
                 return AdUnitConfig(
                     id = id,
                     isEnable = isEnable,
+                    key = key,
                     enableUaCheck = enableUaCheck,
                     reloadIntervalSeconds = reloadIntervalSeconds,
                     colorCTA = colorCTA,

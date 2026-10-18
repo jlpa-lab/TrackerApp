@@ -32,6 +32,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.geocoding.PhoneNumberOfflineGeocoder
 import com.mobile.trackerapp.R
@@ -39,6 +42,7 @@ import com.mobile.trackerapp.ui.DashboardActivity
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Locale
+import kotlin.math.roundToInt
 import kotlin.concurrent.thread
 import java.util.concurrent.ConcurrentHashMap
 
@@ -62,7 +66,7 @@ class AreaCodesActivity : DashboardActivity() {
     private lateinit var sectionTitle: TextView
     private lateinit var locationButton: TextView
     private lateinit var locationButtonContainer: LinearLayout
-    private lateinit var countryShortcut: TextView
+    private lateinit var hintText: TextView
     private var allEntries: List<AreaCodeEntry> = emptyList()
     private var loading = true
     private var locationListener: LocationListener? = null
@@ -75,12 +79,23 @@ class AreaCodesActivity : DashboardActivity() {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        hideNavigationBar()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         selectedCountry = detectDefaultCountry()
         val binding = com.mobile.trackerapp.databinding.ActivityAreaCodesBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.areaBack.setOnClickListener { finish() }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            val contentInset = dp(16)
+            view.setPadding(contentInset, statusBarInset + contentInset, contentInset, 0)
+            insets
+        }
+        ViewCompat.requestApplyInsets(binding.root)
         queryInput = binding.areaQuery; resultHost = binding.areaResults; countLabel = binding.areaCount
-        sectionTitle = binding.areaSectionTitle; locationButton = binding.areaLocation; locationButtonContainer = binding.areaLocationContainer; countryShortcut = binding.areaCountry
-        countryShortcut.text = "${selectedCountry.flag} ${selectedCountry.iso}⌄"; countryShortcut.setOnClickListener { showCountryPicker() }; countLabel.setOnClickListener { showCountryPicker() }; locationButtonContainer.setOnClickListener { useMyLocation() }
+        sectionTitle = binding.areaSectionTitle; locationButton = binding.areaLocation; locationButtonContainer = binding.areaLocationContainer
+        hintText = binding.areaHintText
+        updateHintText(selectedCountry)
+        locationButtonContainer.setOnClickListener { useMyLocation() }
         queryInput.addTextChangedListener(object : TextWatcher { override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int)=Unit; override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int)=scheduleResultsRender(); override fun afterTextChanged(s: Editable?)=Unit })
         renderResults()
         loadCountryEntries(selectedCountry)
@@ -112,10 +127,10 @@ class AreaCodesActivity : DashboardActivity() {
         val list = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         val scroll = ScrollView(this).apply { clipToPadding = false }
         scroll.addView(list, android.view.ViewGroup.LayoutParams(-1, wrap()))
-        resultHost.addView(scroll, FrameLayout.LayoutParams(-1, -1))
+        resultHost.addView(scroll, FrameLayout.LayoutParams(-1, wrap()))
         visibleEntries.forEachIndexed { index, entry ->
             val row = buildEntryRow(entry)
-            list.addView(row, LinearLayout.LayoutParams(-1, wrap()).apply { if (index > 0) topMargin = dp(7) })
+            list.addView(row, LinearLayout.LayoutParams(-1, wrap()).apply { if (index > 0) topMargin = dp(12) })
         }
     }
 
@@ -129,8 +144,8 @@ class AreaCodesActivity : DashboardActivity() {
     private fun buildEntryRow(entry: AreaCodeEntry): View {
         val row = LinearLayout(this).apply {
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(11), dp(10), dp(11), dp(10))
-            background = borderedRounded(android.graphics.Color.WHITE, android.graphics.Color.rgb(235, 240, 237), dp(14).toFloat())
+            setPadding(dp(13), dp(13), dp(13), dp(13))
+            background = ContextCompat.getDrawable(this@AreaCodesActivity, R.drawable.bg_area_result)
             isClickable = true; isFocusable = true
             setOnClickListener {
                 val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -139,17 +154,22 @@ class AreaCodesActivity : DashboardActivity() {
             }
         }
         row.addView(TextView(this).apply {
-            text = entry.code; textSize = 15f; gravity = Gravity.CENTER; setTextColor(dark); typeface = android.graphics.Typeface.DEFAULT_BOLD
+            text = entry.code; textSize = 18f; gravity = Gravity.CENTER; setTextColor(dark)
+            typeface = resources.getFont(R.font.inter_semibold)
             setPadding(dp(8), dp(8), dp(8), dp(8))
             background = rounded(android.graphics.Color.rgb(235, 249, 242), dp(9).toFloat())
         }, LinearLayout.LayoutParams(wrap(), wrap()).apply { marginEnd = dp(8) })
         val copy = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        copy.addView(label(entry.city, 15f, dark, true))
+        copy.addView(label(entry.city, 12f, dark, true))
         if (entry.detail.isNotBlank() && !entry.detail.equals(entry.city, ignoreCase = true)) {
-            copy.addView(label(entry.detail, 12f, muted).apply { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END; setPadding(0, dp(3), 0, 0) })
+            copy.addView(label(entry.detail, 10f, muted).apply { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END; setPadding(0, dp(3), 0, 0) })
         }
         row.addView(copy, LinearLayout.LayoutParams(0, wrap(), 1f))
-        row.addView(label("›", 22f, android.graphics.Color.rgb(178, 188, 197)))
+        row.addView(ImageView(this).apply {
+            setImageResource(R.drawable.ic_chevron)
+            imageAlpha = 150
+            contentDescription = "Open area code details"
+        }, LinearLayout.LayoutParams(dp(16), dp(16)).apply { marginStart = dp(8) })
         return row
     }
 
@@ -157,28 +177,29 @@ class AreaCodesActivity : DashboardActivity() {
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
-            setPadding(dp(16), dp(14), dp(16), dp(14))
-            background = borderedRounded(android.graphics.Color.WHITE, android.graphics.Color.rgb(237, 241, 239), dp(12).toFloat())
+            setPadding(dp(30), dp(28), dp(30), dp(28))
+            background = borderedRounded(android.graphics.Color.WHITE, android.graphics.Color.rgb(237, 241, 239), dp(16).toFloat())
         }
         card.addView(ImageView(this).apply {
-            setImageResource(R.drawable.ic_phone_no_result)
+            setImageResource(R.drawable.ic_area_no_result)
             contentDescription = "No area codes found"
-        }, LinearLayout.LayoutParams(dp(35), dp(35)))
+            scaleType = ImageView.ScaleType.CENTER_INSIDE
+        }, LinearLayout.LayoutParams(dp(64), dp(64)))
         val emptyTitle = if (query.isBlank()) "No regional codes for ${selectedCountry.name}" else "No area codes found"
         val emptyMessage = if (query.isBlank()) "Regional landline codes aren't available for this country." else "No results for “$query”. Try another city or area code."
-        card.addView(label(emptyTitle, 16f, dark, true).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(10) })
-        card.addView(label(emptyMessage, 13f, muted).apply {
+        card.addView(label(emptyTitle, 14f, dark, true).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
+        card.addView(label(emptyMessage, 11f, muted).apply {
             gravity = Gravity.CENTER; textAlignment = View.TEXT_ALIGNMENT_CENTER
-        }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(4) })
-        val clear = label("Clear search", 11f, android.graphics.Color.WHITE, true).apply {
+        }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
+        val clear = label("Clear search", 12f, android.graphics.Color.WHITE, true).apply {
             gravity = Gravity.CENTER
-            setPadding(dp(20), dp(7), dp(20), dp(7))
-            background = rounded(green, dp(24).toFloat())
+            setPadding(dp(30), dp(14), dp(30), dp(14))
+            background = rounded(green, dp(100).toFloat())
             isClickable = true; isFocusable = true
             setOnClickListener { queryInput.text?.clear() }
         }
-        card.addView(clear, LinearLayout.LayoutParams(wrap(), wrap()).apply { topMargin = dp(9) })
-        resultHost.addView(card, FrameLayout.LayoutParams(-1, -1))
+        card.addView(clear, LinearLayout.LayoutParams(wrap(), wrap()).apply { topMargin = dp(12) })
+        resultHost.addView(card, FrameLayout.LayoutParams(-1, wrap()))
     }
 
     private fun loadCountryEntries(country: AreaCountry) {
@@ -263,11 +284,15 @@ class AreaCodesActivity : DashboardActivity() {
 
     private fun chooseCountry(country: AreaCountry) {
         selectedCountry = country
-        countryShortcut.text = "${country.flag} ${country.iso}⌄"
-        val hint = findViewWithTag(findViewById(android.R.id.content), "area-hint") as? LinearLayout
-        (hint?.getChildAt(1) as? TextView)?.text = "Dial ${country.dialCode}, then the area code and local number."
+        updateHintText(country)
         queryInput.text?.clear()
         loadCountryEntries(country)
+    }
+
+    private fun updateHintText(country: AreaCountry) {
+        if (::hintText.isInitialized) {
+            hintText.text = "Dial ${country.dialCode}, followed by the area code and the 7 digit local number for local calls."
+        }
     }
 
     private fun showCountryPicker() {
@@ -436,7 +461,7 @@ class AreaCodesActivity : DashboardActivity() {
 
     private fun label(value: String, size: Float, color: Int, bold: Boolean = false) = TextView(this).apply {
         text = value; textSize = size; setTextColor(color)
-        if (bold) typeface = android.graphics.Typeface.DEFAULT_BOLD
+        typeface = resources.getFont(if (bold) R.font.inter_semibold else R.font.inter_regular)
     }
 
     private fun rounded(color: Int, radius: Float) = android.graphics.drawable.GradientDrawable().apply {
@@ -444,7 +469,7 @@ class AreaCodesActivity : DashboardActivity() {
     }
 
     private fun borderedRounded(color: Int, stroke: Int, radius: Float) = android.graphics.drawable.GradientDrawable().apply {
-        setColor(color); cornerRadius = radius; setStroke(dp(1), stroke)
+        setColor(color); cornerRadius = radius; setStroke((resources.displayMetrics.density * 0.6f).roundToInt().coerceAtLeast(1), stroke)
     }
 
     private fun findViewWithTag(root: View, tag: Any): View? {

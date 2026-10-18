@@ -1,14 +1,14 @@
 package com.mobile.trackerapp.ui
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import androidx.appcompat.app.AppCompatActivity
 
-abstract class DashboardActivity : Activity() {
+abstract class DashboardActivity : AppCompatActivity() {
     protected fun hideNavigationBar() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
             window.decorView.windowInsetsController?.apply {

@@ -18,11 +18,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.bindNativeAllAd
 import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityPhoneLocatorBinding
-import com.mobile.trackerapp.databinding.ActivitySplashBinding
 import java.util.Locale
 
 class PhoneLocatorActivity : AppCompatActivity() {
@@ -37,9 +35,10 @@ class PhoneLocatorActivity : AppCompatActivity() {
         super.onCreate(state)
         binding = ActivityPhoneLocatorBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
+        bindNativeAllAd(this, findViewById(R.id.native_all_container))
         WindowCompat.setDecorFitsSystemWindows(window, true)
         showForm()
-        loadSplashBanner()
         val input = findViewById<EditText>(R.id.phone_input)
         input.background = null
         val clear = findViewById<View>(R.id.phone_clear)
@@ -79,13 +78,6 @@ class PhoneLocatorActivity : AppCompatActivity() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
-    }
-
-    private fun loadSplashBanner() {
-        val bannerConfig =  AdRemoteConfig.banner_all
-        AdsManager.loadBanner(
-            this, bannerConfig, binding.frBanner, isCollapse = false
-        )
     }
 
     // ---------- screen state helpers ----------

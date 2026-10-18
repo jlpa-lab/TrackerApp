@@ -163,6 +163,15 @@
     "components": ["icon_headline", "body", "media", "cta"],
     "enable_ua_check": false
   },
+  "native_all": {
+    "id": "ca-app-pub-3940256099942544/2247696110",
+    "isEnable": true,
+    "colorCTA": "default",
+    "heightCTA": 45,
+    "positionCTA": "BOTTOM",
+    "components": ["icon_headline", "body", "media", "cta"],
+    "enable_ua_check": false
+  },
   "inter_onboarding": {
     "id": "ca-app-pub-3940256099942544/1033173712",
     "isEnable": true,

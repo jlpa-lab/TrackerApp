@@ -33,12 +33,6 @@
             android:textColor="@color/home_phone_locator_text"
             android:textSize="22sp" />
 
-        <TextView
-            android:id="@+id/area_country"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:textColor="#08A349" />
     </LinearLayout>
 
     <LinearLayout
@@ -91,7 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:addStatesFromChildren="true"
-        android:background="@drawable/bg_phone_input"
+        android:background="@drawable/bg_area_search"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="12dp"
@@ -101,12 +95,11 @@
 
         <ImageView
             android:id="@+id/ic_search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:layout_gravity="center_vertical"
             android:contentDescription="search"
-            android:src="@drawable/ic_phone_search"
-            app:tint="@color/home_green_title" />
+            android:src="@drawable/ic_area_search" />
 
         <EditText
             android:id="@+id/area_query"
@@ -128,7 +121,7 @@
             android:textColor="@color/home_phone_locator_text"
             android:textColorHighlight="@android:color/transparent"
             android:textColorHint="@color/home_text_subtitle"
-            android:textSize="14sp" />
+            android:textSize="12sp" />
 
     </LinearLayout>
 
@@ -137,8 +130,8 @@
         android:id="@+id/area_location_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_phone_input"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_area_location"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
@@ -147,8 +140,8 @@
         android:paddingBottom="14dp">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:src="@drawable/ic_locate_fixed" />
 
         <TextView
@@ -166,14 +159,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="12dp">
 
         <TextView
             android:id="@+id/area_section_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:fontFamily="@font/poppins_regular"
+            android:fontFamily="@font/inter_regular"
             android:text="Popular area codes"
             android:textColor="@color/home_text_subtitle"
             android:textSize="11sp" />
@@ -191,33 +184,34 @@
     <FrameLayout
         android:id="@+id/area_results"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1" >
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp">
+
+    </FrameLayout>
 
     <!-- Hint -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_phone_tip"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_area_tip"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="14dp">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:src="@drawable/ic_phone_call"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="Dial +1, followed by the area code and the 7 digit local number for us calls."
+            android:id="@+id/area_hint_text"
+            android:text="Dial +91, followed by the area code and the 7 digit local number for local calls."
             android:textColor="@color/home_text_subtitle"
             android:textSize="10sp"
             android:fontFamily="@font/inter_regular"/>
     </LinearLayout>
-    </FrameLayout>
 </LinearLayout>

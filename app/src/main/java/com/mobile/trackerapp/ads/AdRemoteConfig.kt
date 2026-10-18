@@ -183,6 +183,9 @@ data class AdRemoteConfig(
     val native_home: AdUnitConfig
         get() = getAdUnit("native_home")
 
+    val native_all: AdUnitConfig
+        get() = getAdUnit("native_all")
+
     val inter_onboarding: AdUnitConfig
         get() = getAdUnit("inter_onboarding")
 

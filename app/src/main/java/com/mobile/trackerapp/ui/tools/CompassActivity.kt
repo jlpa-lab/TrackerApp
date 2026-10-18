@@ -306,9 +306,9 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
             canvas.restore()
 
             val marker = Path().apply {
-                moveTo(cx, cy - radius * 1.02f)
-                lineTo(cx - radius * 0.045f, cy - radius * 0.88f)
-                lineTo(cx + radius * 0.045f, cy - radius * 0.88f)
+                moveTo(cx, cy - radius * 0.88f)
+                lineTo(cx - radius * 0.045f, cy - radius * 1.02f)
+                lineTo(cx + radius * 0.045f, cy - radius * 1.02f)
                 close()
             }
             canvas.drawPath(marker, northMarkPaint)

@@ -1,0 +1,7 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/tool_speedometer_row" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:padding="12dp" android:gravity="center_vertical" android:background="@drawable/bg_gps_tool_card"><ImageView android:layout_width="56dp" android:layout_height="56dp" android:scaleType="centerInside" android:src="@drawable/tool_speedometer"/><LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Speedometer" android:textColor="@color/home_phone_locator_text" android:fontFamily="@font/inter_bold" android:textSize="14sp"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="Measure your current speed" android:textColor="@color/home_text_subtitle" android:fontFamily="@font/inter_regular" android:textSize="12sp"/></LinearLayout><ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_chevron"/></LinearLayout>
+
+
+
+
+
+

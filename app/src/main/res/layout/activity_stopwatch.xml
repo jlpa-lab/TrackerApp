@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/home_bg"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -87,14 +88,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
-            android:background="#F1ECFC"
+            android:background="@drawable/bg_stopwatch_timer"
             android:gravity="center"
             android:paddingTop="35dp"
             android:paddingBottom="35dp"
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/stopwatch_state"
+                android:id="@+id/stopwatch_state_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -110,11 +111,12 @@
                     app:tint="@color/home_text_subtitle" />
 
                 <TextView
+                    android:id="@+id/stopwatch_state"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
-                    android:fontFamily="@font/inter_regular"
                     android:text="ready to start"
+                    android:fontFamily="@font/inter_semibold"
                     android:textColor="@color/home_text_subtitle"
                     android:textSize="11sp" />
             </LinearLayout>
@@ -134,8 +136,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="10sp"
-                android:fontFamily="@font/inter_regular"
                 android:text="MINUTES : SECONDS . HUNDREDTHS"
+                android:fontFamily="@font/inter_regular"
                 android:textColor="@color/home_text_subtitle" />
 
             <View
@@ -155,8 +157,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:text="Current lap · --"
                     android:fontFamily="@font/inter_regular"
-                    android:text="Lap times"
                     android:textColor="@color/home_text_subtitle"
                     android:textSize="11sp" />
 
@@ -164,8 +166,8 @@
                     android:id="@+id/text_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="00:00.00"
                     android:fontFamily="@font/inter_semibold"
-                    android:text="00:00:00"
                     android:textColor="@color/home_phone_locator_text"
                     android:textSize="11sp" />
             </LinearLayout>
@@ -177,24 +179,30 @@
             android:layout_marginTop="14dp"
             android:orientation="horizontal">
 
-            <androidx.appcompat.widget.AppCompatButton
+            <TextView
                 android:id="@+id/stopwatch_left"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="4dp"
                 android:layout_weight="1"
-                android:background="@drawable/bg_continue_uninstall"
+                android:background="@drawable/bg_stopwatch_lap_button"
+                android:gravity="center"
                 android:text="Lap"
                 android:textAllCaps="false"
-                android:textColor="#08A331" />
+                android:textColor="#08A331"
+                android:fontFamily="@font/inter_semibold" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/stopwatch_main"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
                 android:layout_weight="1"
-                android:background="@drawable/bg_keep_phone_tracker"
+                android:background="@drawable/bg_stopwatch_main_button"
+                android:stateListAnimator="@null"
+                android:minHeight="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:text="Start"
                 android:textAllCaps="false"
                 android:textColor="@color/white" />
@@ -230,9 +238,57 @@
         <LinearLayout
             android:id="@+id/stopwatch_lap_list"
             android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_stopwatch_lap_card"
             android:orientation="vertical"
-            android:padding="16dp" />
+            android:padding="14dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical">
+            <TextView
+                android:id="@+id/stopwatch_reset_hint"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/ic_stopwatch_reset"
+                android:drawablePadding="6dp"
+                android:text="Reset"
+                android:textSize="11sp"
+                android:textColor="#B8C2CC" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pause to enable reset"
+                android:textColor="@color/home_text_subtitle"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_stopwatch_tip"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            >
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_phone_info" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="9dp"
+                android:text="Tap Lap to save a split without stopping. Pause the stopwatch before resetting."
+                android:textColor="@color/home_text_subtitle"
+                android:textSize="10sp"
+                android:fontFamily="@font/inter_regular" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

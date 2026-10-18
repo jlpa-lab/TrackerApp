@@ -94,4 +94,6 @@
                 android:textSize="12sp" />
         </LinearLayout>
     </ScrollView>
+
+    <include layout="@layout/layout_native_all" />
 </LinearLayout>

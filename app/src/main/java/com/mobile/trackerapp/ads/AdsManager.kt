@@ -42,12 +42,16 @@ object AdsManager {
     val nativeWelcomeAdLive = MutableLiveData<ApNativeAd?>()
     val nativePermissionAdLive = MutableLiveData<ApNativeAd?>()
     val nativeHomeAdLive = MutableLiveData<ApNativeAd?>()
+    val nativeAllAdLive = MutableLiveData<ApNativeAd?>()
+    val nativeHomeLoadingLive = MutableLiveData(false)
+    val nativeAllLoadingLive = MutableLiveData(false)
     var interWelcomeAdLive = MutableLiveData<ApInterstitialAd?>()
-    private val loadingNativeAds = mutableSetOf<MutableLiveData<ApNativeAd?>>()
 
     var interHomeAdLive = MutableLiveData<ApInterstitialAd?>()
     // Auto-resolve config for each loaded native ad
     private val adConfigMap = mutableMapOf<ApNativeAd, AdUnitConfig>()
+    private var cachedNativeHomeAd: ApNativeAd? = null
+    private var cachedNativeAllAd: ApNativeAd? = null
     fun getAdConfig(ad: ApNativeAd): AdUnitConfig? = adConfigMap[ad]
 
     private var interSplashAd: ApInterstitialAd? = null
@@ -61,42 +65,42 @@ object AdsManager {
         layoutRes: Int,
         liveData: MutableLiveData<ApNativeAd?>,
         shouldDisplay: Boolean = true,
+        fallbackAd: () -> ApNativeAd? = { null },
+        loadingLive: MutableLiveData<Boolean>? = null,
     ) {
         if (!config.isEnable
             || AppPurchase.getInstance().isPurchased(activity)
-            || !activity.isNetworkAvailable()
             || !shouldDisplay
         ) {
-            synchronized(loadingNativeAds) { loadingNativeAds.remove(liveData) }
+            loadingLive?.postValue(false)
             liveData.postValue(null)
             return
         }
-
-        if (liveData.value != null) return
-        synchronized(loadingNativeAds) {
-            if (!loadingNativeAds.add(liveData)) return
+        loadingLive?.postValue(true)
+        if (!activity.isNetworkAvailable()) {
+            liveData.postValue(fallbackAd())
+            loadingLive?.postValue(false)
+            return
         }
 
-        Timber.tag("AdFlowLog").d("AD LOAD REQUESTED: ${config.id}")
         ERainAd.getInstance()
             .loadNativeAdResultCallback(activity, config.id, layoutRes, object : AdCallback() {
                 override fun onNativeAdLoaded(nativeAd: ApNativeAd) {
                     super.onNativeAdLoaded(nativeAd)
                     adConfigMap[nativeAd] = config
+                    if (liveData === nativeHomeAdLive) cachedNativeHomeAd = nativeAd
+                    if (liveData === nativeAllAdLive) cachedNativeAllAd = nativeAd
                     liveData.postValue(nativeAd)
+                    loadingLive?.postValue(false)
                 }
 
                 override fun onAdFailedToLoad(adError: LoadAdError?) {
                     super.onAdFailedToLoad(adError)
-                    synchronized(loadingNativeAds) { loadingNativeAds.remove(liveData) }
-                    Timber.tag("AdFlowLog").d("AD LOAD FAILED: ${config.id}: ${adError?.message}")
-                    liveData.postValue(null)
+                    liveData.postValue(fallbackAd())
+                    loadingLive?.postValue(false)
                 }
             })
     }
-
-    fun isNativeAdLoading(liveData: MutableLiveData<ApNativeAd?>): Boolean =
-        synchronized(loadingNativeAds) { loadingNativeAds.contains(liveData) }
 
     fun loadNativeLanguage(activity: Activity, isFirst: Boolean, layoutRes: Int) {
         val config =
@@ -180,12 +184,31 @@ object AdsManager {
 
     fun loadNativeHome(activity: Activity, layoutRes: Int) {
         val config = AdRemoteConfig.native_home
+        val fallback = cachedNativeHomeAd ?: nativeHomeAdLive.value
+        nativeHomeLoadingLive.value = true
+        nativeHomeAdLive.value = null
         loadNativeInternal(
             activity,
             config,
             layoutRes,
             nativeHomeAdLive,
-            ERainAd.getInstance().getShouldDisplayNativeHome(config.enableUaCheck)
+            ERainAd.getInstance().getShouldDisplayNativeHome(config.enableUaCheck),
+            fallbackAd = { fallback },
+            loadingLive = nativeHomeLoadingLive
+        )
+    }
+
+    fun loadNativeAll(activity: Activity, layoutRes: Int) {
+        val fallback = cachedNativeAllAd ?: nativeAllAdLive.value
+        nativeAllLoadingLive.value = true
+        nativeAllAdLive.value = null
+        loadNativeInternal(
+            activity,
+            AdRemoteConfig.native_all,
+            layoutRes,
+            nativeAllAdLive,
+            fallbackAd = { fallback },
+            loadingLive = nativeAllLoadingLive
         )
     }
 
@@ -514,6 +537,12 @@ object AdsManager {
         nativeSurveyAdLive.postValue(null)
         nativeConfirmUninstallAdLive.postValue(null)
         nativeWelcomeAdLive.postValue(null)
+        nativeHomeAdLive.postValue(null)
+        nativeAllAdLive.postValue(null)
+        nativeHomeLoadingLive.postValue(false)
+        nativeAllLoadingLive.postValue(false)
+        cachedNativeHomeAd = null
+        cachedNativeAllAd = null
         interWelcomeAdLive = MutableLiveData()
         interSplashAd = null
         interOnboarding = null

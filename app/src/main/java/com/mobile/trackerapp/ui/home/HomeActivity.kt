@@ -2,7 +2,6 @@ package com.mobile.trackerapp.ui.home
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import com.ads.module.ads.ERainAd
 import com.ads.module.funtion.AdCallback
 import android.view.View
@@ -16,7 +15,6 @@ import com.mobile.trackerapp.ads.inter_home
 import com.mobile.trackerapp.ads.inter_splash
 import com.mobile.trackerapp.ads.inter_splash_uninstall
 import com.mobile.trackerapp.bases.ext.isNetwork
-import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.populateNativeAdView
 import com.mobile.trackerapp.databinding.ActivityMainBinding
 import com.mobile.trackerapp.ui.connection.ConnectionActivity
@@ -48,6 +46,8 @@ class HomeActivity : AppCompatActivity() {
         nativeHomeAdContainer = binding.frNativeHome
         nativeHomeShimmer = binding.nativeHomeShimmer.root
         observeNativeHomeAd()
+        AdsManager.loadNativeHome(this, R.layout.layout_native_home)
+        AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
         //hideNavigationBar()
         findViewById<android.view.View>(R.id.open_live_map).setOnClickListener { startActivity(Intent(this, com.mobile.trackerapp.ui.livelocation.LiveLocationActivity::class.java)) }
         findViewById<android.view.View>(R.id.action_phone_locator).setOnClickListener {
@@ -72,13 +72,16 @@ class HomeActivity : AppCompatActivity() {
 
     private fun observeNativeHomeAd() {
         AdsManager.nativeHomeAdLive.removeObservers(this)
+        AdsManager.nativeHomeLoadingLive.observe(this) { loading ->
+            if (loading) {
+                showNativeHomeShimmer()
+            } else if (AdsManager.nativeHomeAdLive.value == null) {
+                hideNativeHomeAd()
+            }
+        }
         AdsManager.nativeHomeAdLive.observe(this) { nativeAd ->
             if (nativeAd == null) {
-                if (AdsManager.isNativeAdLoading(AdsManager.nativeHomeAdLive)) {
-                    showNativeHomeShimmer()
-                } else {
-                    hideNativeHomeAd()
-                }
+                if (AdsManager.nativeHomeLoadingLive.value != true) hideNativeHomeAd()
                 return@observe
             }
 
@@ -87,26 +90,24 @@ class HomeActivity : AppCompatActivity() {
                 return@observe
             }
 
-            nativeHomeContainer.visibility = View.VISIBLE
-            nativeHomeAdContainer.visibility = View.VISIBLE
-            populateNativeAdView(
-                activity = this,
-                apNativeAd = nativeAd,
-                adPlaceHolder = nativeHomeAdContainer,
-                containerShimmerLoading = nativeHomeShimmer
-            )
+            renderNativeHomeAd(nativeAd)
         }
+    }
+
+    private fun renderNativeHomeAd(nativeAd: com.ads.module.ads.wrapper.ApNativeAd) {
+        nativeHomeContainer.visibility = View.VISIBLE
+        nativeHomeAdContainer.visibility = View.VISIBLE
+        populateNativeAdView(
+            activity = this,
+            apNativeAd = nativeAd,
+            adPlaceHolder = nativeHomeAdContainer,
+            containerShimmerLoading = nativeHomeShimmer
+        )
     }
 
     override fun onStart() {
         super.onStart()
-        AdsManager.nativeHomeAdLive.value = null
-        AdsManager.loadNativeHome(this, R.layout.layout_native_home)
-        if (AdsManager.isNativeAdLoading(AdsManager.nativeHomeAdLive)) {
-            showNativeHomeShimmer()
-        } else {
-            hideNativeHomeAd()
-        }
+        AdsManager.nativeHomeAdLive.value?.let { renderNativeHomeAd(it) }
     }
 
     private fun showNativeHomeShimmer() {

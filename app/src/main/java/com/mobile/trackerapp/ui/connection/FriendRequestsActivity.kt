@@ -13,6 +13,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.bindNativeAllAd
+import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.network.TrackerBackendClient
 import com.mobile.trackerapp.data.LocalTrackerDb
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +46,8 @@ open class FriendRequestsActivity : AppCompatActivity() {
             startActivity(Intent(this, CreateProfileActivity::class.java)); finish(); return
         }
         setContentView(layoutResource)
+        AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
+        bindNativeAllAd(this, findViewById(R.id.native_all_container))
         findViewById<TextView>(R.id.my_invite_code)?.text = "------"
         localDb = LocalTrackerDb(this)
         backend = TrackerBackendClient(this)
