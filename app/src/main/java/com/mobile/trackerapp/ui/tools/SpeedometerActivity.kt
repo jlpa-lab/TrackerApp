@@ -70,12 +70,20 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
         window.statusBarColor = android.graphics.Color.rgb(246, 251, 248)
         window.navigationBarColor = android.graphics.Color.rgb(246, 251, 248)
         @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-        val binding = com.mobile.trackerapp.databinding.ActivitySpeedometerBinding.inflate(layoutInflater)
+        window.decorView.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        val binding =
+            com.mobile.trackerapp.databinding.ActivitySpeedometerBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.speedometerBack.setOnClickListener { finish() }
-        gauge = SpeedometerGauge(this); binding.speedometerGaugeHost.addView(gauge, android.widget.FrameLayout.LayoutParams(-1, -1))
-        status = binding.speedometerStatus; unit = binding.speedometerUnit; average = binding.speedometerAverage; maximum = binding.speedometerMaximum
-        distance = binding.speedometerDistance; tripState = binding.speedometerTripState; timer = binding.speedometerTimer; resetButton = binding.speedometerReset; startButton = binding.speedometerStart
+        gauge = SpeedometerGauge(this); binding.speedometerGaugeHost.addView(
+            gauge,
+            android.widget.FrameLayout.LayoutParams(-1, -1)
+        )
+        status = binding.speedometerStatus; unit = binding.speedometerUnit; average =
+            binding.speedometerAverage; maximum = binding.speedometerMaximum
+        distance = binding.speedometerDistance; tripState = binding.speedometerTripState; timer =
+            binding.speedometerTimer; resetButton = binding.speedometerReset; startButton =
+            binding.speedometerStart
         unit.setOnClickListener { showUnitMenu(unit) }; resetButton.setOnClickListener { resetTrip() }; startButton.setOnClickListener { toggleTrip() }
         updateTripLabels()
         updateStats()
@@ -83,7 +91,9 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
     }
 
     private fun statColumn(parent: LinearLayout, title: String): TextView {
-        val column = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER }
+        val column = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER
+        }
         column.addView(label(title, 14f, muted))
         val number = label("—", 25f, dark, true).apply { gravity = Gravity.CENTER }
         column.addView(number, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(4) })
@@ -96,14 +106,22 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
         text = textValue; textSize = 16f; gravity = Gravity.CENTER; typeface = Typeface.DEFAULT_BOLD
         setTextColor(if (primary) android.graphics.Color.WHITE else green)
         setPadding(dp(8), dp(13), dp(8), dp(13))
-        background = if (primary) rounded(green, dp(30).toFloat()) else borderedRounded(android.graphics.Color.WHITE, android.graphics.Color.rgb(222, 232, 227), dp(30).toFloat())
+        background = if (primary) rounded(
+            green,
+            dp(30).toFloat()
+        ) else borderedRounded(
+            android.graphics.Color.WHITE,
+            android.graphics.Color.rgb(222, 232, 227),
+            dp(30).toFloat()
+        )
         isClickable = true; isFocusable = true
     }
 
-    private fun label(textValue: String, size: Float, color: Int, bold: Boolean = false) = TextView(this).apply {
-        text = textValue; textSize = size; setTextColor(color)
-        if (bold) typeface = Typeface.DEFAULT_BOLD
-    }
+    private fun label(textValue: String, size: Float, color: Int, bold: Boolean = false) =
+        TextView(this).apply {
+            text = textValue; textSize = size; setTextColor(color)
+            if (bold) typeface = Typeface.DEFAULT_BOLD
+        }
 
     private fun showUnitMenu(anchor: View) {
         PopupMenu(this, anchor).apply {
@@ -123,6 +141,7 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
                 timerHandler.removeCallbacks(timerTick)
                 timerHandler.post(timerTick)
             }
+
             TripState.RUNNING -> {
                 elapsedBeforeRun += SystemClock.elapsedRealtime() - runStartedAt
                 trip = TripState.PAUSED
@@ -147,7 +166,8 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
         updateStats()
     }
 
-    private fun elapsedMillis(): Long = elapsedBeforeRun + if (trip == TripState.RUNNING) SystemClock.elapsedRealtime() - runStartedAt else 0L
+    private fun elapsedMillis(): Long =
+        elapsedBeforeRun + if (trip == TripState.RUNNING) SystemClock.elapsedRealtime() - runStartedAt else 0L
 
     private fun updateTripLabels() {
         tripState.text = when (trip) {
@@ -156,7 +176,13 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
             TripState.PAUSED -> "Trip paused"
         }
         val totalSeconds = elapsedMillis() / 1000L
-        timer.text = String.format(Locale.getDefault(), "%02d:%02d:%02d", totalSeconds / 3600, (totalSeconds % 3600) / 60, totalSeconds % 60)
+        timer.text = String.format(
+            Locale.getDefault(),
+            "%02d:%02d:%02d",
+            totalSeconds / 3600,
+            (totalSeconds % 3600) / 60,
+            totalSeconds % 60
+        )
         resetButton.isEnabled = trip != TripState.NOT_STARTED
         resetButton.alpha = if (resetButton.isEnabled) 1f else 0.48f
         startButton.text = when (trip) {
@@ -169,23 +195,52 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
     private fun updateStats() {
         val factor = if (mph) 0.621371f else 1f
         unit.text = if (mph) "mph⌄" else "km/h⌄"
-        average.text = if (speedSamples == 0) "—" else String.format(Locale.getDefault(), "%.0f", speedSum.toFloat() / speedSamples * factor)
-        maximum.text = if (speedSamples == 0) "—" else String.format(Locale.getDefault(), "%.0f", maxKmh * factor)
-        distance.text = if (distanceMeters <= 0.0) "—" else String.format(Locale.getDefault(), "%.1f", distanceMeters / 1000.0 * if (mph) 0.621371 else 1.0)
+        average.text = if (speedSamples == 0) "—" else String.format(
+            Locale.getDefault(),
+            "%.0f",
+            speedSum.toFloat() / speedSamples * factor
+        )
+        maximum.text = if (speedSamples == 0) "—" else String.format(
+            Locale.getDefault(),
+            "%.0f",
+            maxKmh * factor
+        )
+        distance.text = if (distanceMeters <= 0.0) "—" else String.format(
+            Locale.getDefault(),
+            "%.1f",
+            distanceMeters / 1000.0 * if (mph) 0.621371 else 1.0
+        )
         gauge.speed = speedKmh * factor
         gauge.invalidate()
         (gauge.parent as? View)?.invalidate()
     }
 
     private fun hasLocationPermission() =
-        ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
 
     private fun requestLocationPermission() {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST)
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ),
+            LOCATION_PERMISSION_REQUEST
+        )
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST && grantResults.any { it == PackageManager.PERMISSION_GRANTED }) startGpsUpdates()
         else status.text = "Location permission needed"
@@ -222,7 +277,9 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
             speedKmh = location.speed * 3.6f
             if (trip == TripState.RUNNING) {
                 if (speedKmh > maxKmh) maxKmh = speedKmh
-                if (speedKmh > 0f) { speedSum += speedKmh; speedSamples++ }
+                if (speedKmh > 0f) {
+                    speedSum += speedKmh; speedSamples++
+                }
             }
         }
         if (trip == TripState.RUNNING) {
@@ -239,8 +296,13 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
 
     @Deprecated("Deprecated in Android")
     override fun onStatusChanged(provider: String?, statusValue: Int, extras: Bundle?) = Unit
-    override fun onProviderEnabled(provider: String) { status.text = "GPS connected" }
-    override fun onProviderDisabled(provider: String) { status.text = "Turn on location to connect GPS" }
+    override fun onProviderEnabled(provider: String) {
+        status.text = "GPS connected"
+    }
+
+    override fun onProviderDisabled(provider: String) {
+        status.text = "Turn on location to connect GPS"
+    }
 
     override fun onPause() {
         if (locationUpdatesStarted) {
@@ -255,34 +317,60 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
         super.onDestroy()
     }
 
-    private fun rounded(color: Int, radius: Float) = android.graphics.drawable.GradientDrawable().apply {
-        setColor(color); cornerRadius = radius
-    }
+    private fun rounded(color: Int, radius: Float) =
+        android.graphics.drawable.GradientDrawable().apply {
+            setColor(color); cornerRadius = radius
+        }
 
-    private fun borderedRounded(color: Int, stroke: Int, radius: Float) = android.graphics.drawable.GradientDrawable().apply {
-        setColor(color); cornerRadius = radius; setStroke(dp(1), stroke)
-    }
+    private fun borderedRounded(color: Int, stroke: Int, radius: Float) =
+        android.graphics.drawable.GradientDrawable().apply {
+            setColor(color); cornerRadius = radius; setStroke(dp(1), stroke)
+        }
 
     private enum class TripState { NOT_STARTED, RUNNING, PAUSED }
 
     /** Responsive, square-ish canvas gauge; sizing and all drawing scale with available width. */
     private inner class SpeedometerGauge(context: android.content.Context) : View(context) {
         var speed = 0f
-        private val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.rgb(218, 232, 226); style = Paint.Style.STROKE; strokeCap = Paint.Cap.ROUND }
-        private val facePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.rgb(252, 254, 253); style = Paint.Style.FILL }
-        private val arcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = green; style = Paint.Style.STROKE; strokeCap = Paint.Cap.ROUND }
-        private val tickPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.rgb(184, 195, 205); strokeCap = Paint.Cap.ROUND }
-        private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = muted; textAlign = Paint.Align.CENTER; typeface = Typeface.create("sans-serif", Typeface.NORMAL) }
-        private val needlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = green; style = Paint.Style.FILL }
-        private val hubPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.BLACK; style = Paint.Style.FILL }
-        private val hubCenterPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = green; style = Paint.Style.FILL }
-        private val speedTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = dark; textAlign = Paint.Align.CENTER; typeface = Typeface.DEFAULT_BOLD }
-        private val unitTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = muted; textAlign = Paint.Align.CENTER; typeface = Typeface.create("sans-serif", Typeface.NORMAL) }
+        private val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = android.graphics.Color.rgb(218, 232, 226); style =
+            Paint.Style.STROKE; strokeCap = Paint.Cap.ROUND
+        }
+        private val facePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = android.graphics.Color.rgb(252, 254, 253); style = Paint.Style.FILL
+        }
+        private val arcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = green; style = Paint.Style.STROKE; strokeCap = Paint.Cap.ROUND
+        }
+        private val tickPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = android.graphics.Color.rgb(184, 195, 205); strokeCap = Paint.Cap.ROUND
+        }
+        private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = muted; textAlign = Paint.Align.CENTER; typeface =
+            Typeface.create("sans-serif", Typeface.NORMAL)
+        }
+        private val needlePaint =
+            Paint(Paint.ANTI_ALIAS_FLAG).apply { color = green; style = Paint.Style.FILL }
+        private val hubPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = android.graphics.Color.BLACK; style = Paint.Style.FILL
+        }
+        private val hubCenterPaint =
+            Paint(Paint.ANTI_ALIAS_FLAG).apply { color = green; style = Paint.Style.FILL }
+        private val speedTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = dark; textAlign = Paint.Align.CENTER; typeface = Typeface.DEFAULT_BOLD
+        }
+        private val unitTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = muted; textAlign = Paint.Align.CENTER; typeface =
+            Typeface.create("sans-serif", Typeface.NORMAL)
+        }
 
         override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
             val width = MeasureSpec.getSize(widthMeasureSpec)
             val desired = (width * 0.86f).toInt()
-            val height = if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) MeasureSpec.getSize(heightMeasureSpec) else desired
+            val height =
+                if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) MeasureSpec.getSize(
+                    heightMeasureSpec
+                ) else desired
             setMeasuredDimension(width, height)
         }
 
@@ -308,19 +396,24 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
                 val outer = radius + stroke * 0.8f
                 val inner = radius - if (major) radius * 0.075f else radius * 0.035f
                 tickPaint.strokeWidth = if (major) stroke * 0.22f else stroke * 0.13f
-                canvas.drawLine(cx + cos(angle).toFloat() * inner, cy + sin(angle).toFloat() * inner,
-                    cx + cos(angle).toFloat() * outer, cy + sin(angle).toFloat() * outer, tickPaint)
+                canvas.drawLine(
+                    cx + cos(angle).toFloat() * inner, cy + sin(angle).toFloat() * inner,
+                    cx + cos(angle).toFloat() * outer, cy + sin(angle).toFloat() * outer, tickPaint
+                )
             }
             val labels = listOf(0, 40, 80, 120, 160, 180)
             labels.forEach { n ->
                 val angle = Math.toRadians((150.0 + n / 180.0 * 240.0))
                 val labelRadius = radius * 0.70f
                 textPaint.textSize = radius * 0.095f
-                canvas.drawText(n.toString(), cx + cos(angle).toFloat() * labelRadius,
-                    cy + sin(angle).toFloat() * labelRadius + textPaint.textSize * 0.35f, textPaint)
+                canvas.drawText(
+                    n.toString(), cx + cos(angle).toFloat() * labelRadius,
+                    cy + sin(angle).toFloat() * labelRadius + textPaint.textSize * 0.35f, textPaint
+                )
             }
 
-            val needleAngle = Math.toRadians((150f + speed.coerceIn(0f, 180f) / 180f * 240f).toDouble())
+            val needleAngle =
+                Math.toRadians((150f + speed.coerceIn(0f, 180f) / 180f * 240f).toDouble())
             val tipRadius = radius * 0.57f
             val tipX = cx + cos(needleAngle).toFloat() * tipRadius
             val tipY = cy + sin(needleAngle).toFloat() * tipRadius
@@ -338,13 +431,19 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
             canvas.drawCircle(cx, cy, radius * 0.026f, hubCenterPaint)
 
             speedTextPaint.textSize = radius * 0.29f
-            canvas.drawText(String.format(Locale.getDefault(), "%.0f", speed), cx,
-                cy + radius * 0.54f + speedTextPaint.textSize * 0.35f, speedTextPaint)
+            canvas.drawText(
+                String.format(Locale.getDefault(), "%.0f", speed), cx,
+                cy + radius * 0.54f + speedTextPaint.textSize * 0.35f, speedTextPaint
+            )
             unitTextPaint.textSize = radius * 0.095f
-            canvas.drawText(if (mph) "mph" else "km/h", cx,
-                cy + radius * 0.78f + unitTextPaint.textSize * 0.35f, unitTextPaint)
+            canvas.drawText(
+                if (mph) "mph" else "km/h", cx,
+                cy + radius * 0.78f + unitTextPaint.textSize * 0.35f, unitTextPaint
+            )
         }
     }
 
-    companion object { private const val LOCATION_PERMISSION_REQUEST = 61 }
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST = 61
+    }
 }

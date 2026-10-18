@@ -10,4 +10,6 @@
     <color name="home_text_subtitle">#787E8D</color>
     <color name="home_text_muted">#7B808A</color>
     <color name="home_nav_inactive">#484C52</color>
+    <color name="rate_dialog_title">#090E32</color>
+    <color name="rate_dialog_subtitle">#7885A0</color>"
 </resources>
