@@ -27,6 +27,9 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.network.RealtimeLocationClient
 import com.mobile.trackerapp.service.LocationSharingService
 import com.mobile.trackerapp.ui.connection.TrackFriendRequestsActivity
@@ -65,11 +68,14 @@ open class LiveLocationActivity : FragmentActivity(), OnMapReadyCallback {
     override fun onCreate(state: Bundle?) {
         super.onCreate(state); fused = LocationServices.getFusedLocationProviderClient(this)
         setContentView(locationLayout)
+        AdsManager.loadInterHome(this, ignoreLimit = true)
         realtime = RealtimeLocationClient(this) { payload -> runOnUiThread { showFriendLocation(payload) } }
         realtime.connect()
         intent.getStringExtra("screen_title")?.let { findViewById<TextView>(R.id.live_title).text = it }
         intent.getStringExtra("screen_subtitle")?.let { findViewById<TextView>(R.id.live_subtitle).text = it }
-        findViewById<ImageView>(R.id.live_back).setOnClickListener { finish() }
+        findViewById<ImageView>(R.id.live_back).setOnClickListener {
+            onBackPressed()
+        }
         if (friendsOnly) {
             findViewById<View>(R.id.self_location_controls).visibility = View.GONE
             findViewById<View>(R.id.friend_empty_state).visibility = View.GONE
@@ -189,5 +195,18 @@ open class LiveLocationActivity : FragmentActivity(), OnMapReadyCallback {
         }
     }
     override fun onDestroy() { callback?.let { fused.removeLocationUpdates(it) }; if (::realtime.isInitialized) realtime.close(); super.onDestroy() }
+
+
+//    private fun loadLiveLocationBanner() {
+//        val bannerConfig = AdRemoteConfig.banner_all
+//        AdsManager.loadBanner(
+//            this, bannerConfig, binding.frBanner, isCollapse = false
+//        )
+//    }
+    override fun onBackPressed() {
+        AdsManager.showInterHomeBack(this) {
+            finish()
+        }
+    }
 }
 

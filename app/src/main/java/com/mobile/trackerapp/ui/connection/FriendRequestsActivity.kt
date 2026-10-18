@@ -47,6 +47,7 @@ open class FriendRequestsActivity : AppCompatActivity() {
         }
         setContentView(layoutResource)
         AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
+        AdsManager.loadInterHome(this, ignoreLimit = true)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))
         findViewById<TextView>(R.id.my_invite_code)?.text = "------"
         localDb = LocalTrackerDb(this)
@@ -67,7 +68,7 @@ open class FriendRequestsActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.my_invite_code).text = myInviteCode
             }.onFailure { Toast.makeText(this@FriendRequestsActivity, "Backend unavailable: ${it.message}", Toast.LENGTH_LONG).show() }
         }
-        findViewById<View>(R.id.friend_back).setOnClickListener { finish() }
+        findViewById<View>(R.id.friend_back).setOnClickListener { onBackPressed() }
         findViewById<View>(R.id.friend_add).setOnClickListener { showPanel(R.id.friend_add) }
         findViewById<View>(R.id.friend_received).setOnClickListener { showPanel(R.id.friend_received); loadReceivedRequests() }
         findViewById<View>(R.id.friend_sent).setOnClickListener { showPanel(R.id.friend_sent); loadSentRequests() }
@@ -198,5 +199,11 @@ open class FriendRequestsActivity : AppCompatActivity() {
         findViewById<View>(R.id.add_panel).visibility = if (selectedId == R.id.friend_add) View.VISIBLE else View.GONE
         findViewById<View>(R.id.received_panel).visibility = if (selectedId == R.id.friend_received) View.VISIBLE else View.GONE
         findViewById<View>(R.id.sent_panel).visibility = if (selectedId == R.id.friend_sent) View.VISIBLE else View.GONE
+    }
+
+    override fun onBackPressed() {
+        AdsManager.showInterHomeBack(this) {
+            finish()
+        }
     }
 }

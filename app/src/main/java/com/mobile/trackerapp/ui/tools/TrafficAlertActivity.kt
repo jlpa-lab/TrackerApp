@@ -31,6 +31,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.databinding.ActivityTrafficAlertBinding
 
 /** Live Google Maps traffic overlay centered on the user's current location. */
@@ -80,7 +81,8 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
         hideSystemNavigation()
         binding = ActivityTrafficAlertBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.trafficBack.setOnClickListener { finish() }
+        AdsManager.loadInterHome(this, ignoreLimit = true)
+        binding.trafficBack.setOnClickListener { onBackPressed() }
         locationHint = binding.trafficLocationHint
         locationHint.setOnClickListener { requestLocationAccess() }
         locationHint.visibility = View.VISIBLE
@@ -250,6 +252,12 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
         locationCallback = null
         locationUpdatesActive = false
         super.onDestroy()
+    }
+
+    override fun onBackPressed() {
+        AdsManager.showInterHomeBack(this) {
+            finish()
+        }
     }
 
     private fun hideSystemNavigation() {

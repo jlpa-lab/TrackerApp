@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ui.DashboardActivity
 
 /** Saved safe/danger zones and entry/exit monitoring controls. */
@@ -70,7 +71,10 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
         val binding = com.mobile.trackerapp.databinding.ActivityZoneAlertBinding.inflate(layoutInflater)
-        setContentView(binding.root); binding.zoneBack.setOnClickListener { finish() }; binding.zoneAdd.setOnClickListener { startActivity(Intent(this, CreateZoneActivity::class.java)) }
+        setContentView(binding.root)
+        AdsManager.loadInterHome(this, ignoreLimit = true)
+        binding.zoneBack.setOnClickListener { onBackPressed() };
+        binding.zoneAdd.setOnClickListener { startActivity(Intent(this, CreateZoneActivity::class.java)) }
         mapView = binding.zoneMap; mapMessage = binding.zoneMapMessage; zoneList = binding.zoneList; zoneCount = binding.zoneCount; statusTitle = binding.zoneStatusTitle; statusSubtitle = binding.zoneStatusSubtitle
         mapMessage.setOnClickListener { requestForegroundLocation() }; mapMessage.visibility = if (hasForegroundLocation()) View.GONE else View.VISIBLE
         mapView.onCreate(state)
@@ -335,6 +339,12 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         if (::mapView.isInitialized) mapView.onSaveInstanceState(outState)
+    }
+
+    override fun onBackPressed() {
+        AdsManager.showInterHomeBack(this) {
+            finish()
+        }
     }
 
     @Deprecated("Deprecated in Android")

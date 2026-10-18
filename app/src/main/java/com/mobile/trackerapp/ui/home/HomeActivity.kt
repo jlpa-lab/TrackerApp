@@ -45,29 +45,86 @@ class HomeActivity : AppCompatActivity() {
         nativeHomeContainer = binding.nativeHomeContainer
         nativeHomeAdContainer = binding.frNativeHome
         nativeHomeShimmer = binding.nativeHomeShimmer.root
+        AdsManager.loadInterHome(this, ignoreLimit = true)
+        AdsManager.loadInterBack(this, ignoreLimit = true)
         observeNativeHomeAd()
         AdsManager.loadNativeHome(this, R.layout.layout_native_home)
         AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
         //hideNavigationBar()
-        findViewById<android.view.View>(R.id.open_live_map).setOnClickListener { startActivity(Intent(this, com.mobile.trackerapp.ui.livelocation.LiveLocationActivity::class.java)) }
+        findViewById<android.view.View>(R.id.open_live_map).setOnClickListener {
+            AdsManager.loadInterBack(this, ignoreLimit = true)
+            AdsManager.showInterHome(this) {
+                startActivity(
+                    Intent(
+                        this,
+                        com.mobile.trackerapp.ui.livelocation.LiveLocationActivity::class.java
+                    )
+                )
+            }
+        }
         findViewById<android.view.View>(R.id.action_phone_locator).setOnClickListener {
+            AdsManager.loadInterBack(this, ignoreLimit = true)
             AdsManager.showInterHome(this) {
                 startActivity(Intent(this, PhoneLocatorActivity::class.java))
             }
 
         }
         findViewById<android.view.View>(R.id.action_track_friend).setOnClickListener {
-            startActivity(Intent(this, TrackFriendMapActivity::class.java))
+            AdsManager.loadInterBack(this, ignoreLimit = true)
+            AdsManager.showInterHome(this) {
+                startActivity(Intent(this, TrackFriendMapActivity::class.java))
+            }
         }
-        findViewById<android.view.View>(R.id.action_shared_connection).setOnClickListener { startActivity(Intent(this, ShareConnectionActivity::class.java)) }
-        findViewById<android.view.View>(R.id.view_all_tools).setOnClickListener { startActivity(Intent(this, ToolsActivity::class.java)) }
-        findViewById<android.view.View>(R.id.home_gps_tools_tile).setOnClickListener { startActivity(Intent(this, GpsToolsActivity::class.java)) }
-        findViewById<android.view.View>(R.id.home_traffic_alert_tile).setOnClickListener { startActivity(Intent(this, TrafficAlertActivity::class.java)) }
-        findViewById<android.view.View>(R.id.home_zone_alert_tile).setOnClickListener { startActivity(Intent(this, ZoneAlertActivity::class.java)) }
-        findViewById<android.view.View>(R.id.home_nearby_tile).setOnClickListener { startActivity(Intent(this, NearbyActivity::class.java)) }
-        findViewById<android.view.View>(R.id.nav_tools).setOnClickListener { startActivity(Intent(this, ToolsActivity::class.java)) }
-        findViewById<android.view.View>(R.id.nav_connection).setOnClickListener { startActivity(Intent(this, ConnectionActivity::class.java)) }
-        findViewById<android.view.View>(R.id.nav_settings).setOnClickListener { startActivity(Intent(this, SettingsActivity::class.java)) }
+        findViewById<android.view.View>(R.id.action_shared_connection).setOnClickListener {
+            AdsManager.loadInterBack(this, ignoreLimit = true)
+            AdsManager.showInterHome(this) {
+                startActivity(Intent(this, ShareConnectionActivity::class.java))
+            }
+        }
+        findViewById<android.view.View>(R.id.view_all_tools).setOnClickListener {
+            AdsManager.loadInterBack(this, ignoreLimit = true)
+            AdsManager.showInterHome(this) {
+                startActivity(Intent(this, ToolsActivity::class.java))
+            }
+        }
+        findViewById<android.view.View>(R.id.home_gps_tools_tile).setOnClickListener {
+            AdsManager.loadInterBack(this, ignoreLimit = true)
+            AdsManager.showInterHome(this) {
+                startActivity(Intent(this, GpsToolsActivity::class.java))
+            }
+        }
+        findViewById<android.view.View>(R.id.home_traffic_alert_tile).setOnClickListener {
+            AdsManager.loadInterBack(this, ignoreLimit = true)
+            AdsManager.showInterHome(this) {
+                startActivity(Intent(this, TrafficAlertActivity::class.java))
+            }
+        }
+        findViewById<android.view.View>(R.id.home_zone_alert_tile).setOnClickListener {
+            AdsManager.loadInterBack(this, ignoreLimit = true)
+            AdsManager.showInterHome(this) {
+                startActivity(Intent(this, ZoneAlertActivity::class.java))
+            }}
+        findViewById<android.view.View>(R.id.home_nearby_tile).setOnClickListener {
+            AdsManager.loadInterBack(this, ignoreLimit = true)
+            AdsManager.showInterHome(this) {
+                startActivity(Intent(this, NearbyActivity::class.java))
+            }
+        }
+        findViewById<android.view.View>(R.id.nav_tools).setOnClickListener {
+            AdsManager.loadInterBack(this, ignoreLimit = true)
+            AdsManager.showInterHome(this) {
+                startActivity(Intent(this, ToolsActivity::class.java))
+            }
+        }
+        findViewById<android.view.View>(R.id.nav_connection).setOnClickListener {
+            AdsManager.loadInterBack(this, ignoreLimit = true)
+            AdsManager.showInterHome(this) {
+                startActivity(Intent(this, ConnectionActivity::class.java))
+            }
+        }
+        findViewById<android.view.View>(R.id.nav_settings).setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
     }
 
     private fun observeNativeHomeAd() {

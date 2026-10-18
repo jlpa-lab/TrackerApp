@@ -37,6 +37,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
         setContentView(binding.root)
         AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))
+        AdsManager.loadInterHome(this, ignoreLimit = true)
         WindowCompat.setDecorFitsSystemWindows(window, true)
         showForm()
         val input = findViewById<EditText>(R.id.phone_input)
@@ -45,13 +46,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
         val contacts = findViewById<View>(R.id.phone_contacts)
 
         findViewById<View>(R.id.phone_back).setOnClickListener {
-            if (findViewById<View>(R.id.country_picker_overlay).visibility == View.VISIBLE) {
-                hideCountryPicker()
-            } else if (findViewById<View>(R.id.phone_form).visibility == View.VISIBLE) {
-                finish()
-            } else {
-                showForm()
-            }
+            onBackPressed()
         }
         findViewById<View>(R.id.country_selector).setOnClickListener { showCountryPicker() }
         findViewById<View>(R.id.phone_search).setOnClickListener { searchNumber() }
@@ -184,8 +179,12 @@ class PhoneLocatorActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (findViewById<View>(R.id.country_picker_overlay).visibility == View.VISIBLE) {
             hideCountryPicker()
+        } else if (findViewById<View>(R.id.phone_form).visibility == View.VISIBLE) {
+            AdsManager.showInterHomeBack(this) {
+                finish()
+            }
         } else {
-            super.onBackPressed()
+            showForm()
         }
     }
 

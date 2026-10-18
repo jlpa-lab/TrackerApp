@@ -34,6 +34,7 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.BuildConfig
+import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ui.DashboardActivity
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -101,7 +102,9 @@ class NearbyActivity : DashboardActivity() {
         selectedCategory = state?.getString(STATE_CATEGORY) ?: "Coffee"
         currentQuery = state?.getString(STATE_QUERY).orEmpty()
         val binding = com.mobile.trackerapp.databinding.ActivityNearbyBinding.inflate(layoutInflater)
-        setContentView(binding.root); binding.nearbyBack.setOnClickListener { finish() }
+        setContentView(binding.root)
+        AdsManager.loadInterHome(this, ignoreLimit = true)
+        binding.nearbyBack.setOnClickListener { onBackPressed() }
         search=binding.nearbySearch; clearSearch=binding.nearbyClear; chips=binding.nearbyChips; title=binding.nearbyTitle; count=binding.nearbyCount; results=binding.nearbyResults; statePanel=binding.nearbyStatePanel; stateIcon=binding.nearbyStateIcon; stateTitle=binding.nearbyStateTitle; stateDescription=binding.nearbyStateDescription; stateAction=binding.nearbyStateAction; loading=binding.nearbyLoading
         listOf("Coffee","Food","Gas","More").forEachIndexed { index, name -> chips.getChildAt(index).setOnClickListener { if(name=="More") openCategories() else chooseCategory(name) } }
         clearSearch.setOnClickListener { suppressTextListener=true; search.text?.clear(); suppressTextListener=false; currentQuery=""; updateClearVisibility(); if(hasLocationPermission()) queryCurrentSelection() }
@@ -140,7 +143,11 @@ class NearbyActivity : DashboardActivity() {
     private fun openCategories() {
         startActivityForResult(Intent(this, NearbyCategoriesActivity::class.java), REQUEST_CATEGORIES)
     }
-
+    override fun onBackPressed() {
+        AdsManager.showInterHomeBack(this) {
+            finish()
+        }
+    }
     @Deprecated("Deprecated in Android")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

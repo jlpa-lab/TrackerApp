@@ -213,6 +213,9 @@ data class AdRemoteConfig(
 
     val inter_home: AdUnitConfig
         get() = getAdUnit("inter_home")
+
+    val  inter_back: AdUnitConfig
+        get() = getAdUnit("inter_back")
 }
 
 

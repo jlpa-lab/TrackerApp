@@ -40,8 +40,10 @@ class GpsToolsActivity : DashboardActivity() {
             insets
         }
         ViewCompat.requestApplyInsets(binding.root)
+        AdsManager.loadInterHome(this, ignoreLimit = true)
         AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))
+        binding.gpsToolsBack.setOnClickListener { onBackPressed() }
         binding.gpsCompassRow.root.setOnClickListener { startActivity(Intent(this, CompassActivity::class.java)) }
         binding.gpsStopwatchRow.root.setOnClickListener { startActivity(Intent(this, StopwatchActivity::class.java)) }
         binding.gpsSpeedometerRow.root.setOnClickListener { startActivity(Intent(this, SpeedometerActivity::class.java)) }
@@ -83,6 +85,12 @@ class GpsToolsActivity : DashboardActivity() {
         setColor(color)
         cornerRadius = dp(radius).toFloat()
         setStroke(dp(1), stroke)
+    }
+
+    override fun onBackPressed() {
+        AdsManager.showInterHomeBack(this) {
+            finish()
+        }
     }
 
     private data class Tool(val title: String, val subtitle: String, val icon: Int, val activity: Class<out android.app.Activity>)

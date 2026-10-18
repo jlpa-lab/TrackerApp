@@ -21,15 +21,13 @@ import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.ads.banner_splash
-import com.mobile.trackerapp.ads.banner_splash_uninstall
 import com.mobile.trackerapp.ads.bindNativeAllAd
-import com.mobile.trackerapp.ads.populateNativeAdView
-import com.mobile.trackerapp.bases.ext.isNetwork
-import com.mobile.trackerapp.bases.visibleView
+import com.mobile.trackerapp.databinding.ActivityConnectionBinding
+import com.mobile.trackerapp.databinding.ActivityToolsBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 
 class ConnectionActivity : DashboardActivity() {
+    private lateinit var binding: ActivityConnectionBinding
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, results: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, results)
         if (requestCode != LOCATION_PERMISSION_REQUEST) return
@@ -52,7 +50,10 @@ class ConnectionActivity : DashboardActivity() {
         root.addView(content, LinearLayout.LayoutParams(-1, 0, 1f))
         root.addView(layoutInflater.inflate(R.layout.layout_native_all, root, false))
         root.addView(nav("Connection"), LinearLayout.LayoutParams(-1, wrap()))
+        binding = ActivityConnectionBinding.inflate(layoutInflater)
         setContentView(root)
+        loadConnectionBanner()
+        AdsManager.loadInterHome(this, ignoreLimit = true)
         AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))
         findViewById<View>(R.id.connection_share_invite).setOnClickListener { startActivity(Intent(this, ShareConnectionActivity::class.java)) }
@@ -86,6 +87,12 @@ class ConnectionActivity : DashboardActivity() {
         } }
     }
 
+    private fun loadConnectionBanner() {
+        val bannerConfig = AdRemoteConfig.banner_all
+        AdsManager.loadBanner(
+            this, bannerConfig, binding.frBanner, isCollapse = false
+        )
+    }
     private fun shareInvite() {
         val code = ConnectionInvite.code(this)
         val send = Intent(Intent.ACTION_SEND).apply {
@@ -93,6 +100,12 @@ class ConnectionActivity : DashboardActivity() {
             putExtra(Intent.EXTRA_TEXT, "Connect with me on GPS Tracker. My invite code is $code")
         }
         startActivity(Intent.createChooser(send, "Share friend invite"))
+    }
+
+    override fun onBackPressed() {
+        AdsManager.showInterHomeBack(this) {
+            finish()
+        }
     }
 
     companion object { private const val LOCATION_PERMISSION_REQUEST = 84 }
