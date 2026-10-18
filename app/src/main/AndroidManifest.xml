@@ -67,7 +67,6 @@
         <activity android:name=".ui.connection.FriendRequestsActivity" />
         <activity android:name=".ui.connection.ShareConnectionActivity" />
         <activity android:name=".ui.connection.TrackFriendRequestsActivity" />
-        <activity android:name=".ui.connection.CreateProfileActivity" />
         <activity android:name=".ui.connection.ScanQrActivity" />
         <activity android:name=".ui.connection.MyQrActivity" />
         <activity android:name=".ui.settings.SettingsActivity" />

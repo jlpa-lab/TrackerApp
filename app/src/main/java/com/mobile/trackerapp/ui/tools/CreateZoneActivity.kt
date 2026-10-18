@@ -10,11 +10,11 @@ import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.content.Context
-import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -40,6 +40,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.ZoneToggleView
 import java.util.Locale
 import java.util.concurrent.Executors
 
@@ -60,8 +61,8 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
     private lateinit var safeButton: TextView
     private lateinit var dangerButton: TextView
     private lateinit var saveButton: TextView
-    private lateinit var enterCheck: CheckBox
-    private lateinit var exitCheck: CheckBox
+    private lateinit var enterCheck: ZoneToggleView
+    private lateinit var exitCheck: ZoneToggleView
     private lateinit var locationHint: TextView
     private var map: GoogleMap? = null
     private var circle: Circle? = null
@@ -84,10 +85,19 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
         zoneId = intent.getLongExtra(EXTRA_ZONE_ID, NO_ZONE)
         val binding = com.mobile.trackerapp.databinding.ActivityCreateZoneBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.createZoneBack.setOnClickListener { finish() }
-        mapView=binding.createZoneMap; zoneName=binding.createZoneName; searchInput=binding.createZoneSearch; addressText=binding.createZoneAddress; radiusText=binding.createZoneRadiusText; radiusBar=binding.createZoneRadius; safeButton=binding.createZoneSafe; dangerButton=binding.createZoneDanger; saveButton=binding.createZoneSave; enterCheck=binding.createZoneEnter; exitCheck=binding.createZoneExit; locationHint=binding.createZoneLocationHint
+        mapView=binding.createZoneMap; zoneName=binding.createZoneName; searchInput=binding.createZoneSearch; addressText=binding.createZoneAddress; radiusText=binding.createZoneRadiusText; radiusBar=binding.createZoneRadius; safeButton=binding.createZoneSafe; dangerButton=binding.createZoneDanger; saveButton=binding.createZoneSave; enterCheck=binding.createZoneEnter; exitCheck=binding.createZoneExit; enterCheck.isChecked = true; exitCheck.isChecked = true; locationHint=binding.createZoneLocationHint
+        // The map is inside a ScrollView. Keep vertical drags on the map from
+        // being intercepted by the page so the user can pan the zone normally.
+        mapView.setOnTouchListener { view, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> view.parent?.requestDisallowInterceptTouchEvent(true)
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> view.parent?.requestDisallowInterceptTouchEvent(false)
+            }
+            false
+        }
         binding.createZoneSearchButton.setOnClickListener { searchLocation() }; binding.createZoneLocate.setOnClickListener { moveToCurrentLocation() }; safeButton.setOnClickListener { isSafe = true; renderTypeButtons() }; dangerButton.setOnClickListener { isSafe = false; renderTypeButtons() }; saveButton.setOnClickListener { saveZone() }
         searchInput.setOnEditorActionListener { _, action, _ -> if (action == EditorInfo.IME_ACTION_SEARCH) { searchLocation(); true } else false }
-        radiusBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener { override fun onStartTrackingTouch(seekBar: SeekBar)=Unit; override fun onStopTrackingTouch(seekBar: SeekBar)=Unit; override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) { radiusMeters=(progress+1)*100; radiusText.text=if(radiusMeters==1000) "1 km" else "$radiusMeters m"; drawCircle() } })
+        radiusBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener { override fun onStartTrackingTouch(seekBar: SeekBar)=Unit; override fun onStopTrackingTouch(seekBar: SeekBar)=Unit; override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) { radiusMeters=(progress+1)*100; radiusText.text=if(radiusMeters==1000) "1,000m" else "${radiusMeters}m"; drawCircle() } })
         renderTypeButtons()
         mapView.onCreate(state)
         mapView.getMapAsync(this)
@@ -99,9 +109,9 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
     }
 
     private fun renderTypeButtons() {
-        safeButton.background = bordered(if (isSafe) Color.rgb(237, 250, 245) else Color.WHITE, if (isSafe) green else Color.rgb(229, 237, 233), dp(13))
+        safeButton.background = typeBordered(if (isSafe) Color.rgb(237, 250, 245) else Color.WHITE, if (isSafe) green else Color.rgb(229, 237, 233), dp(12))
         safeButton.setTextColor(if (isSafe) green else muted)
-        dangerButton.background = bordered(if (!isSafe) Color.rgb(255, 242, 241) else Color.WHITE, if (!isSafe) red else Color.rgb(229, 237, 233), dp(13))
+        dangerButton.background = typeBordered(if (!isSafe) Color.rgb(255, 242, 241) else Color.WHITE, if (!isSafe) red else Color.rgb(229, 237, 233), dp(12))
         dangerButton.setTextColor(if (!isSafe) red else muted)
         drawCircle()
     }
@@ -130,7 +140,7 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap.apply {
             uiSettings.isZoomControlsEnabled = false; uiSettings.isMyLocationButtonEnabled = false
-            uiSettings.isCompassEnabled = true; uiSettings.isMapToolbarEnabled = false
+            uiSettings.isCompassEnabled = true; uiSettings.isMapToolbarEnabled = false; uiSettings.isScrollGesturesEnabled = true; uiSettings.isZoomGesturesEnabled = true
             setOnCameraMoveStartedListener { reason -> if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) userMovedMap = true }
             setOnCameraIdleListener {
                 if (userMovedMap) {
@@ -269,7 +279,10 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
     }
 
     private fun rounded(color: Int, radiusDp: Int) = GradientDrawable().apply { setColor(color); cornerRadius = dp(radiusDp).toFloat() }
-    private fun bordered(color: Int, stroke: Int, radiusDp: Int) = rounded(color, radiusDp).apply { setStroke(dp(1), stroke) }
+    private fun bordered(color: Int, stroke: Int, radiusDp: Int) = rounded(color, radiusDp).apply { setStroke(dp(0.6f), stroke) }
+    private fun typeBordered(color: Int, stroke: Int, radiusDp: Int) = rounded(color, radiusDp).apply { setStroke(dp(1f), stroke) }
+
+    private fun dp(value: Float) = (value * resources.displayMetrics.density).toInt().coerceAtLeast(1)
 
     private inner class AspectMapFrame : FrameLayout(this@CreateZoneActivity) {
         override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

@@ -68,18 +68,19 @@ object AdsManager {
         shouldDisplay: Boolean = true,
         fallbackAd: () -> ApNativeAd? = { null },
         loadingLive: MutableLiveData<Boolean>? = null,
+        publishLoadedAd: Boolean = true,
     ) {
         if (!config.isEnable
             || AppPurchase.getInstance().isPurchased(activity)
             || !shouldDisplay
         ) {
             loadingLive?.postValue(false)
-            liveData.postValue(null)
+            if (publishLoadedAd) liveData.postValue(null)
             return
         }
         loadingLive?.postValue(true)
         if (!activity.isNetworkAvailable()) {
-            liveData.postValue(fallbackAd())
+            if (publishLoadedAd) liveData.postValue(fallbackAd())
             loadingLive?.postValue(false)
             return
         }
@@ -91,13 +92,13 @@ object AdsManager {
                     adConfigMap[nativeAd] = config
                     if (liveData === nativeHomeAdLive) cachedNativeHomeAd = nativeAd
                     if (liveData === nativeAllAdLive) cachedNativeAllAd = nativeAd
-                    liveData.postValue(nativeAd)
+                    if (publishLoadedAd) liveData.postValue(nativeAd)
                     loadingLive?.postValue(false)
                 }
 
                 override fun onAdFailedToLoad(adError: LoadAdError?) {
                     super.onAdFailedToLoad(adError)
-                    liveData.postValue(fallbackAd())
+                    if (publishLoadedAd) liveData.postValue(fallbackAd())
                     loadingLive?.postValue(false)
                 }
             })
@@ -184,10 +185,15 @@ object AdsManager {
     }
 
     fun loadNativeHome(activity: Activity, layoutRes: Int) {
+        preloadNativeHome(activity, layoutRes)
+    }
+
+    /** Preloads the next native-home ad without disturbing an ad already available to Home. */
+    fun preloadNativeHome(activity: Activity, layoutRes: Int) {
+        if (nativeHomeLoadingLive.value == true || cachedNativeHomeAd != null || nativeHomeAdLive.value != null) return
         val config = AdRemoteConfig.native_home
         val fallback = cachedNativeHomeAd ?: nativeHomeAdLive.value
         nativeHomeLoadingLive.value = true
-        nativeHomeAdLive.value = null
         loadNativeInternal(
             activity,
             config,
@@ -200,9 +206,14 @@ object AdsManager {
     }
 
     fun loadNativeAll(activity: Activity, layoutRes: Int) {
+        preloadNativeAll(activity, layoutRes)
+    }
+
+    /** Preloads the next native-all ad without clearing the current slot. */
+    fun preloadNativeAll(activity: Activity, layoutRes: Int) {
+        if (nativeAllLoadingLive.value == true || cachedNativeAllAd != null || nativeAllAdLive.value != null) return
         val fallback = cachedNativeAllAd ?: nativeAllAdLive.value
         nativeAllLoadingLive.value = true
-        nativeAllAdLive.value = null
         loadNativeInternal(
             activity,
             AdRemoteConfig.native_all,
@@ -210,6 +221,53 @@ object AdsManager {
             nativeAllAdLive,
             fallbackAd = { fallback },
             loadingLive = nativeAllLoadingLive
+        )
+    }
+
+    /** Shows the preloaded native-home ad with the normal shimmer handoff, then preloads its replacement. */
+    fun showNativeHomeAndPreload(activity: Activity, layoutRes: Int) {
+        val current = cachedNativeHomeAd ?: nativeHomeAdLive.value
+        if (current == null && nativeHomeLoadingLive.value == true) return
+
+        if (current == null) {
+            nativeHomeAdLive.value = null
+            preloadNativeHome(activity, layoutRes)
+            return
+        }
+
+        nativeHomeLoadingLive.value = true
+        nativeHomeAdLive.value = current
+        loadNativeInternal(
+            activity = activity,
+            config = AdRemoteConfig.native_home,
+            layoutRes = layoutRes,
+            liveData = nativeHomeAdLive,
+            shouldDisplay = ERainAd.getInstance().getShouldDisplayNativeHome(AdRemoteConfig.native_home.enableUaCheck),
+            loadingLive = nativeHomeLoadingLive,
+            publishLoadedAd = false
+        )
+    }
+
+    /** Shows the preloaded native-all ad with the normal shimmer handoff, then preloads its replacement. */
+    fun showNativeAllAndPreload(activity: Activity, layoutRes: Int) {
+        val current = cachedNativeAllAd ?: nativeAllAdLive.value
+        if (current == null && nativeAllLoadingLive.value == true) return
+
+        if (current == null) {
+            nativeAllAdLive.value = null
+            preloadNativeAll(activity, layoutRes)
+            return
+        }
+
+        nativeAllLoadingLive.value = true
+        nativeAllAdLive.value = current
+        loadNativeInternal(
+            activity = activity,
+            config = AdRemoteConfig.native_all,
+            layoutRes = layoutRes,
+            liveData = nativeAllAdLive,
+            loadingLive = nativeAllLoadingLive,
+            publishLoadedAd = false
         )
     }
 

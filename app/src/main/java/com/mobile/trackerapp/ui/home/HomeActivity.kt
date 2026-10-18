@@ -37,6 +37,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var nativeHomeContainer: FrameLayout
     private lateinit var nativeHomeAdContainer: FrameLayout
     private lateinit var nativeHomeShimmer: ShimmerFrameLayout
+    private var nativeHomeRenderRunnable: Runnable? = null
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -48,8 +49,8 @@ class HomeActivity : AppCompatActivity() {
         AdsManager.loadInterHome(this, ignoreLimit = true)
         AdsManager.loadInterBack(this, ignoreLimit = true)
         observeNativeHomeAd()
-        AdsManager.loadNativeHome(this, R.layout.layout_native_home)
-        AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
+        AdsManager.showNativeHomeAndPreload(this, R.layout.layout_native_home)
+        AdsManager.preloadNativeAll(this, R.layout.layout_native_ad_small)
         //hideNavigationBar()
         findViewById<android.view.View>(R.id.open_live_map).setOnClickListener {
             AdsManager.loadInterBack(this, ignoreLimit = true)
@@ -130,7 +131,7 @@ class HomeActivity : AppCompatActivity() {
     private fun observeNativeHomeAd() {
         AdsManager.nativeHomeAdLive.removeObservers(this)
         AdsManager.nativeHomeLoadingLive.observe(this) { loading ->
-            if (loading) {
+            if (loading && AdsManager.nativeHomeAdLive.value == null) {
                 showNativeHomeShimmer()
             } else if (AdsManager.nativeHomeAdLive.value == null) {
                 hideNativeHomeAd()
@@ -153,13 +154,21 @@ class HomeActivity : AppCompatActivity() {
 
     private fun renderNativeHomeAd(nativeAd: com.ads.module.ads.wrapper.ApNativeAd) {
         nativeHomeContainer.visibility = View.VISIBLE
-        nativeHomeAdContainer.visibility = View.VISIBLE
-        populateNativeAdView(
-            activity = this,
-            apNativeAd = nativeAd,
-            adPlaceHolder = nativeHomeAdContainer,
-            containerShimmerLoading = nativeHomeShimmer
-        )
+        nativeHomeRenderRunnable?.let(nativeHomeShimmer::removeCallbacks)
+        nativeHomeAdContainer.visibility = View.GONE
+        nativeHomeShimmer.visibility = View.VISIBLE
+        nativeHomeShimmer.startShimmer()
+        nativeHomeRenderRunnable = Runnable {
+            if (!isFinishing && !isDestroyed && nativeHomeContainer.isAttachedToWindow) {
+                nativeHomeAdContainer.visibility = View.VISIBLE
+                populateNativeAdView(
+                    activity = this,
+                    apNativeAd = nativeAd,
+                    adPlaceHolder = nativeHomeAdContainer,
+                    containerShimmerLoading = nativeHomeShimmer
+                )
+            }
+        }.also { nativeHomeShimmer.postDelayed(it, NATIVE_SHIMMER_HANDOFF_DELAY_MS) }
     }
 
     override fun onStart() {
@@ -183,8 +192,13 @@ class HomeActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        nativeHomeRenderRunnable?.let(nativeHomeShimmer::removeCallbacks)
         if (::nativeHomeShimmer.isInitialized) nativeHomeShimmer.stopShimmer()
         super.onDestroy()
+    }
+
+    companion object {
+        private const val NATIVE_SHIMMER_HANDOFF_DELAY_MS = 220L
     }
 
     private fun hideNavigationBar() {

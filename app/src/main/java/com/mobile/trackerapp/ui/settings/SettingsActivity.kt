@@ -20,7 +20,7 @@ class SettingsActivity : DashboardActivity() {
         root.findViewById<android.view.View>(R.id.settings_rate).setOnClickListener { startActivity(Intent(this, RateAppActivity::class.java)) }
         root.addView(nav("Setting"), LinearLayout.LayoutParams(-1, wrap()))
         setContentView(root)
-        AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
+        AdsManager.showNativeAllAndPreload(this, R.layout.layout_native_ad_small)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))
         hideNavigationBar()
     }

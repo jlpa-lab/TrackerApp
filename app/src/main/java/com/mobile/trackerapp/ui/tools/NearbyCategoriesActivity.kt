@@ -11,6 +11,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ui.DashboardActivity
 
@@ -27,8 +30,15 @@ class NearbyCategoriesActivity : DashboardActivity() {
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         val binding = com.mobile.trackerapp.databinding.ActivityNearbyCategoriesBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.categoriesBack.setOnClickListener { finish() }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.setPadding(dp(16), statusBarInset + dp(16), dp(16), dp(16))
+            insets
+        }
+        ViewCompat.requestApplyInsets(binding.root)
         populateCategoryGrid(binding.categoriesGrid)
     }
 
@@ -56,7 +66,9 @@ class NearbyCategoriesActivity : DashboardActivity() {
     }
 
     private fun rounded(color: Int, radiusDp: Int) = GradientDrawable().apply { setColor(color); cornerRadius = dp(radiusDp).toFloat() }
-    private fun bordered(color: Int, stroke: Int, radiusDp: Int) = rounded(color, radiusDp).apply { setStroke(dp(1), stroke) }
+    private fun bordered(color: Int, stroke: Int, radiusDp: Int) = rounded(color, radiusDp).apply { setStroke(dp(0.6f), stroke) }
+
+    private fun dp(value: Float) = (value * resources.displayMetrics.density).toInt().coerceAtLeast(1)
 
     companion object { const val EXTRA_CATEGORY = "nearby_category" }
 }

@@ -1,12 +1,372 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:background="#F6FBF8"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
- <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical"><ImageView android:id="@+id/create_zone_back" android:layout_width="28dp" android:layout_height="34dp" android:src="@drawable/ic_phone_back" android:contentDescription="Back"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="14dp" android:text="Add or edit zone" android:textSize="24sp" android:textStyle="bold"/></LinearLayout>
- <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="horizontal"><EditText android:id="@+id/create_zone_search" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1" android:hint="Search location or address" android:singleLine="true" android:imeOptions="actionSearch"/><Button android:id="@+id/create_zone_search_button" android:layout_width="wrap_content" android:layout_height="50dp" android:text="Search"/></LinearLayout>
- <FrameLayout android:layout_width="match_parent" android:layout_height="260dp" android:layout_marginTop="10dp"><com.google.android.gms.maps.MapView android:id="@+id/create_zone_map" android:layout_width="match_parent" android:layout_height="match_parent"/><Button android:id="@+id/create_zone_locate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom|end" android:text="Locate"/><TextView android:id="@+id/create_zone_location_hint" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="top|center_horizontal" android:padding="8dp" android:text="Allow location or search for a place" android:background="#FFFFFF"/></FrameLayout>
- <TextView android:id="@+id/create_zone_address" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="7dp" android:text="Move the map to set your zone location"/>
- <EditText android:id="@+id/create_zone_name" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="10dp" android:hint="e.g. Home, School, Office" android:singleLine="true"/>
- <TextView android:id="@+id/create_zone_radius_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="500 m" android:textColor="#00A44C"/><SeekBar android:id="@+id/create_zone_radius" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="9" android:progress="4"/>
- <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal"><Button android:id="@+id/create_zone_safe" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1" android:text="Safe Zone"/><Button android:id="@+id/create_zone_danger" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1" android:text="Danger Zone"/></LinearLayout>
- <CheckBox android:id="@+id/create_zone_enter" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Alert when someone enters" android:checked="true"/><CheckBox android:id="@+id/create_zone_exit" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Alert when someone leaves" android:checked="true"/>
- <Button android:id="@+id/create_zone_save" android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="12dp" android:text="Save Zone"/>
- </LinearLayout></ScrollView>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/home_bg"
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:gravity="center_vertical">
+            <ImageView
+                android:id="@+id/create_zone_back"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:clickable="true"
+                android:contentDescription="Back"
+                android:focusable="true"
+                android:src="@drawable/ic_phone_back" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:text="Add new zone"
+                android:textColor="@color/home_phone_locator_text"
+                android:textSize="22sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="-1dp"
+            android:fontFamily="@font/inter_regular"
+            android:text="Choose a place to keep your family safe"
+            android:textColor="@color/home_text_subtitle"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_zone_input"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="8dp">
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="Search"
+                android:src="@drawable/ic_nearby_search" />
+            <EditText
+                android:id="@+id/create_zone_search"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:fontFamily="@font/inter_regular"
+                android:hint="Search location or address"
+                android:imeOptions="actionSearch"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:padding="0dp"
+                android:singleLine="true"
+                android:textColor="@color/home_phone_locator_text"
+                android:textColorHint="@color/home_text_subtitle"
+                android:textSize="13sp" />
+            <ImageView
+                android:id="@+id/create_zone_search_button"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:clickable="true"
+                android:contentDescription="Search location"
+                android:focusable="true"
+                android:padding="3dp"
+                android:src="@drawable/ic_nearby_search" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="218dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_traffic_map"
+            android:clipToOutline="true">
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/create_zone_map"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <ImageView
+                android:id="@+id/create_zone_locate"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="12dp"
+                android:background="@drawable/bg_map_control"
+                android:clickable="true"
+                android:contentDescription="Use current location"
+                android:focusable="true"
+                android:padding="7dp"
+                android:src="@drawable/ic_locate_fixed" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/create_zone_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:drawableStart="@drawable/ic_zone_move"
+            android:drawablePadding="8dp"
+            android:fontFamily="@font/inter_regular"
+            android:gravity="center_vertical"
+            android:text="Move the map to set your zone location"
+            android:textColor="@color/home_text_subtitle"
+            android:textSize="12sp" />
+        <TextView
+            android:id="@+id/create_zone_location_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/inter_regular"
+            android:text="Allow location or search for a place"
+            android:textColor="@color/home_text_subtitle"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:fontFamily="@font/inter_bold"
+            android:text="Zone name"
+            android:textColor="@color/home_phone_locator_text"
+            android:textSize="14sp" />
+        <EditText
+            android:id="@+id/create_zone_name"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_zone_input"
+            android:drawableStart="@drawable/ic_phone_pin"
+            android:drawablePadding="10dp"
+            android:fontFamily="@font/inter_regular"
+            android:hint="Grandma’s home"
+            android:includeFontPadding="false"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:singleLine="true"
+            android:textColor="@color/home_phone_locator_text"
+            android:textColorHint="@color/home_text_subtitle"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:gravity="center_vertical">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/inter_bold"
+                android:text="Zone radius"
+                android:textColor="@color/home_phone_locator_text"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/create_zone_radius_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_speedometer_status"
+                android:fontFamily="@font/inter_semibold"
+                android:paddingStart="12dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="5dp"
+                android:text="500m"
+                android:textColor="@color/home_green_background"
+                android:textSize="12sp" />
+        </LinearLayout>
+        <SeekBar
+            android:id="@+id/create_zone_radius"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:max="9"
+            android:progress="4"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:progressDrawable="@drawable/bg_zone_radius_progress"
+            android:splitTrack="false"
+            android:thumb="@drawable/zone_radius_thumb" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/inter_regular"
+                android:text="100m"
+                android:textColor="@color/home_text_subtitle"
+                android:textSize="12sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="1,000m"
+                android:textColor="@color/home_text_subtitle"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:fontFamily="@font/inter_bold"
+            android:text="Zone type"
+            android:textColor="@color/home_phone_locator_text"
+            android:textSize="14sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/create_zone_safe"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/ic_shield_check"
+                android:drawablePadding="8dp"
+                android:fontFamily="@font/inter_semibold"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="8dp"
+                android:text="Safe Zone"
+                android:textSize="13sp" />
+            <TextView
+                android:id="@+id/create_zone_danger"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/ic_phone_info"
+                android:drawablePadding="8dp"
+                android:fontFamily="@font/inter_semibold"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="8dp"
+                android:text="Danger Zone"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_zone_card"
+            android:orientation="vertical"
+            android:paddingStart="12dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="8dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_speedometer_status"
+                    android:padding="7dp"
+                    android:src="@drawable/ic_locate_fixed" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_semibold"
+                        android:text="Alert on Enter"
+                        android:textColor="@color/home_phone_locator_text"
+                        android:textSize="14sp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:fontFamily="@font/inter_regular"
+                        android:text="Notify when someone arrives"
+                        android:textColor="@color/home_text_subtitle"
+                        android:textSize="13sp" />
+                </LinearLayout>
+                <com.mobile.trackerapp.ui.ZoneToggleView
+                    android:id="@+id/create_zone_enter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.6dp"
+                android:background="#E1E9E5" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_speedometer_status"
+                    android:padding="7dp"
+                    android:src="@drawable/ic_locate_fixed" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_semibold"
+                        android:text="Alert on Exit"
+                        android:textColor="@color/home_phone_locator_text"
+                        android:textSize="14sp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:fontFamily="@font/inter_regular"
+                        android:text="Notify when someone leaves"
+                        android:textColor="@color/home_text_subtitle"
+                        android:textSize="13sp" />
+                </LinearLayout>
+                <com.mobile.trackerapp.ui.ZoneToggleView
+                    android:id="@+id/create_zone_exit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/create_zone_save"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_zone_primary"
+            android:clickable="true"
+            android:fontFamily="@font/inter_bold"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="✓  Save Zone"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+</ScrollView>

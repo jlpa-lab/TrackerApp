@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import android.widget.TextView
 import android.Manifest
@@ -20,8 +21,9 @@ import com.google.zxing.common.HybridBinarizer
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ui.DashboardActivity
 
-class ScanQrActivity : AppCompatActivity() {
+class ScanQrActivity : DashboardActivity() {
     private val galleryPicker = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             result.data?.data?.let { uri ->
@@ -37,12 +39,23 @@ class ScanQrActivity : AppCompatActivity() {
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        window.statusBarColor = android.graphics.Color.rgb(246, 251, 248)
+        window.navigationBarColor = android.graphics.Color.rgb(246, 251, 248)
+        @Suppress("DEPRECATION")
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        hideNavigationBar()
         setContentView(R.layout.activity_scan_qr)
         barcodeView = findViewById(R.id.scan_barcode_view)
         barcodeView.decodeSingle { result -> result.text?.takeIf { it.isNotBlank() }?.let(::returnCode) }
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST) else barcodeView.resume()
         findViewById<View>(R.id.scan_back).setOnClickListener { finish() }
-        findViewById<View>(R.id.scan_flash).setOnClickListener { flashlightOn = !flashlightOn; if (flashlightOn) barcodeView.setTorchOn() else barcodeView.setTorchOff(); findViewById<TextView>(R.id.scan_flash).text = if (flashlightOn) "▣  Flashlight on" else "▣  Flashlight off" }
+        findViewById<View>(R.id.scan_flash).setOnClickListener {
+            flashlightOn = !flashlightOn
+            if (flashlightOn) barcodeView.setTorchOn() else barcodeView.setTorchOff()
+            findViewById<TextView>(R.id.scan_flash_label).text = if (flashlightOn) "Flashlight on" else "Flashlight off"
+            findViewById<View>(R.id.scan_flash).setBackgroundResource(if (flashlightOn) R.drawable.bg_flash_on else R.drawable.bg_flash_button)
+            findViewById<ImageView>(R.id.scan_flash_icon).setColorFilter(if (flashlightOn) android.graphics.Color.rgb(10, 48, 29) else android.graphics.Color.WHITE)
+        }
         findViewById<View>(R.id.scan_gallery).setOnClickListener {
             galleryPicker.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).setType("image/*").addCategory(Intent.CATEGORY_OPENABLE))
         }

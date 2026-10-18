@@ -121,6 +121,14 @@ fun populateNativeAdView(
     Admob.getInstance().populateUnifiedNativeAdView(apNativeAd.admobNativeAd, adView)
     adPlaceHolder.removeAllViews()
     adPlaceHolder.addView(adView)
+    // A loading update can be delivered after the ad update because the two
+    // LiveData streams are independent. Re-assert the final loaded state after
+    // the view is attached so the shimmer cannot remain over the ad.
+    adPlaceHolder.post {
+        containerShimmerLoading.stopShimmer()
+        containerShimmerLoading.visibility = View.GONE
+        adPlaceHolder.visibility = View.VISIBLE
+    }
 }
 
 private fun applyCtaColor(ctaButton: View, colorCTA: String) {

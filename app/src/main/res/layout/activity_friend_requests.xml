@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/friend_request_bg"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -12,367 +12,384 @@
         android:layout_weight="1"
         android:fillViewport="true">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="16dp"
-        android:paddingTop="24dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="24dp">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical">
-
-            <ImageView
-                android:id="@+id/friend_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:contentDescription="Back"
-                android:focusable="true"
-                android:padding="8dp"
-                android:src="@drawable/ic_back_chevron" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_bold"
-                    android:text="Friend Requests"
-                    android:textColor="@color/home_phone_locator_text"
-                    android:textSize="22sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:text="See who wants to connect with you"
-                    android:textColor="@color/home_text_subtitle"
-                    android:textSize="13sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/friend_tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_tool_list">
-
-            <TextView
-                android:id="@+id/friend_add"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="Add Friend"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/friend_received"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="Received"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/friend_sent"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="Sent"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/add_panel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:orientation="vertical"
-            android:paddingBottom="16dp">
+            android:paddingStart="16dp"
+            android:paddingTop="14dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp">
 
             <LinearLayout
-                android:id="@+id/action_shared_connection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/bg_shared_connection"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="12dp">
+                android:gravity="center_vertical">
 
+                <ImageView
+                    android:id="@+id/friend_back"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:clickable="true"
+                    android:contentDescription="Back"
+                    android:focusable="true"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_back_chevron" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="0.65"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/inter_bold"
-                        android:text="Make a connection"
+                        android:text="Friend Requests"
                         android:textColor="@color/home_phone_locator_text"
-                        android:textSize="18sp" />
+                        android:textSize="22sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="3dp"
                         android:fontFamily="@font/inter_regular"
-                        android:text="Invite a friend. Location sharing stays under your control."
+                        android:text="See who wants to connect with you"
                         android:textColor="@color/home_text_subtitle"
-                        android:textSize="12sp" />
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/friend_tabs"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_tool_list"
+                android:padding="3dp">
+
+                <TextView
+                    android:id="@+id/friend_add"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Add Friend"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/friend_received"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Received"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/friend_sent"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Sent"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/add_panel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/action_shared_connection"
+                    android:layout_width="match_parent"
+                    android:layout_height="132dp"
+                    android:background="@drawable/bg_shared_connection"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_bold"
+                            android:text="Make a connection"
+                            android:textColor="@color/home_phone_locator_text"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:fontFamily="@font/inter_regular"
+                            android:text="Share an invite. Stay close.&#10;You're always in control."
+                            android:textColor="@color/home_text_subtitle"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:contentDescription="Connection"
+                        android:src="@drawable/home_shared_connection" />
                 </LinearLayout>
 
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_height="60dp"
-                    android:layout_weight="0.35"
-                    android:src="@drawable/home_shared_connection" />
+                <LinearLayout
+                    android:id="@+id/connection_panel"
+                    android:layout_width="match_parent"
+                    android:layout_height="260dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_tool_list"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="Your connection code"
+                        android:textColor="@color/home_phone_locator_text"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/my_invite_code"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/inter_bold"
+                            android:gravity="center_vertical"
+                            android:letterSpacing="0.08"
+                            android:text="------"
+                            android:textColor="@color/home_green_button_text"
+                            android:textSize="30sp" />
+
+                        <TextView
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:background="@drawable/bg_connection_icon"
+                            android:gravity="center"
+                            android:text="⧉"
+                            android:textColor="@color/home_green_button_text"
+                            android:textSize="24sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_private_invitation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/inter_regular"
+                        android:text="Private invitation · Expires in 24 hours"
+                        android:textColor="@color/home_text_subtitle"
+                        android:textSize="14sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="14dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/share_invite_button"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_live_share"
+                            android:fontFamily="@font/inter_bold"
+                            android:gravity="center"
+                            android:text="Share invitation"
+                            android:textColor="@color/white"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/show_my_qr_button"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_phone_input"
+                            android:fontFamily="@font/inter_bold"
+                            android:gravity="center"
+                            android:text="Share QR"
+                            android:textColor="@color/home_green_button_text"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/friend_panel"
+                    android:layout_width="match_parent"
+                    android:layout_height="140dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_tool_list"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="Have a friend's code?"
+                        android:textColor="@color/home_phone_locator_text"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical">
+
+                        <EditText
+                            android:id="@+id/friend_code_input"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_phone_input"
+                            android:fontFamily="@font/inter_regular"
+                            android:hint="Enter connection code"
+                            android:inputType="textCapCharacters"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/home_text_subtitle"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/friend_connect_button"
+                            android:layout_width="104dp"
+                            android:layout_height="44dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_live_share"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:fontFamily="@font/inter_bold"
+                            android:gravity="center"
+                            android:text="Connect"
+                            android:textColor="@color/white"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </LinearLayout>
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/connection_panel"
+                android:id="@+id/received_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/bg_tool_list"
                 android:orientation="vertical"
-                android:paddingVertical="16dp"
-                android:paddingHorizontal="12dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/inter_bold"
-                android:text="Your connection code"
-                android:textColor="@color/home_phone_locator_text"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/my_invite_code"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:background="@drawable/bg_connection_icon"
-                android:fontFamily="@font/inter_bold"
-                android:gravity="center"
-                android:letterSpacing="0.12"
-                android:padding="12dp"
-                android:text="--------"
-                android:textColor="@color/home_phone_locator_text"
-                android:textSize="24sp" />
-
-            <TextView
-                android:id="@+id/tv_private_invitation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/inter_regular"
-                android:text="Private Invitation. Expires in 24 hours"
-                android:textColor="@color/home_text_subtitle"
-                android:textSize="11sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/share_invite_button"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_live_share"
-                    android:fontFamily="@font/inter_bold"
-                    android:gravity="center"
-                    android:padding="13dp"
-                    android:text="Share invitation"
-                    android:textColor="@color/white"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:id="@+id/show_my_qr_button"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="9dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_phone_input"
-                    android:fontFamily="@font/inter_bold"
-                    android:gravity="center"
-                    android:padding="13dp"
-                    android:text="Share QR"
-                    android:textColor="@color/home_green_button_text"
-                    android:textSize="14sp" />
-            </LinearLayout>
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/scan_friend_qr"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_connection_icon"
-                android:fontFamily="@font/inter_bold"
                 android:padding="16dp"
-                android:text="▦  Scan a friend's QR code     ›"
-                android:textColor="@color/home_green_button_text"
-                android:textSize="16sp" />
+                android:visibility="gone">
 
-            <LinearLayout
-                android:id="@+id/friend_panel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:background="@drawable/bg_tool_list"
-                android:orientation="vertical"
-                android:paddingVertical="16dp"
-                android:paddingHorizontal="12dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/inter_bold"
-                android:text="Have a friend's code?"
-                android:textColor="@color/home_phone_locator_text"
-                android:textSize="14sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="16dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/friend_code_input"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_phone_input"
-                    android:fontFamily="@font/inter_regular"
-                    android:gravity="center_vertical"
-                    android:hint="Enter connection code"
-                    android:inputType="textCapCharacters"
-                    android:paddingStart="12dp"
-                    android:paddingTop="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingBottom="12dp"
-                    android:singleLine="true"
-                    android:textColorHint="@color/home_text_subtitle"
-                    android:textSize="14sp" />
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="Received invitations"
+                        android:textColor="@color/home_text_dark"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/received_request_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="0 requests"
+                        android:textColor="@color/home_green_button_text"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/request_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
 
                 <TextView
-                    android:id="@+id/friend_connect_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_live_share"
-                    android:fontFamily="@font/inter_bold"
-                    android:gravity="center"
-                    android:paddingStart="16dp"
-                    android:paddingTop="12dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="12dp"
-                    android:text="Connect"
-                    android:textColor="@color/white"
-                    android:textSize="12sp" />
-
+                    android:layout_marginTop="28dp"
+                    android:text="♢  Accept people you know. Only friends can share their&#10;    live location with you."
+                    android:textColor="@color/home_text_subtitle"
+                    android:textSize="17sp" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/connection_backend_note"
+            <LinearLayout
+                android:id="@+id/sent_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Invite codes and QR previews work on this device. Sending/receiving requests and live sharing need the connection service to be configured."
-                android:textColor="@color/home_text_subtitle"
-                android:textSize="12sp" />
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_tool_list"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="Pending invitations"
+                        android:textColor="@color/home_text_dark"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/sent_request_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="0 requests"
+                        android:textColor="@color/home_green_button_text"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/sent_request_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"
+                    android:text="♢  Your invitation stays pending until accepted. You can&#10;    cancel it at any time."
+                    android:textColor="@color/home_text_subtitle"
+                    android:textSize="17sp" />
             </LinearLayout>
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/received_panel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/bg_tool_list"
-            android:orientation="vertical"
-            android:padding="20dp"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/inter_bold"
-                android:text="Received invitations"
-                android:textColor="@color/home_text_dark"
-                android:textSize="18sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:gravity="center"
-                android:padding="22dp"
-                android:text="No pending invitations yet. When someone sends you a request, it will appear here."
-                android:textColor="@color/home_text_subtitle"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/sent_panel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/bg_tool_list"
-            android:orientation="vertical"
-            android:padding="20dp"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/inter_bold"
-                android:text="Sent invitations"
-                android:textColor="@color/home_text_dark"
-                android:textSize="18sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:gravity="center"
-                android:padding="22dp"
-                android:text="You haven’t sent any invitations yet."
-                android:textColor="@color/home_text_subtitle"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
 
     <include layout="@layout/layout_native_all" />
 </LinearLayout>
+

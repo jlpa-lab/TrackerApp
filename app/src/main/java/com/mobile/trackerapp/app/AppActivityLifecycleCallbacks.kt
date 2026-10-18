@@ -2,7 +2,11 @@ package com.mobile.trackerapp.app
 
 import android.app.Activity
 import android.app.Application
+import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import com.mobile.trackerapp.TrackerApplication
 
 class AppActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
@@ -12,6 +16,14 @@ class AppActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
 
     override fun onActivityResumed(activity: Activity) {
         TrackerApplication.currentActivity = activity
+        if (activity::class.java.simpleName !in setOf(
+                "SplashActivity",
+                "LanguageActivity",
+                "OnBoardingActivity",
+                "WelcomeActivity"
+            )) {
+            hideNavigationBar(activity)
+        }
     }
 
     override fun onActivityPaused(activity: Activity) = Unit
@@ -23,6 +35,19 @@ class AppActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
     override fun onActivityDestroyed(activity: Activity) {
         if (TrackerApplication.currentActivity == activity) {
             TrackerApplication.currentActivity = null
+        }
+    }
+
+    private fun hideNavigationBar(activity: Activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            activity.window.decorView.windowInsetsController?.apply {
+                hide(WindowInsets.Type.navigationBars())
+                systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            activity.window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         }
     }
 }

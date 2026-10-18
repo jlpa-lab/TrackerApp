@@ -1,21 +1,27 @@
 package com.mobile.trackerapp.ui.connection
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.network.TrackerBackendClient
 import com.mobile.trackerapp.data.LocalTrackerDb
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.mobile.trackerapp.ui.DashboardActivity
 
-class MyQrActivity : AppCompatActivity() {
+class MyQrActivity : DashboardActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.statusBarColor = Color.rgb(246, 251, 248)
+        window.navigationBarColor = Color.rgb(246, 251, 248)
+        @Suppress("DEPRECATION")
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        hideNavigationBar()
         setContentView(R.layout.activity_my_qr)
         val inviteCode = ConnectionInvite.code(this)
         findViewById<View>(R.id.my_qr_back).setOnClickListener { finish() }

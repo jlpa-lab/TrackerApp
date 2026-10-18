@@ -19,6 +19,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.content.Context
+import android.content.res.ColorStateList
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -29,6 +30,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
@@ -68,17 +72,18 @@ class NearbyActivity : DashboardActivity() {
     private val main = Handler(Looper.getMainLooper())
     private val fused by lazy { LocationServices.getFusedLocationProviderClient(this) }
     private lateinit var search: EditText
-    private lateinit var clearSearch: TextView
+    private lateinit var clearSearch: ImageView
     private lateinit var chips: LinearLayout
     private lateinit var title: TextView
     private lateinit var count: TextView
     private lateinit var results: LinearLayout
     private lateinit var statePanel: LinearLayout
-    private lateinit var stateIcon: TextView
+    private lateinit var stateIcon: ImageView
     private lateinit var stateTitle: TextView
     private lateinit var stateDescription: TextView
     private lateinit var stateAction: TextView
     private lateinit var loading: ProgressBar
+    private lateinit var nearbyRoot: ScrollView
     private var selectedCategory = "Coffee"
     private var lastLocation: Location? = null
     private var requestVersion = 0
@@ -93,18 +98,20 @@ class NearbyActivity : DashboardActivity() {
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
-        window.statusBarColor = Color.rgb(246, 251, 248)
-        window.navigationBarColor = Color.rgb(246, 251, 248)
-        window.setBackgroundDrawable(ColorDrawable(Color.rgb(246, 251, 248)))
-        @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-        hideNavigationBar()
+        restoreNearbyWindow()
         selectedCategory = state?.getString(STATE_CATEGORY) ?: "Coffee"
         currentQuery = state?.getString(STATE_QUERY).orEmpty()
         val binding = com.mobile.trackerapp.databinding.ActivityNearbyBinding.inflate(layoutInflater)
         setContentView(binding.root)
         AdsManager.loadInterHome(this, ignoreLimit = true)
         binding.nearbyBack.setOnClickListener { onBackPressed() }
+        nearbyRoot = binding.root
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.setPadding(0, statusBarInset, 0, 0)
+            insets
+        }
+        ViewCompat.requestApplyInsets(binding.root)
         search=binding.nearbySearch; clearSearch=binding.nearbyClear; chips=binding.nearbyChips; title=binding.nearbyTitle; count=binding.nearbyCount; results=binding.nearbyResults; statePanel=binding.nearbyStatePanel; stateIcon=binding.nearbyStateIcon; stateTitle=binding.nearbyStateTitle; stateDescription=binding.nearbyStateDescription; stateAction=binding.nearbyStateAction; loading=binding.nearbyLoading
         listOf("Coffee","Food","Gas","More").forEachIndexed { index, name -> chips.getChildAt(index).setOnClickListener { if(name=="More") openCategories() else chooseCategory(name) } }
         clearSearch.setOnClickListener { suppressTextListener=true; search.text?.clear(); suppressTextListener=false; currentQuery=""; updateClearVisibility(); if(hasLocationPermission()) queryCurrentSelection() }
@@ -120,11 +127,27 @@ class NearbyActivity : DashboardActivity() {
     override fun onResume() {
         super.onResume()
         // Restore the activity window after returning from an external maps app.
+        restoreNearbyWindow()
+        if (::nearbyRoot.isInitialized) ViewCompat.requestApplyInsets(nearbyRoot)
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            // Maps can temporarily replace the system-bar controller. Re-apply it
+            // after the Nearby surface is visible again, not while Maps is open.
+            restoreNearbyWindow()
+            if (::nearbyRoot.isInitialized) ViewCompat.requestApplyInsets(nearbyRoot)
+        }
+    }
+
+    private fun restoreNearbyWindow() {
         window.statusBarColor = Color.rgb(246, 251, 248)
         window.navigationBarColor = Color.rgb(246, 251, 248)
         window.setBackgroundDrawable(ColorDrawable(Color.rgb(246, 251, 248)))
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         hideNavigationBar()
     }
 
@@ -170,7 +193,8 @@ class NearbyActivity : DashboardActivity() {
             val name = listOf("Coffee", "Food", "Gas", "More")[index]
             val selected = quick == name
             chip.setTextColor(if (selected) Color.WHITE else muted)
-            chip.background = rounded(if (selected) green else Color.WHITE, dp(24))
+            chip.compoundDrawableTintList = ColorStateList.valueOf(if (selected) Color.WHITE else muted)
+            chip.background = if (selected) rounded(green, 100) else bordered(Color.WHITE, Color.rgb(221, 229, 225), 100)
         }
     }
 
@@ -260,8 +284,13 @@ class NearbyActivity : DashboardActivity() {
     }
 
     private fun fetchPlaces(query: String, origin: Location): List<NearbyPlace> {
+        val collected = LinkedHashMap<String, NearbyPlace>()
         if (BuildConfig.GOOGLE_PLACES_API_KEY.isNotBlank()) {
-            runCatching { fetchGooglePlaces(origin, query) }.getOrNull()?.takeIf { it.isNotEmpty() }?.let { return it }
+            runCatching { fetchGooglePlaces(origin, query) }.getOrNull().orEmpty()
+                .forEach { collected[placeKey(it)] = it }
+            if (collected.size >= INITIAL_RESULT_COUNT) {
+                return collected.values.sortedBy { it.distanceMeters }.take(MAX_RESULTS)
+            }
         }
         var lastError: Exception? = null
         for (endpoint in OVERPASS_ENDPOINTS) {
@@ -280,7 +309,7 @@ class NearbyActivity : DashboardActivity() {
                 val status = connection.responseCode
                 if (status !in 200..299) throw IllegalStateException("Places service returned HTTP $status")
                 val json = connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
-            val elements = JSONObject(json).optJSONArray("elements") ?: return emptyList()
+            val elements = JSONObject(json).optJSONArray("elements") ?: continue
             val places = ArrayList<NearbyPlace>()
             for (index in 0 until elements.length()) {
                 val item = elements.optJSONObject(index) ?: continue
@@ -305,7 +334,12 @@ class NearbyActivity : DashboardActivity() {
                     null, null, null
                 ))
             }
-                return places.distinctBy { it.id }.filter { it.distanceMeters <= SEARCH_RADIUS_METERS }.sortedBy { it.distanceMeters }.take(MAX_RESULTS)
+                places.distinctBy { it.id }
+                    .filter { it.distanceMeters <= SEARCH_RADIUS_METERS }
+                    .forEach { collected[placeKey(it)] = it }
+                if (collected.size >= INITIAL_RESULT_COUNT) {
+                    return collected.values.sortedBy { it.distanceMeters }.take(MAX_RESULTS)
+                }
             } catch (error: Exception) {
                 lastError = error
             } finally {
@@ -313,10 +347,14 @@ class NearbyActivity : DashboardActivity() {
                 synchronized(networkLock) { if (activeConnection === connection) activeConnection = null }
             }
         }
-        runCatching { fetchPhotonPlaces(origin, currentQuery.ifBlank { categorySearchName(selectedCategory) }) }
+        if (collected.isNotEmpty()) return collected.values.sortedBy { it.distanceMeters }.take(MAX_RESULTS)
+        runCatching { fetchPhotonPlaces(origin, query.ifBlank { categorySearchName(selectedCategory) }) }
             .getOrNull()?.takeIf { it.isNotEmpty() }?.let { return it }
         throw lastError ?: IllegalStateException("Nearby places are unavailable")
     }
+
+    private fun placeKey(place: NearbyPlace): String =
+        "${place.name.trim().lowercase(Locale.getDefault())}|${String.format(Locale.US, "%.3f", place.latitude)}|${String.format(Locale.US, "%.3f", place.longitude)}"
 
     private fun fetchGooglePlaces(origin: Location, query: String): List<NearbyPlace> {
         val includedType = when (selectedCategory) {
@@ -414,10 +452,14 @@ class NearbyActivity : DashboardActivity() {
         results.removeAllViews()
         loading.visibility = View.GONE
         statePanel.visibility = if (places.isEmpty()) View.VISIBLE else View.GONE
-        count.text = "${places.size} ${if (places.size == 1) "place" else "places"} nearby"
+        count.text = if (query.isBlank() && places.isNotEmpty()) "View all (${places.size})" else "${places.size} ${if (places.size == 1) "place" else "places"} nearby"
+        count.setTextColor(if (places.isEmpty()) muted else green)
+        count.isClickable = query.isBlank() && places.size > INITIAL_RESULT_COUNT
+        count.setOnClickListener { if (count.isClickable) { showAllResults = true; renderPlaces() } }
         title.text = if (query.isBlank()) "$selectedCategory near you" else "Search results"
         if (places.isEmpty()) {
-            stateIcon.text = "⌕"
+            stateIcon.setImageResource(R.drawable.ic_area_no_result)
+            stateIcon.visibility = View.VISIBLE
             stateTitle.text = if (query.isBlank()) "No places found" else "No places found"
             stateDescription.text = if (query.isBlank()) "No nearby ${categorySearchName(selectedCategory)} were found. Try another category."
                 else "No nearby matches for “$query”. Try another name or place type."
@@ -437,17 +479,6 @@ class NearbyActivity : DashboardActivity() {
         val visiblePlaces = if (showAllResults) latestPlaces else latestPlaces.take(INITIAL_RESULT_COUNT)
         visiblePlaces.forEach { place ->
             results.addView(placeCard(place), LinearLayout.LayoutParams(-1, wrap()).apply { bottomMargin = dp(8) })
-        }
-        if (!showAllResults && latestPlaces.size > INITIAL_RESULT_COUNT) {
-            val viewMore = label("View more (${latestPlaces.size - INITIAL_RESULT_COUNT})", 14f, green, true).apply {
-                gravity = Gravity.CENTER
-                setPadding(dp(16), dp(12), dp(16), dp(12))
-                background = bordered(Color.WHITE, Color.rgb(229, 237, 233), dp(14))
-                isClickable = true
-                isFocusable = true
-                setOnClickListener { showAllResults = true; renderPlaces() }
-            }
-            results.addView(viewMore, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(2); bottomMargin = dp(8) })
         }
     }
 
@@ -471,7 +502,7 @@ class NearbyActivity : DashboardActivity() {
             addView(photo, FrameLayout.LayoutParams(-1, -1))
             addView(glyph, FrameLayout.LayoutParams(-1, -1))
         }
-        addView(thumbnail, LinearLayout.LayoutParams(dp(52), dp(58)).apply { marginEnd = dp(10) })
+        addView(thumbnail, LinearLayout.LayoutParams(dp(52), dp(60)).apply { marginEnd = dp(10) })
         place.imageUrl?.let { imageUrl ->
             worker.execute {
                 runCatching {
@@ -502,8 +533,9 @@ class NearbyActivity : DashboardActivity() {
             details.addView(label("${place.kind}  ·  ${formatDistance(place.distanceMeters)}  ·  ${walkingTime(place.distanceMeters)} min walk", 12f, muted), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(3) })
         }
         addView(details, LinearLayout.LayoutParams(0, wrap(), 1f))
-        val direction = label("➤", 20f, green, true).apply {
-            gravity = Gravity.CENTER
+        val direction = ImageView(this@NearbyActivity).apply {
+            setImageResource(R.drawable.ic_nearby_direction)
+            setPadding(dp(9), dp(9), dp(9), dp(9))
             background = rounded(pale, dp(12))
             isClickable = true; isFocusable = true
             contentDescription = "Directions to ${place.name}"
@@ -523,7 +555,6 @@ class NearbyActivity : DashboardActivity() {
             } else {
                 startActivity(Intent(Intent.ACTION_VIEW, location))
             }
-            overridePendingTransition(0, 0)
         } catch (_: Exception) {
             Toast.makeText(this, "No maps app is available.", Toast.LENGTH_SHORT).show()
         }
@@ -538,7 +569,7 @@ class NearbyActivity : DashboardActivity() {
         count.text = ""
         results.removeAllViews()
         showState("Location needed", "Allow location while using the app to find and sort places near you.", showLoading = false)
-        stateIcon.text = "⌖"
+        stateIcon.setImageResource(R.drawable.ic_location_focus_green)
         stateAction.text = "Use my location"
         stateAction.visibility = View.VISIBLE
         stateAction.setOnClickListener {
@@ -549,7 +580,7 @@ class NearbyActivity : DashboardActivity() {
     private fun showError(heading: String, message: String) {
         results.removeAllViews(); count.text = ""
         showState(heading, message, showLoading = false)
-        stateIcon.text = "!"
+        stateIcon.setImageResource(R.drawable.ic_phone_info)
         stateAction.text = "Try again"
         stateAction.visibility = View.VISIBLE
         stateAction.setOnClickListener { if (hasLocationPermission()) queryCurrentSelection() else showLocationPermissionState() }
@@ -558,7 +589,7 @@ class NearbyActivity : DashboardActivity() {
     private fun showState(heading: String, message: String, showLoading: Boolean) {
         results.removeAllViews()
         statePanel.visibility = View.VISIBLE
-        stateIcon.visibility = View.VISIBLE
+        stateIcon.visibility = if (showLoading) View.GONE else View.VISIBLE
         stateTitle.text = heading
         stateDescription.text = message
         loading.visibility = if (showLoading) View.VISIBLE else View.GONE
@@ -600,7 +631,9 @@ class NearbyActivity : DashboardActivity() {
     }
 
     private fun rounded(color: Int, radiusDp: Int) = GradientDrawable().apply { setColor(color); cornerRadius = dp(radiusDp).toFloat() }
-    private fun bordered(color: Int, stroke: Int, radiusDp: Int) = rounded(color, radiusDp).apply { setStroke(dp(1), stroke) }
+    private fun bordered(color: Int, stroke: Int, radiusDp: Int) = rounded(color, radiusDp).apply { setStroke(dp(0.6f), stroke) }
+
+    private fun dp(value: Float) = (value * resources.displayMetrics.density).roundToInt().coerceAtLeast(1)
 
     private class SimpleTextWatcher(private val changed: () -> Unit) : android.text.TextWatcher {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
@@ -615,7 +648,7 @@ class NearbyActivity : DashboardActivity() {
         private const val STATE_QUERY = "nearby_query"
         private const val SEARCH_RADIUS_METERS = 5000
         private const val MAX_RESULTS = 30
-        private const val INITIAL_RESULT_COUNT = 5
+        private const val INITIAL_RESULT_COUNT = 2
         private const val SEARCH_DEBOUNCE_MS = 600L
         private const val CONNECT_TIMEOUT_MS = 6_000
         private const val READ_TIMEOUT_MS = 12_000

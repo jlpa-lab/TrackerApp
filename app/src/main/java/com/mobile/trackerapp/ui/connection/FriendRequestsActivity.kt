@@ -3,15 +3,14 @@ package com.mobile.trackerapp.ui.connection
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.widget.EditText
-import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.bindNativeAllAd
 import com.mobile.trackerapp.ads.AdsManager
@@ -24,27 +23,28 @@ import android.animation.ValueAnimator
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import com.mobile.trackerapp.ui.DashboardActivity
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import kotlin.math.abs
 
-open class FriendRequestsActivity : AppCompatActivity() {
+open class FriendRequestsActivity : DashboardActivity() {
     protected open val layoutResource: Int = R.layout.activity_friend_requests
     private lateinit var backend: TrackerBackendClient
     private var myInviteCode: String = ""
     private lateinit var localDb: LocalTrackerDb
     private var codeWave: ValueAnimator? = null
+    private var backendReady = false
     override fun onDestroy() { codeWave?.cancel(); super.onDestroy() }
-    private val scanFriendQr = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            result.data?.getStringExtra(ScanQrActivity.EXTRA_SCANNED_CODE)?.let {
-                findViewById<EditText>(R.id.friend_code_input).setText(it)
-            }
-        }
-    }
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
-        if (!getSharedPreferences("tracker_profile", MODE_PRIVATE).getBoolean("complete", false)) {
-            startActivity(Intent(this, CreateProfileActivity::class.java)); finish(); return
-        }
+        window.statusBarColor = Color.rgb(246, 251, 248)
+        window.navigationBarColor = Color.rgb(246, 251, 248)
+        @Suppress("DEPRECATION")
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        hideNavigationBar()
         setContentView(layoutResource)
         AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
         AdsManager.loadInterHome(this, ignoreLimit = true)
@@ -52,7 +52,6 @@ open class FriendRequestsActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.my_invite_code)?.text = "------"
         localDb = LocalTrackerDb(this)
         backend = TrackerBackendClient(this)
-        findViewById<LinearLayout>(R.id.received_panel).addView(LinearLayout(this).apply { id = R.id.request_list; orientation = LinearLayout.VERTICAL })
         findViewById<TextView>(R.id.friend_received).text = "Received"
         findViewById<TextView>(R.id.friend_sent).text = "Sent"
         myInviteCode = localDb.read("invite_code").orEmpty()
@@ -66,15 +65,16 @@ open class FriendRequestsActivity : AppCompatActivity() {
                 codeWave?.cancel()
                 findViewById<TextView>(R.id.my_invite_code).text = myInviteCode
                 findViewById<TextView>(R.id.my_invite_code).text = myInviteCode
+            }.onSuccess {
+                backendReady = true
+                loadReceivedRequests()
+                loadSentRequests()
             }.onFailure { Toast.makeText(this@FriendRequestsActivity, "Backend unavailable: ${it.message}", Toast.LENGTH_LONG).show() }
         }
         findViewById<View>(R.id.friend_back).setOnClickListener { onBackPressed() }
         findViewById<View>(R.id.friend_add).setOnClickListener { showPanel(R.id.friend_add) }
         findViewById<View>(R.id.friend_received).setOnClickListener { showPanel(R.id.friend_received); loadReceivedRequests() }
         findViewById<View>(R.id.friend_sent).setOnClickListener { showPanel(R.id.friend_sent); loadSentRequests() }
-        findViewById<View>(R.id.scan_friend_qr)?.setOnClickListener {
-            scanFriendQr.launch(Intent(this, ScanQrActivity::class.java))
-        }
         findViewById<View>(R.id.show_my_qr_button).setOnClickListener {
             startActivity(Intent(this, MyQrActivity::class.java))
         }
@@ -102,6 +102,10 @@ open class FriendRequestsActivity : AppCompatActivity() {
     }
 
     private fun submitInviteCode() {
+        if (!backendReady) {
+            Toast.makeText(this, "Connecting securely, please try again in a moment.", Toast.LENGTH_SHORT).show()
+            return
+        }
         val entered = findViewById<EditText>(R.id.friend_code_input).text.toString().trim().uppercase()
         if (entered.isBlank()) {
             findViewById<EditText>(R.id.friend_code_input).error = "Enter a friend's invite code"
@@ -132,27 +136,34 @@ open class FriendRequestsActivity : AppCompatActivity() {
     }
 
     private fun loadReceivedRequests() {
+        if (!backendReady) return
         CoroutineScope(Dispatchers.Main).launch {
             runCatching { backend.listRequests() }.onSuccess { result ->
                 localDb.write("received_requests", result.toString())
                 val list = findViewById<LinearLayout>(R.id.request_list) ?: return@onSuccess
                 list.removeAllViews()
                 val requests = result.optJSONArray("requests")
-                findViewById<TextView>(R.id.friend_received).text = "Received · ${requests?.length() ?: 0}"
+                val requestCount = requests?.length() ?: 0
+                findViewById<TextView>(R.id.friend_received).text = "Received · $requestCount"
+                findViewById<TextView>(R.id.received_request_count).text = "$requestCount requests"
                 if (requests == null || requests.length() == 0) {
-                    list.addView(TextView(this@FriendRequestsActivity).apply { text = "No pending invitations yet."; setPadding(0, 24, 0, 24) })
+                    list.addView(emptyRequestMessage("No pending invitations yet."))
                     return@onSuccess
                 }
                 for (i in 0 until requests.length()) {
                     val request = requests.getJSONObject(i)
                     val requestId = request.getString("id")
                     val status = request.optString("status", "pending")
-                    val row = LinearLayout(this@FriendRequestsActivity).apply { orientation = LinearLayout.VERTICAL; setPadding(0, 12, 0, 12) }
-                    row.addView(TextView(this@FriendRequestsActivity).apply { text = "Friend request from ${request.optString("from_name", request.optString("from_id"))} ($status)"; textSize = 16f })
-                    val actions = LinearLayout(this@FriendRequestsActivity)
-                    val accept = Button(this@FriendRequestsActivity).apply { text = if (status == "accepted") "Accepted" else "Accept"; isEnabled = status != "accepted"; setOnClickListener { decideRequest(requestId, "accept") } }
-                    val reject = Button(this@FriendRequestsActivity).apply { text = "Reject"; isEnabled = status != "rejected"; setOnClickListener { decideRequest(requestId, "reject") } }
-                    actions.addView(accept); actions.addView(reject); row.addView(actions); list.addView(row)
+                    val name = request.optString("from_name", request.optString("from_id"))
+                    val handle = request.optString("from_handle").ifBlank { request.optString("from_username") }
+                        .ifBlank { fallbackHandle(name) }
+                    list.addView(receivedRequestCard(
+                        requestId = requestId,
+                        name = name,
+                        handle = handle,
+                        time = relativeTime(request.opt("created_at")),
+                        status = status
+                    ), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(if (i == 0) 12 else 10) })
                 }
             }.onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: "Could not load requests", Toast.LENGTH_LONG).show() }
         }
@@ -170,29 +181,187 @@ open class FriendRequestsActivity : AppCompatActivity() {
     }
 
     private fun loadSentRequests() {
+        if (!backendReady) return
         CoroutineScope(Dispatchers.Main).launch {
             runCatching { backend.listSentRequests() }.onSuccess { result ->
                 val panel = findViewById<LinearLayout>(R.id.sent_panel)
                 val requests = result.optJSONArray("requests")
-                findViewById<TextView>(R.id.friend_sent).text = "Sent · ${requests?.length() ?: 0}"
-                if (panel.childCount > 0) panel.removeViews(0, panel.childCount)
-                val list = LinearLayout(this@FriendRequestsActivity).apply { orientation = LinearLayout.VERTICAL; setPadding(0, 12, 0, 0) }
+                val requestCount = requests?.length() ?: 0
+                findViewById<TextView>(R.id.friend_sent).text = "Sent · $requestCount"
+                findViewById<TextView>(R.id.sent_request_count).text = "$requestCount requests"
+                val list = findViewById<LinearLayout>(R.id.sent_request_list)
+                list.removeAllViews()
                 if (requests == null || requests.length() == 0) {
-                    list.addView(TextView(this@FriendRequestsActivity).apply { text = "You haven’t sent any invitations yet."; setPadding(0, 24, 0, 24) })
+                    list.addView(emptyRequestMessage("You haven’t sent any invitations yet."))
                 } else for (i in 0 until requests.length()) {
                     val request = requests.getJSONObject(i)
-                    list.addView(TextView(this@FriendRequestsActivity).apply { text = "Request to ${request.optString("to_name")} (${request.optString("status")})"; textSize = 16f; setPadding(0, 12, 0, 12) })
+                    val name = request.optString("to_name", request.optString("to_id"))
+                    val handle = request.optString("to_handle").ifBlank { request.optString("to_username") }
+                        .ifBlank { fallbackHandle(name) }
+                    list.addView(sentRequestCard(
+                        requestId = request.getString("id"),
+                        name = name,
+                        handle = handle,
+                        time = relativeTime(request.opt("created_at")),
+                        status = request.optString("status", "pending")
+                    ), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = if (i == 0) dp(12) else dp(10) })
                 }
-                panel.addView(list)
             }.onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: "Could not load sent requests", Toast.LENGTH_LONG).show() }
         }
+    }
+
+    private fun receivedRequestCard(requestId: String, name: String, handle: String, time: String, status: String): View =
+        LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(12), dp(12), dp(12), dp(12))
+            background = getDrawable(R.drawable.bg_friend_request_item)
+
+            val identity = identityRow(name, handle, time)
+            addView(identity)
+            if (status == "pending") {
+                val actions = LinearLayout(this@FriendRequestsActivity).apply { orientation = LinearLayout.HORIZONTAL }
+                actions.addView(actionButton("Accept", true) { decideRequest(requestId, "accept") }, LinearLayout.LayoutParams(0, dp(44), 1f))
+                actions.addView(actionButton("Decline", false) { decideRequest(requestId, "reject") }, LinearLayout.LayoutParams(0, dp(44), 1f).apply { marginStart = dp(8) })
+                addView(actions, LinearLayout.LayoutParams(-1, dp(44)).apply { topMargin = dp(12) })
+            } else {
+                addView(statusLabel(status), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(10) })
+            }
+        }
+
+    private fun sentRequestCard(requestId: String, name: String, handle: String, time: String, status: String): View =
+        LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(12), dp(12), dp(12), dp(12))
+            background = getDrawable(R.drawable.bg_friend_request_item)
+
+            val top = identityRow(name, handle, "")
+            val statusView = TextView(this@FriendRequestsActivity).apply {
+                text = "◷  ${status.replaceFirstChar { it.uppercase() }}"
+                textSize = 13f
+                setTextColor(Color.rgb(117, 126, 143))
+                typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+                gravity = Gravity.CENTER_VERTICAL
+            }
+            (top as LinearLayout).addView(statusView, LinearLayout.LayoutParams(wrap(), wrap()))
+            addView(top)
+
+            val bottom = LinearLayout(this@FriendRequestsActivity).apply { gravity = Gravity.CENTER_VERTICAL }
+            bottom.addView(TextView(this@FriendRequestsActivity).apply {
+                text = if (status == "pending") "Sent $time" else status.replaceFirstChar { it.uppercase() }
+                textSize = 13f
+                setTextColor(Color.rgb(117, 126, 143))
+            }, LinearLayout.LayoutParams(0, wrap(), 1f))
+            if (status == "pending") {
+                bottom.addView(actionButton("Cancel Request", false) { cancelRequest(requestId) }, LinearLayout.LayoutParams(dp(116), dp(44)))
+            }
+            addView(bottom, LinearLayout.LayoutParams(-1, dp(44)).apply { topMargin = dp(12) })
+        }
+
+    private fun identityRow(name: String, handle: String, time: String): View = LinearLayout(this).apply {
+        gravity = Gravity.CENTER_VERTICAL
+        val avatar = TextView(this@FriendRequestsActivity).apply {
+            text = name.trim().firstOrNull()?.uppercase() ?: "?"
+            textSize = 18f
+            setTextColor(Color.rgb(17, 24, 39))
+            gravity = Gravity.CENTER
+            background = rounded(Color.rgb(232, 244, 233), 100)
+        }
+        addView(avatar, LinearLayout.LayoutParams(dp(48), dp(48)))
+        val names = LinearLayout(this@FriendRequestsActivity).apply { orientation = LinearLayout.VERTICAL }
+        names.addView(TextView(this@FriendRequestsActivity).apply {
+            text = name
+            textSize = 17f
+            setTextColor(Color.rgb(17, 24, 39))
+            typeface = Typeface.create("sans-serif", Typeface.BOLD)
+        })
+        names.addView(TextView(this@FriendRequestsActivity).apply {
+            text = handle
+            textSize = 13f
+            setTextColor(Color.rgb(117, 126, 143))
+        }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(2) })
+        addView(names, LinearLayout.LayoutParams(0, wrap(), 1f).apply { marginStart = dp(12) })
+        if (time.isNotBlank()) addView(TextView(this@FriendRequestsActivity).apply {
+            text = time
+            textSize = 13f
+            setTextColor(Color.rgb(117, 126, 143))
+            gravity = Gravity.CENTER_VERTICAL
+        }, LinearLayout.LayoutParams(wrap(), wrap()))
+    }
+
+    private fun actionButton(label: String, primary: Boolean, onClick: () -> Unit) = TextView(this).apply {
+        text = label
+        textSize = 14f
+        setTextColor(if (primary) Color.WHITE else Color.rgb(117, 126, 143))
+        typeface = Typeface.create("sans-serif", Typeface.BOLD)
+        gravity = Gravity.CENTER
+        background = getDrawable(if (primary) R.drawable.bg_friend_action_primary else R.drawable.bg_friend_action_secondary)
+        isClickable = true
+        isFocusable = true
+        setOnClickListener { onClick() }
+    }
+
+    private fun statusLabel(status: String) = TextView(this).apply {
+        text = status.replaceFirstChar { it.uppercase() }
+        textSize = 13f
+        setTextColor(Color.rgb(117, 126, 143))
+    }
+
+    private fun emptyRequestMessage(message: String) = TextView(this).apply {
+        text = message
+        textSize = 14f
+        setTextColor(Color.rgb(117, 126, 143))
+        gravity = Gravity.CENTER
+        setPadding(0, dp(20), 0, dp(20))
+    }
+
+    private fun cancelRequest(id: String) {
+        CoroutineScope(Dispatchers.Main).launch {
+            runCatching { backend.cancelFriendRequest(id) }
+                .onSuccess {
+                    Toast.makeText(this@FriendRequestsActivity, "Friend request cancelled", Toast.LENGTH_SHORT).show()
+                    loadSentRequests()
+                }
+                .onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: "Could not cancel request", Toast.LENGTH_LONG).show() }
+        }
+    }
+
+    private fun fallbackHandle(name: String): String {
+        val normalized = name.lowercase(Locale.US).replace(Regex("[^a-z0-9]+"), ".").trim('.')
+        return if (normalized.isBlank()) "@friend" else "@$normalized"
+    }
+
+    private fun relativeTime(raw: Any?): String {
+        val value = raw?.toString().orEmpty()
+        val timestamp = value.toLongOrNull()?.let { if (it < 10_000_000_000L) it * 1000 else it }
+            ?: listOf(
+                "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+                "yyyy-MM-dd'T'HH:mm:ssXXX",
+                "yyyy-MM-dd HH:mm:ssXXX",
+                "yyyy-MM-dd HH:mm:ss"
+            ).firstNotNullOfOrNull { pattern ->
+                runCatching { SimpleDateFormat(pattern, Locale.US).parse(value)?.time }.getOrNull()
+            }
+        if (timestamp == null) return "Recently"
+        val seconds = abs(System.currentTimeMillis() - timestamp) / 1000L
+        return when {
+            seconds < 60 -> "Just now"
+            seconds < 3600 -> "${seconds / 60} minutes ago"
+            seconds < 86_400 -> "${seconds / 3600} hours ago"
+            seconds < 172_800 -> "Yesterday"
+            else -> "${seconds / 86_400} days ago"
+        }
+    }
+
+    private fun rounded(color: Int, radiusDp: Int) = GradientDrawable().apply {
+        setColor(color)
+        cornerRadius = dp(radiusDp).toFloat()
     }
 
     private fun showPanel(selectedId: Int) {
         listOf(R.id.friend_add, R.id.friend_received, R.id.friend_sent).forEach { id ->
             val tab = findViewById<TextView>(id)
             val selected = id == selectedId
-            tab.setBackgroundColor(if (selected) Color.rgb(232, 245, 233) else Color.TRANSPARENT)
+            tab.setBackgroundResource(if (selected) R.drawable.bg_friend_tab_selected else android.R.color.transparent)
             tab.setTextColor(if (selected) Color.rgb(0, 150, 60) else Color.rgb(117, 126, 143))
             tab.setTypeface(null, if (selected) Typeface.BOLD else Typeface.NORMAL)
         }
@@ -207,3 +376,7 @@ open class FriendRequestsActivity : AppCompatActivity() {
         }
     }
 }
+
+
+
+

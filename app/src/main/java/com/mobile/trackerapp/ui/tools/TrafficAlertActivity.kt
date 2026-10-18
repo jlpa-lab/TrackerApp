@@ -17,6 +17,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -33,12 +36,17 @@ import com.google.android.gms.maps.model.LatLng
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.databinding.ActivityTrafficAlertBinding
+import kotlin.math.ceil
+import kotlin.math.max
 
 /** Live Google Maps traffic overlay centered on the user's current location. */
 class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
     private val fusedLocation by lazy { LocationServices.getFusedLocationProviderClient(this) }
     private lateinit var binding: ActivityTrafficAlertBinding
     private lateinit var locationHint: TextView
+    private lateinit var statusTitle: TextView
+    private lateinit var statusDetail: TextView
+    private lateinit var liveTrafficLabel: TextView
     private var map: GoogleMap? = null
     private var locationCallback: LocationCallback? = null
     private var cameraCentered = false
@@ -79,11 +87,22 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideSystemNavigation()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityTrafficAlertBinding.inflate(layoutInflater)
         setContentView(binding.root)
         AdsManager.loadInterHome(this, ignoreLimit = true)
         binding.trafficBack.setOnClickListener { onBackPressed() }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.setPadding(0, statusBarInset, 0, 0)
+            insets
+        }
+        ViewCompat.requestApplyInsets(binding.root)
         locationHint = binding.trafficLocationHint
+        statusTitle = binding.trafficStatusTitle
+        statusDetail = binding.trafficStatusDetail
+        liveTrafficLabel = binding.trafficLiveLabel
+        updateTrafficSummary()
         locationHint.setOnClickListener { requestLocationAccess() }
         locationHint.visibility = View.VISIBLE
         val mapFragment = supportFragmentManager.findFragmentById(R.id.traffic_map) as? SupportMapFragment
@@ -100,7 +119,9 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
             uiSettings.isZoomControlsEnabled = false
             uiSettings.isMyLocationButtonEnabled = false
             uiSettings.isCompassEnabled = true
+            setOnCameraIdleListener { updateTrafficSummary() }
         }
+        updateTrafficSummary()
         requestLocationAccess()
     }
 
@@ -178,6 +199,7 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
                     locationUpdatesActive = false
                     showLocationMessage("Unable to read your location. Tap to try again")
                 }
+            .addOnCompleteListener { updateTrafficSummary() }
         } catch (_: SecurityException) {
             locationUpdatesActive = false
             currentMap.isMyLocationEnabled = false
@@ -187,11 +209,13 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun showLocation(location: Location, animate: Boolean) {
         lastLocation = location
-        if (cameraCentered) return
-        cameraCentered = true
-        val point = LatLng(location.latitude, location.longitude)
-        val update = CameraUpdateFactory.newLatLngZoom(point, CAMERA_ZOOM)
-        if (animate) map?.animateCamera(update) else map?.moveCamera(update)
+        if (!cameraCentered) {
+            cameraCentered = true
+            val point = LatLng(location.latitude, location.longitude)
+            val update = CameraUpdateFactory.newLatLngZoom(point, CAMERA_ZOOM)
+            if (animate) map?.animateCamera(update) else map?.moveCamera(update)
+        }
+        updateTrafficSummary()
     }
 
     private fun hasLocationPermission() = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
@@ -228,6 +252,35 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun showLocationMessage(message: String) {
         locationHint.text = message
         locationHint.visibility = View.VISIBLE
+        updateTrafficSummary()
+    }
+
+    private fun updateTrafficSummary() {
+        if (!::statusTitle.isInitialized) return
+        val currentMap = map
+        val locationReady = currentMap != null && lastLocation != null && locationUpdatesActive
+        if (!locationReady) {
+            statusTitle.text = if (!hasLocationPermission()) "Location is needed for live traffic" else "Waiting for live traffic"
+            statusDetail.text = if (!hasLocationPermission()) "Allow location access to see conditions near you" else "Centering traffic around your location"
+            liveTrafficLabel.text = "Traffic location pending"
+            return
+        }
+        val radiusKm = visibleTrafficRadiusKm(currentMap!!)
+        statusTitle.text = "Live traffic is available"
+        statusDetail.text = "Live conditions within $radiusKm km of you"
+        liveTrafficLabel.text = "Live traffic · $radiusKm km"
+    }
+
+    private fun visibleTrafficRadiusKm(currentMap: GoogleMap): Int {
+        val bounds = runCatching { currentMap.projection.visibleRegion.latLngBounds }.getOrNull() ?: return DEFAULT_RADIUS_KM
+        val center = bounds.center
+        val corners = listOf(bounds.northeast, bounds.southwest, LatLng(bounds.northeast.latitude, bounds.southwest.longitude), LatLng(bounds.southwest.latitude, bounds.northeast.longitude))
+        val maxMeters = corners.maxOfOrNull { corner ->
+            val result = FloatArray(1)
+            Location.distanceBetween(center.latitude, center.longitude, corner.latitude, corner.longitude, result)
+            result[0]
+        } ?: return DEFAULT_RADIUS_KM
+        return max(1, ceil(maxMeters / 1000f).toInt())
     }
 
     override fun onResume() {
@@ -277,5 +330,6 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val LOCATION_INTERVAL_MS = 5_000L
         private const val LOCATION_DISTANCE_METERS = 5f
         private const val CAMERA_ZOOM = 16f
+        private const val DEFAULT_RADIUS_KM = 5
     }
 }

@@ -19,7 +19,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
-import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -41,6 +40,13 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.ZoneToggleView
+import com.mobile.trackerapp.network.RealtimeLocationClient
+import com.mobile.trackerapp.network.TrackerBackendClient
+import com.mobile.trackerapp.service.LocationSharingService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /** Saved safe/danger zones and entry/exit monitoring controls. */
 class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
@@ -54,14 +60,22 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
     private lateinit var mapMessage: TextView
     private lateinit var zoneList: LinearLayout
     private lateinit var zoneCount: TextView
+    private lateinit var zoneAdd: TextView
+    private lateinit var zoneLocate: ImageView
+    private lateinit var zoneStatusIcon: ImageView
     private lateinit var statusTitle: TextView
     private lateinit var statusSubtitle: TextView
+    private lateinit var alertNotice: TextView
     private var map: GoogleMap? = null
     private var locationCallback: LocationCallback? = null
     private var cameraCentered = false
     private var didPromptBackground = false
     private var didAskNotifications = false
     private var lastGeofenceSignature: String? = null
+    private var manageMode = false
+    private var realtime: RealtimeLocationClient? = null
+    private var hasAcceptedFriends = false
+    private var friendMemberLabel = "0 members"
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -75,17 +89,33 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         AdsManager.loadInterHome(this, ignoreLimit = true)
         binding.zoneBack.setOnClickListener { onBackPressed() };
         binding.zoneAdd.setOnClickListener { startActivity(Intent(this, CreateZoneActivity::class.java)) }
-        mapView = binding.zoneMap; mapMessage = binding.zoneMapMessage; zoneList = binding.zoneList; zoneCount = binding.zoneCount; statusTitle = binding.zoneStatusTitle; statusSubtitle = binding.zoneStatusSubtitle
+        binding.zoneCount.setOnClickListener {
+            if (store.all().isNotEmpty()) {
+                manageMode = !manageMode
+                renderZones(store.all())
+            }
+        }
+        binding.zoneLocate.setOnClickListener { if (hasForegroundLocation()) moveMapToCurrentLocation() else requestForegroundLocation() }
+        mapView = binding.zoneMap; mapMessage = binding.zoneMapMessage; zoneList = binding.zoneList; zoneCount = binding.zoneCount; zoneAdd = binding.zoneAdd; zoneLocate = binding.zoneLocate; zoneStatusIcon = binding.zoneStatusIcon; statusTitle = binding.zoneStatusTitle; statusSubtitle = binding.zoneStatusSubtitle; alertNotice = binding.zoneAlertNotice
         mapMessage.setOnClickListener { requestForegroundLocation() }; mapMessage.visibility = if (hasForegroundLocation()) View.GONE else View.VISIBLE
         mapView.onCreate(state)
         mapView.getMapAsync(this)
         renderZones(store.all())
+        showLatestFriendAlert()
+        connectFriendZoneMonitoring()
     }
 
     private fun renderZones(zones: List<ZoneRecord>) {
         if (!::zoneList.isInitialized) return
         zoneList.removeAllViews()
-        zoneCount.text = "${zones.size} ${if (zones.size == 1) "zone" else "zones"}"
+        if (zones.isEmpty()) manageMode = false
+        zoneCount.text = when {
+            zones.isEmpty() -> "0 zones"
+            manageMode -> "Done"
+            else -> "Manage"
+        }
+        zoneCount.setTextColor(if (zones.isEmpty()) muted else green)
+        zoneAdd.text = if (zones.isEmpty()) "＋  Create your first zone" else "＋  Add a new zone"
         val enabledCount = zones.count { it.enabled }
         statusTitle.text = when {
             zones.isEmpty() -> "Set up your safe zones"
@@ -105,12 +135,19 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
             val empty = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 gravity = Gravity.CENTER
-                setPadding(dp(16), dp(20), dp(16), dp(20))
+                minimumHeight = dp(176)
+                setPadding(dp(20), dp(20), dp(20), dp(20))
                 background = bordered(Color.WHITE, Color.rgb(229, 237, 233), dp(16))
             }
-            empty.addView(text("⌖", 30f, green, true))
-            empty.addView(text("No zones yet", 17f, ink, true).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(4) })
-            empty.addView(text("Add Home, School, or another place to get alerts when you arrive or leave.", 13f, muted).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(4) })
+            empty.addView(ImageView(this).apply {
+                setImageResource(R.drawable.ic_zone_pin)
+                contentDescription = "No zones"
+            }, LinearLayout.LayoutParams(dp(48), dp(48)))
+            empty.addView(text("No zones yet", 16f, ink, true).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(10) })
+            empty.addView(text("Add Home, School, or another place to get alerts\nwhen loved ones arrive or leave.", 12f, muted).apply {
+                gravity = Gravity.CENTER
+                textAlignment = View.TEXT_ALIGNMENT_CENTER
+            }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(8) })
             zoneList.addView(empty)
         } else {
             zones.forEach { zone -> zoneList.addView(zoneCard(zone), LinearLayout.LayoutParams(-1, wrap()).apply { bottomMargin = dp(8) }) }
@@ -121,24 +158,25 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
             maybeRequestNotificationPermission()
             if (Build.VERSION.SDK_INT < 33 || hasNotificationPermission()) maybeExplainBackgroundAccess()
         }
+        ensureFriendZoneMonitor(zones, hasAcceptedFriends)
     }
 
     private fun zoneCard(zone: ZoneRecord): View = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        setPadding(dp(13), dp(12), dp(13), dp(11))
+        setPadding(dp(12), dp(10), dp(12), dp(10))
         background = bordered(Color.WHITE, Color.rgb(229, 237, 233), dp(16))
 
         val top = LinearLayout(this@ZoneAlertActivity).apply { gravity = Gravity.CENTER_VERTICAL }
         val badge = text(if (zone.safe) "⌂" else "⚠", 20f, if (zone.safe) green else danger, true).apply { gravity = Gravity.CENTER }
         badge.background = rounded(if (zone.safe) Color.rgb(235, 249, 242) else Color.rgb(255, 240, 239), dp(11))
-        top.addView(badge, LinearLayout.LayoutParams(dp(38), dp(38)).apply { marginEnd = dp(10) })
+        top.addView(badge, LinearLayout.LayoutParams(dp(32), dp(32)).apply { marginEnd = dp(10) })
         val names = LinearLayout(this@ZoneAlertActivity).apply { orientation = LinearLayout.VERTICAL }
-        names.addView(text(zone.name, 16f, ink, true))
-        names.addView(text(zone.address.ifBlank { "${"%.5f".format(zone.latitude)}, ${"%.5f".format(zone.longitude)}" }, 12f, muted).apply {
+        names.addView(text(zone.name, 14f, ink, true))
+        names.addView(text(zone.address.ifBlank { "${"%.5f".format(zone.latitude)}, ${"%.5f".format(zone.longitude)}" }, 11f, muted).apply {
             maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
         }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(2) })
         top.addView(names, LinearLayout.LayoutParams(0, wrap(), 1f))
-        val activeSwitch = Switch(this@ZoneAlertActivity).apply {
+        val activeSwitch = ZoneToggleView(this@ZoneAlertActivity).apply {
             isChecked = zone.enabled
             contentDescription = "Enable alerts for ${zone.name}"
             setOnCheckedChangeListener { _, enabled ->
@@ -146,23 +184,26 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
                 renderZones(store.all())
             }
         }
-        top.addView(activeSwitch)
+        top.addView(activeSwitch, LinearLayout.LayoutParams(wrap(), wrap()))
         setOnClickListener { startActivity(Intent(this@ZoneAlertActivity, CreateZoneActivity::class.java).putExtra(CreateZoneActivity.EXTRA_ZONE_ID, zone.id)) }
         addView(top)
 
         val metadata = LinearLayout(this@ZoneAlertActivity).apply { gravity = Gravity.CENTER_VERTICAL }
         val color = if (zone.safe) green else danger
-        metadata.addView(text("${zone.radiusMeters} m radius · ${if (zone.safe) "Safe zone" else "Danger zone"}", 12f, color, true), LinearLayout.LayoutParams(0, wrap(), 1f))
+        metadata.addView(text("${zone.radiusMeters} m radius · $friendMemberLabel", 11f, color, true), LinearLayout.LayoutParams(0, wrap(), 1f))
         metadata.addView(text("${if (zone.alertOnEnter) "Enter" else ""}${if (zone.alertOnEnter && zone.alertOnExit) " & " else ""}${if (zone.alertOnExit) "Exit" else ""} alerts", 11f, muted))
         addView(metadata, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(9) })
 
-        val actions = LinearLayout(this@ZoneAlertActivity).apply { gravity = Gravity.END }
-        val edit = text("Edit", 12f, green, true).apply { isClickable = true; isFocusable = true }
-        edit.setOnClickListener { startActivity(Intent(this@ZoneAlertActivity, CreateZoneActivity::class.java).putExtra(CreateZoneActivity.EXTRA_ZONE_ID, zone.id)) }
-        val delete = text("Delete", 12f, danger, true).apply { setPadding(dp(18), 0, 0, 0); isClickable = true; isFocusable = true }
-        delete.setOnClickListener { confirmDelete(zone) }
-        actions.addView(edit); actions.addView(delete)
-        addView(actions, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(7) })
+        if (manageMode) {
+            val actions = LinearLayout(this@ZoneAlertActivity).apply { gravity = Gravity.END }
+            val edit = text("Edit", 12f, green, true).apply { isClickable = true; isFocusable = true }
+            edit.setOnClickListener { startActivity(Intent(this@ZoneAlertActivity, CreateZoneActivity::class.java).putExtra(CreateZoneActivity.EXTRA_ZONE_ID, zone.id)) }
+            val delete = text("Delete", 12f, danger, true).apply { setPadding(dp(18), 0, 0, 0); isClickable = true; isFocusable = true }
+            delete.setOnClickListener { confirmDelete(zone) }
+            actions.addView(edit); actions.addView(delete)
+            addView(actions, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(5) })
+        }
+        minimumHeight = dp(86)
     }
 
     private fun confirmDelete(zone: ZoneRecord) {
@@ -230,6 +271,21 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         cameraCentered = true
         val update = CameraUpdateFactory.newLatLngZoom(target, 15f)
         if (animate) map?.animateCamera(update) else map?.moveCamera(update)
+    }
+
+    private fun moveMapToCurrentLocation() {
+        if (!hasForegroundLocation()) {
+            requestForegroundLocation()
+            return
+        }
+        fused.lastLocation.addOnSuccessListener(this) { location ->
+            if (location != null) {
+                cameraCentered = true
+                map?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 15f))
+            } else {
+                startLocationUpdates()
+            }
+        }
     }
 
     private fun hasForegroundLocation() = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
@@ -310,10 +366,77 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         }.addOnFailureListener { error -> android.util.Log.e("ZoneAlert", "Could not refresh geofences", error) }
     }
 
+    private fun connectFriendZoneMonitoring() {
+        CoroutineScope(Dispatchers.Main).launch {
+            val backend = TrackerBackendClient(this@ZoneAlertActivity)
+            val friendList = runCatching {
+                backend.register()
+                backend.listFriendsOrLegacy().optJSONArray("friends")
+            }.getOrNull()
+            val friendModels = buildList {
+                if (friendList != null) {
+                    for (index in 0 until friendList.length()) {
+                        val friend = friendList.optJSONObject(index) ?: continue
+                        val model = friend.optString("device_model")
+                            .ifBlank { friend.optString("name") }
+                            .trim()
+                        if (model.isNotBlank() && !contains(model)) add(model)
+                    }
+                }
+            }
+            hasAcceptedFriends = if (friendList != null) friendList.length() > 0
+            else runCatching { backend.hasAcceptedFriends() }.getOrDefault(false)
+            friendMemberLabel = when {
+                friendModels.size == 1 -> friendModels.first()
+                friendModels.size > 1 -> "${friendModels.size} members"
+                hasAcceptedFriends -> "1 member"
+                else -> "0 members"
+            }
+            renderZones(store.all())
+            if (hasAcceptedFriends) {
+                realtime = RealtimeLocationClient(this@ZoneAlertActivity) { payload ->
+                    val event = ZoneAlertNotifier.processFriendLocation(this@ZoneAlertActivity, payload)
+                    if (event != null) {
+                        runOnUiThread {
+                            showLatestFriendAlert()
+                            Toast.makeText(this@ZoneAlertActivity, event.title, Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        runOnUiThread { showLatestFriendAlert() }
+                    }
+                }.also { it.connect() }
+            } else {
+                alertNotice.visibility = View.GONE
+                getSharedPreferences("tracker_location", MODE_PRIVATE).edit().putBoolean("enabled", false).apply()
+                stopService(Intent(this@ZoneAlertActivity, LocationSharingService::class.java))
+            }
+            ensureFriendZoneMonitor(store.all(), hasAcceptedFriends)
+        }
+    }
+
+    private fun ensureFriendZoneMonitor(zones: List<ZoneRecord>, hasAcceptedFriends: Boolean) {
+        val hasMonitoredZones = zones.any { it.enabled && (it.alertOnEnter || it.alertOnExit) }
+        val canMonitor = hasAcceptedFriends && hasMonitoredZones && hasForegroundLocation() && hasBackgroundLocation() && hasNotificationPermission()
+        if (canMonitor) {
+            ContextCompat.startForegroundService(this, Intent(this, LocationSharingService::class.java))
+        } else if (!getSharedPreferences("tracker_location", MODE_PRIVATE).getBoolean("enabled", false) || !hasAcceptedFriends) {
+            stopService(Intent(this, LocationSharingService::class.java))
+        }
+    }
+
+    private fun showLatestFriendAlert() {
+        if (!::alertNotice.isInitialized) return
+        ZoneAlertNotifier.latestMessage(this)?.let {
+            alertNotice.text = it
+            alertNotice.visibility = View.VISIBLE
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         if (::mapView.isInitialized) mapView.onResume()
         if (::zoneList.isInitialized) renderZones(store.all())
+        showLatestFriendAlert()
         if (map != null && hasForegroundLocation()) startLocationUpdates()
     }
 
@@ -330,6 +453,7 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
 
     override fun onDestroy() {
         locationCallback?.let(fused::removeLocationUpdates)
+        realtime?.close()
         if (::mapView.isInitialized) mapView.onDestroy()
         super.onDestroy()
     }
@@ -373,7 +497,9 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
     }
 
     private fun rounded(color: Int, radiusDp: Int) = GradientDrawable().apply { setColor(color); cornerRadius = dp(radiusDp).toFloat() }
-    private fun bordered(color: Int, stroke: Int, radiusDp: Int) = rounded(color, radiusDp).apply { setStroke(dp(1), stroke) }
+    private fun bordered(color: Int, stroke: Int, radiusDp: Int) = rounded(color, radiusDp).apply { setStroke(dp(0.6f), stroke) }
+
+    private fun dp(value: Float) = (value * resources.displayMetrics.density).toInt().coerceAtLeast(1)
 
     private inner class AspectMapFrame : FrameLayout(this@ZoneAlertActivity) {
         override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

@@ -7,8 +7,14 @@ import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
+import com.mobile.trackerapp.ads.AdsManager
 
 abstract class DashboardActivity : AppCompatActivity() {
+    override fun onCreate(state: Bundle?) {
+        super.onCreate(state)
+        AdsManager.loadInterBack(this, ignoreLimit = true)
+    }
+
     protected fun hideNavigationBar() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
             window.decorView.windowInsetsController?.apply {

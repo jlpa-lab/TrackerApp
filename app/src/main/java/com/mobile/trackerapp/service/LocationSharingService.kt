@@ -13,26 +13,69 @@ import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.*
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.network.RealtimeLocationClient
+import com.mobile.trackerapp.ui.tools.ZoneAlertNotifier
+import com.mobile.trackerapp.ui.tools.ZoneStore
 
 class LocationSharingService : Service() {
     private lateinit var fused: FusedLocationProviderClient
     private lateinit var realtime: RealtimeLocationClient
     private var callback: LocationCallback? = null
+    private var sharingEnabled = false
     override fun onCreate() {
-        super.onCreate(); createChannel(); startForeground(NOTIFICATION_ID, notification())
-        if (!getSharedPreferences("tracker_location", MODE_PRIVATE).getBoolean("enabled", false)) { stopSelf(); return }
+        super.onCreate()
+        sharingEnabled = getSharedPreferences("tracker_location", MODE_PRIVATE).getBoolean("enabled", false)
+        val monitorZones = ZoneStore.get(this).all().any { it.enabled && (it.alertOnEnter || it.alertOnExit) }
+        createChannel()
+        startForeground(NOTIFICATION_ID, notification(sharingEnabled))
+        if (!sharingEnabled && !monitorZones) { stopSelf(); return }
         fused = LocationServices.getFusedLocationProviderClient(this)
-        realtime = RealtimeLocationClient(this) { }
+        realtime = RealtimeLocationClient(this) { payload -> ZoneAlertNotifier.processFriendLocation(this, payload) }
         realtime.connect()
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED && checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) { stopSelf(); return }
-        callback = object : LocationCallback() { override fun onLocationResult(result: LocationResult) { result.lastLocation?.let { realtime.sendLocation(it.latitude, it.longitude, batteryPercentage()) } } }
-        fused.requestLocationUpdates(LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000L).setMinUpdateDistanceMeters(5f).build(), callback!!, Looper.getMainLooper())
+        if (sharingEnabled) startSharingUpdates()
     }
     private fun batteryPercentage(): Float = registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))?.let { it.getIntExtra("level", 0) * 100f / it.getIntExtra("scale", 100).coerceAtLeast(1) } ?: 0f
     private fun createChannel() { getSystemService(NotificationManager::class.java).createNotificationChannel(NotificationChannel(CHANNEL, "Location sharing", NotificationManager.IMPORTANCE_LOW)) }
-    private fun notification(): Notification = NotificationCompat.Builder(this, CHANNEL).setSmallIcon(R.mipmap.ic_launcher).setContentTitle("Location sharing active").setContentText("Sharing your live location with accepted friends").setOngoing(true).build()
+    private fun notification(sharing: Boolean): Notification = NotificationCompat.Builder(this, CHANNEL)
+        .setSmallIcon(R.mipmap.ic_launcher)
+        .setContentTitle(if (sharing) "Your location is being shared" else "Zone alerts active")
+        .setContentText(if (sharing) "Your live location is being shared with your accepted friends" else "Watching for friend arrivals and departures")
+        .setOngoing(true)
+        .build()
+    private fun startSharingUpdates() {
+        if (!::fused.isInitialized || !::realtime.isInitialized) return
+        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED && checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            stopSelf()
+            return
+        }
+        callback?.let { fused.removeLocationUpdates(it) }
+        callback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                result.lastLocation?.let { realtime.sendLocation(it.latitude, it.longitude, batteryPercentage()) }
+            }
+        }
+        fused.requestLocationUpdates(LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000L).setMinUpdateDistanceMeters(5f).build(), callback!!, Looper.getMainLooper())
+        fused.lastLocation.addOnSuccessListener { location ->
+            location?.let { realtime.sendLocation(it.latitude, it.longitude, batteryPercentage()) }
+        }
+    }
+
     override fun onDestroy() { callback?.let { fused.removeLocationUpdates(it) }; if (::realtime.isInitialized) realtime.close(); super.onDestroy() }
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int = START_STICKY
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val requestedSharing = getSharedPreferences("tracker_location", MODE_PRIVATE).getBoolean("enabled", false)
+        if (requestedSharing != sharingEnabled) {
+            sharingEnabled = requestedSharing
+            getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification(sharingEnabled))
+            if (sharingEnabled) startSharingUpdates() else callback?.let { fused.removeLocationUpdates(it) }.also { callback = null }
+        }
+        val monitorZones = ZoneStore.get(this).all().any { it.enabled && (it.alertOnEnter || it.alertOnExit) }
+        if (!sharingEnabled && !monitorZones) stopSelf()
+        if (sharingEnabled && ::fused.isInitialized && ::realtime.isInitialized) {
+            fused.lastLocation.addOnSuccessListener { location ->
+                location?.let { realtime.sendLocation(it.latitude, it.longitude, batteryPercentage()) }
+            }
+        }
+        return START_STICKY
+    }
     override fun onBind(intent: Intent?): IBinder? = null
     companion object { private const val CHANNEL = "location_sharing"; private const val NOTIFICATION_ID = 1001 }
 }
