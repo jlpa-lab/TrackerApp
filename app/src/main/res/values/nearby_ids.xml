@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="nearby_place_icon" type="id" />
+    <item name="nearby_place_photo" type="id" />
+    <item name="nearby_place_details" type="id" />
+    <item name="nearby_place_name" type="id" />
+    <item name="nearby_place_meta" type="id" />
+    <item name="nearby_place_status" type="id" />
+    <item name="nearby_place_direction" type="id" />
+</resources>

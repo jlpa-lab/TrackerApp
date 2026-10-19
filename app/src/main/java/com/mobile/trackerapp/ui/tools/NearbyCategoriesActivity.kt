@@ -7,14 +7,9 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
-import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.TextView
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ui.DashboardActivity
 
@@ -28,16 +23,12 @@ class NearbyCategoriesActivity : DashboardActivity() {
         super.onCreate(state)
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        window.statusBarColor = Color.rgb(246, 251, 248)
+        window.navigationBarColor = Color.rgb(246, 251, 248)
         hideNavigationBar()
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.setDecorFitsSystemWindows(window, true)
         val binding = com.mobile.trackerapp.databinding.ActivityNearbyCategoriesBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.categoriesBack.setOnClickListener { finish() }
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            view.setPadding(dp(16), statusBarInset, dp(16),16 )
-            insets
-        }
-        ViewCompat.requestApplyInsets(binding.root)
         populateCategoryGrid(binding.categoriesGrid)
     }
 
@@ -262,95 +253,72 @@ class NearbyCategoriesActivity : DashboardActivity() {
 //}
 
     private fun populateCategoryGrid(gridRows: LinearLayout) {
-        NearbyCategoryCatalog.all.chunked(3).forEach { rowItems ->
+        NearbyCategoryCatalog.groups().forEach { (group, categories) ->
+            gridRows.addView(
+                label(group, 13f, ink, true).apply {
+                    setPadding(0, dp(12), 0, dp(8))
+                },
+                LinearLayout.LayoutParams(-1, wrap())
+            )
 
-            val row = LinearLayout(this).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.TOP
-            }
+            categories.chunked(3).forEach { rowItems ->
+                val row = LinearLayout(this).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.TOP
+                }
 
-            rowItems.forEach { category ->
+                rowItems.forEach { category ->
 
-                val tile = LinearLayout(this).apply {
-                    orientation = LinearLayout.VERTICAL
-                    gravity = Gravity.CENTER
-                    setPadding(dp(4), dp(6), dp(4), dp(6))
+                    val tile = LinearLayout(this).apply {
+                        orientation = LinearLayout.VERTICAL
+                        gravity = Gravity.CENTER
+                        setPadding(dp(6), dp(10), dp(6), dp(10))
 
-                    // Outer background with slight corners
-                    background = rounded(
-                        Color.parseColor("#E8F3E8"),
-                        dp(4)
-                    )
+                        background = bordered(Color.WHITE, Color.rgb(229, 237, 233), dp(16))
 
-                    isClickable = true
-                    isFocusable = true
+                        isClickable = true
+                        isFocusable = true
 
-                    setOnClickListener {
-                        setResult(
-                            Activity.RESULT_OK,
-                            intent.putExtra(EXTRA_CATEGORY, category.name)
-                        )
-                        finish()
+                        setOnClickListener {
+                            setResult(Activity.RESULT_OK, intent.putExtra(EXTRA_CATEGORY, category.name))
+                            finish()
+                        }
                     }
-                }
 
-                // Icon background wraps only around the icon
-                val iconView = label(category.icon, 24f, green).apply {
-                    gravity = Gravity.CENTER
-                    setPadding(dp(8), dp(5), dp(8), dp(5))
+                    val iconView = TextView(this).apply {
+                        text = category.emoji
+                        textSize = 30f
+                        gravity = Gravity.CENTER
+                        includeFontPadding = false
+                        importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                        contentDescription = null
+                        setPadding(0, 0, 0, 0)
+                    }
 
-                    background = rounded(
-                        Color.parseColor("#F2F7F2"),
-                        dp(4)
-                    )
-                }
+                    tile.addView(iconView, LinearLayout.LayoutParams(dp(48), dp(48)))
 
-                tile.addView(
-                    iconView,
-                    LinearLayout.LayoutParams(
-                        wrap(),
-                        wrap()
-                    )
-                )
-
-                // Single-line category text with ellipsis
-                tile.addView(
-                    label(category.name, 12f, ink, true).apply {
+                    tile.addView(label(category.name, 12f, ink, true).apply {
                         gravity = Gravity.CENTER
                         maxLines = 1
                         isSingleLine = true
                         ellipsize = android.text.TextUtils.TruncateAt.END
                         setPadding(0, dp(5), 0, 0)
-                    },
-                    LinearLayout.LayoutParams(
-                        -1,
-                        wrap()
-                    )
-                )
+                    }, LinearLayout.LayoutParams(-1, wrap()))
 
-                row.addView(
-                    tile,
-                    LinearLayout.LayoutParams(0, wrap(), 1f).apply {
-                        marginEnd = dp(7)
-                        bottomMargin = dp(8)
+                    row.addView(tile, LinearLayout.LayoutParams(0, wrap(), 1f).apply {
+                            marginEnd = dp(7)
+                            bottomMargin = dp(8)
+                        })
                     }
-                )
-            }
 
-            // Fill empty columns in the last row
-            repeat(3 - rowItems.size) {
-                row.addView(
-                    View(this),
-                    LinearLayout.LayoutParams(0, 1, 1f).apply {
-                        marginEnd = dp(7)
+                    repeat(3 - rowItems.size) {
+                        row.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f).apply {
+                            marginEnd = dp(7)
+                        })
                     }
-                )
-            }
 
-            gridRows.addView(
-                row,
-                LinearLayout.LayoutParams(-1, wrap())
-            )
+                    gridRows.addView(row, LinearLayout.LayoutParams(-1, wrap()))
+                }
         }
     }
     private fun label(value: String, size: Float, color: Int, bold: Boolean = false) = TextView(this).apply {

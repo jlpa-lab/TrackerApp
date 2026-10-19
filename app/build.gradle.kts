@@ -28,6 +28,8 @@ android {
         versionCode = 1
         versionName = "1.0"
         manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY", "")
+        // A REST key in an APK can be extracted. Restrict it in Google Cloud and
+        // move Places calls behind a backend proxy before production release.
         buildConfigField("String", "GOOGLE_PLACES_API_KEY", "\"${localProperties.getProperty("GOOGLE_PLACES_API_KEY", "")}\"")
         buildConfigField("String", "TRACKER_BACKEND_URL", "\"${localProperties.getProperty("TRACKER_BACKEND_URL", "http://192.168.1.33:5000") }\"")
 
@@ -94,6 +96,8 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
   //  kapt(libs.hilt.compiler)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("io.socket:socket.io-client:2.1.0")
