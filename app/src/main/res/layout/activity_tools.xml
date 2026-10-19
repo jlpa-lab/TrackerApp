@@ -1,136 +1,57 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/home_bg"
-    android:fitsSystemWindows="false"
-    android:orientation="vertical">
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/home_bg" android:fitsSystemWindows="false" android:orientation="vertical">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="16dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="16dp" android:paddingTop="8dp" android:paddingEnd="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tools"
-                android:fontFamily="@font/inter_bold"
-                android:textColor="@color/home_phone_locator_text"
-                android:textSize="22sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tools" android:fontFamily="@font/inter_bold" android:textColor="@color/home_phone_locator_text" android:textSize="22sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="Useful tools for every journey"
-                android:fontFamily="@font/inter_bold"
-                android:textColor="@color/home_text_subtitle"
-                android:textSize="12sp"  />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="Useful tools for every journey" android:fontFamily="@font/inter_bold" android:textColor="@color/home_text_subtitle" android:textSize="12sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="16dp"
-                android:text="GPS tools"
-                android:fontFamily="@font/inter_medium"
-                android:textColor="@color/home_text_subtitle"
-                android:textSize="12sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:layout_marginBottom="16dp" android:text="GPS tools" android:fontFamily="@font/inter_medium" android:textColor="@color/home_text_subtitle" android:textSize="12sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_tool_list"
-                android:orientation="vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_tool_list" android:orientation="vertical" android:paddingStart="16dp" android:paddingEnd="16dp">
 
                 <include android:id="@+id/tool_compass_row" layout="@layout/tool_row_compass" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#E8EDEA" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E8EDEA" />
 
                 <include android:id="@+id/tool_speedometer_row" layout="@layout/tool_row_speedometer" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#E8EDEA" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E8EDEA" />
 
                 <include android:id="@+id/tool_level_row" layout="@layout/tool_row_level" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#E8EDEA" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E8EDEA" />
 
                 <include android:id="@+id/tool_area_codes_row" layout="@layout/tool_row_area" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#E8EDEA" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E8EDEA" />
 
                 <include android:id="@+id/tool_stopwatch_row" layout="@layout/tool_row_stopwatch" />
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="8dp"
-                android:text="Location &amp; alerts"
-                android:textColor="@color/home_text_subtitle"
-                android:textSize="12sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:layout_marginBottom="8dp" android:text="Location &amp; alerts" android:textColor="@color/home_text_subtitle" android:textSize="12sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_tool_list"
-                android:orientation="vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_tool_list" android:orientation="vertical" android:paddingStart="16dp" android:paddingEnd="16dp">
 
                 <include android:id="@+id/tool_nearby_row" layout="@layout/tool_row_nearby" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#E8EDEA" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E8EDEA" />
 
                 <include android:id="@+id/tool_traffic_row" layout="@layout/tool_row_traffic" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#E8EDEA" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E8EDEA" />
 
                 <include android:id="@+id/tool_zone_row" layout="@layout/tool_row_zone" />
             </LinearLayout>
             </LinearLayout>
     </ScrollView>
-    <FrameLayout
-        android:id="@+id/fr_banner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/black">
+    <FrameLayout android:id="@+id/fr_banner" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@color/black">
 
-        <include
-            android:id="@+id/include_banner"
-            layout="@layout/layout_banner_control"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        <include android:id="@+id/include_banner" layout="@layout/layout_banner_control" android:layout_width="match_parent" android:layout_height="wrap_content" />
     </FrameLayout>
 </LinearLayout>
+
+

@@ -56,7 +56,11 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
 
         confirmButton.setOnClickListener {
           //  FirebaseAnalytics.getInstance(this).logEvent("LanguageActivity_confirm", null)
-            startActivity(Intent(this, OnBoardingActivity::class.java))
+            if (fromSetting) {
+                Routes.startMainActivity(this)
+            } else {
+                startActivity(Intent(this, OnBoardingActivity::class.java))
+            }
             finish()
         }
         mBinding.tvLanguage.setOnAdminAdToggleListener(){
@@ -64,10 +68,15 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
             finish()
         }
         mBinding.root.postDelayed({
-            // CHANGE: observe only the initial language ad before any selection.
-            listenLanguageAd()
-            loadNativeLanguageClick(this, appSharedPref.firstLanguage, R.layout.layout_native_language_click)
-            initAds()
+            if (fromSetting) {
+                // Settings opens this screen as a utility page; it must remain ad-free.
+                mBinding.flAds.goneView()
+            } else {
+                // Observe and load language ads only for the onboarding entry path.
+                listenLanguageAd()
+                loadNativeLanguageClick(this, appSharedPref.firstLanguage, R.layout.layout_native_language_click)
+                initAds()
+            }
         }, 100L)
     }
 
@@ -84,8 +93,8 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
             val radio = row.findViewById<RadioButton>(R.id.language_radio)
 
             row.setOnClickListener {
-                // CHANGE: switch to the click-stage ad only after a language is selected.
-                listenLanguageClickAd()
+                // Switch to the click-stage ad only during onboarding, never from Settings.
+                if (!fromSetting) listenLanguageClickAd()
                 selectedRow?.isSelected = false
                 selectedRadio?.isChecked = false
                 row.isSelected = true
@@ -99,6 +108,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
                 getSharedPreferences("app_preferences", MODE_PRIVATE).edit()
                     .putString("selected_language", language.tag)
                     .apply()
+                appSharedPref.languageCode = language.locale
 //                FirebaseAnalytics.getInstance(this)
 //                    .logEvent("LanguageActivity_select_${language.tag}", null)
                 handler.postDelayed(revealConfirmation, CONFIRMATION_DELAY_MS)
@@ -169,22 +179,22 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
         private const val NOTIFICATION_PERMISSION_REQUEST = 1001
 
         private val languages = listOf(
-            LanguageOption("english", R.string.language_english),
-            LanguageOption("vietnamese", R.string.language_vietnamese),
-            LanguageOption("japanese", R.string.language_japanese),
-            LanguageOption("korean", R.string.language_korean),
-            LanguageOption("french", R.string.language_french),
-            LanguageOption("spanish", R.string.language_spanish),
-            LanguageOption("german", R.string.language_german),
-            LanguageOption("portuguese", R.string.language_portuguese),
-            LanguageOption("hindi", R.string.language_hindi),
-            LanguageOption("chinese", R.string.language_chinese),
-            LanguageOption("arabic", R.string.language_arabic),
-            LanguageOption("russian", R.string.language_russian)
+            LanguageOption("english", "en", R.string.language_english),
+            LanguageOption("vietnamese", "vi", R.string.language_vietnamese),
+            LanguageOption("japanese", "ja", R.string.language_japanese),
+            LanguageOption("korean", "ko", R.string.language_korean),
+            LanguageOption("french", "fr", R.string.language_french),
+            LanguageOption("spanish", "es", R.string.language_spanish),
+            LanguageOption("german", "de", R.string.language_german),
+            LanguageOption("portuguese", "pt", R.string.language_portuguese),
+            LanguageOption("hindi", "hi", R.string.language_hindi),
+            LanguageOption("chinese", "zh", R.string.language_chinese),
+            LanguageOption("arabic", "ar", R.string.language_arabic),
+            LanguageOption("russian", "ru", R.string.language_russian)
         )
     }
 
-    private data class LanguageOption(val tag: String, val labelRes: Int)
+        private data class LanguageOption(val tag: String, val locale: String, val labelRes: Int)
 }
 
 

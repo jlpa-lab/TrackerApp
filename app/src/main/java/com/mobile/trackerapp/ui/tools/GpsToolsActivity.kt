@@ -34,12 +34,6 @@ class GpsToolsActivity : DashboardActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val binding = com.mobile.trackerapp.databinding.ActivityGpsToolsBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.gpsToolsBack.setOnClickListener { finish() }
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            view.setPadding(view.paddingLeft, statusBarInset, view.paddingRight, 0)
-            insets
-        }
-        ViewCompat.requestApplyInsets(binding.root)
         AdsManager.loadInterHome(this, ignoreLimit = true)
         AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))

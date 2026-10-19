@@ -186,13 +186,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/bg_tool_list"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="0dp"
+            android:background="@drawable/bg_friend_dialog"
             android:elevation="8dp"
             android:orientation="vertical"
-            android:padding="12dp"
+            android:padding="28dp"
             android:visibility="gone">
 
             <LinearLayout
@@ -237,100 +237,112 @@
             <LinearLayout
                 android:id="@+id/friend_add_button"
                 android:layout_width="match_parent"
-                android:layout_height="36dp"
-                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content"
+                android:minHeight="44dp"
+                android:layout_marginTop="6dp"
                 android:background="@drawable/bg_phone_input"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="10dp">
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="12dp">
 
                 <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:padding="7dp"
+                    android:background="@drawable/bg_friend_icon_soft"
                     android:src="@drawable/ic_friend_request" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/inter_bold"
                     android:text="Add friend"
                     android:textColor="@color/home_phone_locator_text"
-                    android:textSize="12sp" />
+                    android:textSize="13sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="›"
                     android:textColor="@color/home_text_subtitle"
-                    android:textSize="18sp" />
+                    android:textSize="24sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/friend_received_button"
                 android:layout_width="match_parent"
-                android:layout_height="36dp"
+                android:layout_height="wrap_content"
+                android:minHeight="44dp"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/bg_phone_input"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="10dp">
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="12dp">
 
                 <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:src="@drawable/ic_connection_request" />
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:padding="7dp"
+                    android:background="@drawable/bg_friend_icon_soft"
+                    android:src="@drawable/ic_friend_bell" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/inter_bold"
                     android:text="View received requests"
                     android:textColor="@color/home_phone_locator_text"
-                    android:textSize="12sp" />
+                    android:textSize="13sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="›"
                     android:textColor="@color/home_text_subtitle"
-                    android:textSize="18sp" />
+                    android:textSize="24sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/friend_sent_button"
                 android:layout_width="match_parent"
-                android:layout_height="36dp"
+                android:layout_height="wrap_content"
+                android:minHeight="44dp"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/bg_phone_input"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="10dp">
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="12dp">
 
                 <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:src="@drawable/ic_location_sharing" />
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:padding="7dp"
+                    android:background="@drawable/bg_friend_icon_soft"
+                    android:src="@drawable/ic_friend_plane" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/inter_bold"
                     android:text="View sent requests"
                     android:textColor="@color/home_phone_locator_text"
-                    android:textSize="12sp" />
+                    android:textSize="13sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="›"
                     android:textColor="@color/home_text_subtitle"
-                    android:textSize="18sp" />
+                    android:textSize="24sp" />
             </LinearLayout>
         </LinearLayout>
     </FrameLayout>
@@ -367,3 +379,6 @@
             android:layout_height="wrap_content" />
     </FrameLayout>
 </LinearLayout>
+
+
+

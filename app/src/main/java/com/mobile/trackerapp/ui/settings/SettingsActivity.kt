@@ -10,13 +10,14 @@ import com.mobile.trackerapp.ui.DashboardActivity
 import com.mobile.trackerapp.ui.language.LanguageActivity
 import com.mobile.trackerapp.ui.rating.RateAppActivity
 import com.mobile.trackerapp.pref.AppSharedPreferencesApp
+import com.mobile.trackerapp.app.AppConstants
 
 class SettingsActivity : DashboardActivity() {
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         val root = layoutInflater.inflate(R.layout.activity_settings, null) as LinearLayout
         root.findViewById<android.view.View>(R.id.settings_language).setOnClickListener {
-            startActivity(Intent(this, LanguageActivity::class.java))
+            startActivity(Intent(this, LanguageActivity::class.java).putExtra(AppConstants.KEY_SETTING, true))
         }
         root.findViewById<android.view.View>(R.id.settings_rate).setOnClickListener {
             if (AppSharedPreferencesApp(this).isRate) {

@@ -97,12 +97,6 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
         AdsManager.loadInterHome(this, ignoreLimit = true)
         binding.trafficBack.setOnClickListener { onBackPressed() }
         loadTrafficAlertBanner()
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            view.setPadding(0, statusBarInset, 0, 0)
-            insets
-        }
-        ViewCompat.requestApplyInsets(binding.root)
         locationHint = binding.trafficLocationHint
         statusTitle = binding.trafficStatusTitle
         statusDetail = binding.trafficStatusDetail

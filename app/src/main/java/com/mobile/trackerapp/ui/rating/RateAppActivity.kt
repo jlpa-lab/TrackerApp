@@ -25,6 +25,7 @@ class RateAppActivity : AppCompatActivity() {
     private lateinit var feedback: EditText
     private lateinit var count: TextView
     private lateinit var action: TextView
+    private lateinit var later: TextView
 
     private lateinit var rate_feedback_container: RelativeLayout
 
@@ -39,9 +40,14 @@ class RateAppActivity : AppCompatActivity() {
         feedback = findViewById(R.id.rate_feedback);
         count = findViewById(R.id.rate_count);
         action = findViewById(R.id.rate_action)
+        later = findViewById(R.id.rate_later)
         rate_feedback_container = findViewById(R.id.rate_feedback_container)
         findViewById<View>(R.id.rate_close).setOnClickListener {
             RateAppManager.onRateDialogDismissed(); finish()
+        }
+        later.setOnClickListener {
+            RateAppManager.onRateDialogDismissed()
+            finish()
         }
         RateAppManager.onRateDialogShown()
         showStart()
@@ -54,6 +60,8 @@ class RateAppActivity : AppCompatActivity() {
         renderStars();
         action.text = "Rate us"; action.isEnabled = rating > 0
         action.setOnClickListener { if (rating > 0) showResult() }
+        later.visibility = View.VISIBLE
+        later.setTextColor(Color.rgb(190, 190, 190))
     }
 
     private fun showResult() {
@@ -65,6 +73,8 @@ class RateAppActivity : AppCompatActivity() {
         renderStars(); action.text =
             if (rating >= 4) "Rate on Google Play" else "Give feedback"; action.isEnabled = true
         action.setOnClickListener { if (rating >= 4) openPlay() else showFeedback() }
+        later.visibility = View.VISIBLE
+        later.setTextColor(Color.rgb(0, 164, 76))
     }
 
     private fun showFeedback() {
@@ -75,6 +85,7 @@ class RateAppActivity : AppCompatActivity() {
         )
         rate_feedback_container.visibility = View.VISIBLE;
         stars.visibility = View.GONE;
+        later.visibility = View.GONE
         feedback.visibility = View.VISIBLE
         count.visibility = View.VISIBLE;
         count.text = "${feedback.length()}/500"

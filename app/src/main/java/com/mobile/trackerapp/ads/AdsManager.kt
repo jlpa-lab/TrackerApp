@@ -470,6 +470,8 @@ object AdsManager {
                     override fun onNextAction() {
                         super.onNextAction()
                         interWelcomeAdLive = MutableLiveData()
+                        // Refill the cache immediately after the displayed ad is consumed.
+                        loadInterWelcome(context, ignoreLimit = true)
                         onAction()
                     }
                 }, false)

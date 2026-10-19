@@ -21,6 +21,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.view.MotionEvent
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -92,21 +93,43 @@ class AreaCodesActivity : DashboardActivity() {
         binding = ActivityAreaCodesBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.areaBack.setOnClickListener { finish() }
         loadAreaCodeBanner()
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            val contentInset = dp(16)
-            view.setPadding(contentInset, statusBarInset, contentInset, 0)
-            insets
-        }
-        ViewCompat.requestApplyInsets(binding.root)
         queryInput = binding.areaQuery; resultHost = binding.areaResults; countLabel = binding.areaCount
         sectionTitle = binding.areaSectionTitle; locationButton = binding.areaLocation; locationButtonContainer = binding.areaLocationContainer
         hintText = binding.areaHintText
+        queryInput.setOnEditorActionListener { _, actionId, event ->
+            val done = actionId == EditorInfo.IME_ACTION_DONE ||
+                (event?.keyCode == android.view.KeyEvent.KEYCODE_ENTER)
+            if (done) {
+                hideAreaKeyboard()
+                true
+            } else false
+        }
+        binding.root.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN && !isTouchInside(event, queryInput)) {
+                hideAreaKeyboard()
+            }
+            false
+        }
         updateHintText(selectedCountry)
         locationButtonContainer.setOnClickListener { useMyLocation() }
         queryInput.addTextChangedListener(object : TextWatcher { override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int)=Unit; override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int)=scheduleResultsRender(); override fun afterTextChanged(s: Editable?)=Unit })
         renderResults()
         loadCountryEntries(selectedCountry)
+    }
+
+    private fun isTouchInside(event: MotionEvent, view: View): Boolean {
+        val location = IntArray(2)
+        view.getLocationOnScreen(location)
+        val x = event.rawX
+        val y = event.rawY
+        return x >= location[0] && x <= location[0] + view.width &&
+            y >= location[1] && y <= location[1] + view.height
+    }
+
+    private fun hideAreaKeyboard() {
+        (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
+            .hideSoftInputFromWindow(queryInput.windowToken, 0)
+        queryInput.clearFocus()
     }
 
     private fun renderResults() {

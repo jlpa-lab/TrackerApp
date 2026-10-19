@@ -48,6 +48,8 @@ abstract class DashboardActivity : AppCompatActivity() {
     protected fun wrap() = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
     protected fun nav(active: String): android.widget.LinearLayout = android.widget.LinearLayout(this).apply {
         val bar = layoutInflater.inflate(com.mobile.trackerapp.R.layout.home_bottom_nav, this, false) as android.widget.LinearLayout
+        val activeColor = Color.rgb(8, 163, 49)
+        val inactiveColor = Color.rgb(120, 132, 148)
         val tabs = listOf(
             "Home" to bar.getChildAt(0),
             "Tools" to bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_tools),
@@ -56,16 +58,16 @@ abstract class DashboardActivity : AppCompatActivity() {
         )
         tabs.forEach { (name, tab) ->
             val selected = name == active
+            val stateColor = if (selected) activeColor else inactiveColor
             (tab as android.view.ViewGroup).getChildAt(1).let { label ->
-                (label as android.widget.TextView).setTextColor(
-                    if (selected) Color.rgb(8, 163, 49) else Color.rgb(120, 132, 148)
-                )
+                (label as android.widget.TextView).setTextColor(stateColor)
                 label.typeface = android.graphics.Typeface.create(
                     if (selected) "sans-serif-medium" else "sans-serif", android.graphics.Typeface.NORMAL
                 )
             }
             ((tab as android.view.ViewGroup).getChildAt(0) as? android.widget.ImageView)?.apply {
-                if (selected) setColorFilter(Color.rgb(8, 163, 49)) else clearColorFilter()
+                // Apply the inactive tint too; Home's vector drawable is green by default.
+                setColorFilter(stateColor)
             }
         }
         bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_tools).setOnClickListener {

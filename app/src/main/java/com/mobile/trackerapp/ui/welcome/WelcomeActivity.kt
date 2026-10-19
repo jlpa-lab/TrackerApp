@@ -65,6 +65,10 @@ class WelcomeActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        AdsManager.showInterWelcome(this) { finish() }
+    }
+
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)
         super.onDestroy()

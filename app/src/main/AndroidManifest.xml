@@ -105,9 +105,11 @@
             tools:ignore="LockedOrientationActivity"/>
         <activity android:name=".ui.connection.FriendRequestsActivity"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity"/>
         <activity android:name=".ui.connection.ShareConnectionActivity"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity"/>
         <activity android:name=".ui.connection.TrackFriendRequestsActivity"
             android:screenOrientation="portrait"

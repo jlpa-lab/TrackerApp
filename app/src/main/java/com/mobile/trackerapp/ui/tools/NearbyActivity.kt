@@ -291,6 +291,13 @@ class NearbyActivity : DashboardActivity() {
 
     private fun fetchPlaces(query: String, origin: Location): List<NearbyPlace> {
         val collected = LinkedHashMap<String, NearbyPlace>()
+        // Photon is the quickest text-search provider and supports city/place names
+        // directly. Try it first for typed searches instead of waiting through the
+        // slower category/Overpass fallbacks.
+        if (query.isNotBlank()) {
+            runCatching { fetchPhotonPlaces(origin, query) }
+                .getOrNull()?.takeIf { it.isNotEmpty() }?.let { return it }
+        }
         if (BuildConfig.GOOGLE_PLACES_API_KEY.isNotBlank()) {
             runCatching { fetchGooglePlaces(origin, query) }.getOrNull().orEmpty()
                 .forEach { collected[placeKey(it)] = it }
@@ -660,7 +667,7 @@ class NearbyActivity : DashboardActivity() {
         private const val SEARCH_RADIUS_METERS = 5000
         private const val MAX_RESULTS = 30
         private const val INITIAL_RESULT_COUNT = 2
-        private const val SEARCH_DEBOUNCE_MS = 600L
+        private const val SEARCH_DEBOUNCE_MS = 300L
         private const val CONNECT_TIMEOUT_MS = 6_000
         private const val READ_TIMEOUT_MS = 12_000
         private val OVERPASS_ENDPOINTS = listOf(

@@ -16,6 +16,8 @@ import android.widget.BaseAdapter
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
+import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,6 +44,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityPhoneLocatorBinding
+    private var countryDialog: Dialog? = null
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -117,22 +120,46 @@ class PhoneLocatorActivity : AppCompatActivity() {
             CountryItem(it, Locale("", it).displayCountry, "+" + util.getCountryCodeForRegion(it))
         }
 
-        val overlay = findViewById<View>(R.id.country_picker_overlay)
-        val view = findViewById<View>(R.id.country_picker_sheet)
+        countryDialog?.dismiss()
+        val view = layoutInflater.inflate(R.layout.dialog_country_picker, null)
         view.setBackgroundResource(R.drawable.bg_country_sheet)
-        view.layoutParams = (view.layoutParams as android.widget.FrameLayout.LayoutParams).apply {
-            val screenInset = resources.getDimensionPixelSize(R.dimen.phone_locator_screen_inset)
-            width = ViewGroup.LayoutParams.MATCH_PARENT
-            height = (resources.displayMetrics.heightPixels * 0.78f).toInt()
-            gravity = Gravity.BOTTOM
-            marginStart = screenInset
-            marginEnd = screenInset
+        val dialog = Dialog(this)
+        dialog.setContentView(view)
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setOnCancelListener { setCountryPickerBlurred(false) }
+        dialog.window?.apply {
+            setBackgroundDrawableResource(android.R.color.transparent)
+            setDimAmount(0.32f)
+            addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            setGravity(Gravity.BOTTOM)
+            attributes = attributes.apply {
+                width = ViewGroup.LayoutParams.MATCH_PARENT
+                height = ViewGroup.LayoutParams.WRAP_CONTENT
+            }
         }
-        view.setOnClickListener { /* Keep taps inside the sheet from closing it. */ }
-        overlay.setOnClickListener { hideCountryPicker() }
-        overlay.visibility = View.VISIBLE
+        countryDialog = dialog
+        dialog.show()
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        setCountryPickerBlurred(true)
         val countrySearch = view.findViewById<EditText>(R.id.country_search)
         countrySearch.background = null
+        countrySearch.setTextColor(Color.rgb(17, 24, 39))
+        countrySearch.setHintTextColor(Color.rgb(176, 183, 195))
+        countrySearch.alpha = 1f
+        countrySearch.imeOptions = android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
+        countrySearch.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH ||
+                actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE
+            ) {
+                (getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager)
+                    .hideSoftInputFromWindow(countrySearch.windowToken, 0)
+                countrySearch.clearFocus()
+                true
+            } else false
+        }
         val list = view.findViewById<ListView>(R.id.country_list)
         list.setBackgroundColor(Color.WHITE)
         list.cacheColorHint = Color.TRANSPARENT
@@ -151,9 +178,16 @@ class PhoneLocatorActivity : AppCompatActivity() {
                 row.findViewById<TextView>(R.id.country_flag).apply {
                     text = regionToFlag(item.iso)
                     alpha = 1f
+                    setTextColor(Color.BLACK)
                 }
-                row.findViewById<TextView>(R.id.country_name).text = item.name
-                row.findViewById<TextView>(R.id.country_code).text = item.code
+                row.findViewById<TextView>(R.id.country_name).apply {
+                    text = item.name
+                    alpha = 1f
+                }
+                row.findViewById<TextView>(R.id.country_code).apply {
+                    text = item.code
+                    alpha = 1f
+                }
                 row.findViewById<View>(R.id.country_check).visibility = if (isSelected) View.VISIBLE else View.GONE
                 return row
             }
@@ -169,6 +203,14 @@ class PhoneLocatorActivity : AppCompatActivity() {
 
         view.findViewById<View>(R.id.country_close).setOnClickListener { hideCountryPicker() }
         view.findViewById<View>(R.id.country_done).setOnClickListener { hideCountryPicker() }
+        countrySearch.isFocusableInTouchMode = true
+        countrySearch.setOnClickListener {
+            countrySearch.requestFocus()
+            countrySearch.post {
+                (getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager)
+                    .showSoftInput(countrySearch, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+            }
+        }
         countrySearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -188,12 +230,20 @@ class PhoneLocatorActivity : AppCompatActivity() {
     }
 
     private fun hideCountryPicker() {
-        findViewById<View>(R.id.country_picker_overlay).visibility = View.GONE
+        countryDialog?.dismiss()
+        countryDialog = null
+        setCountryPickerBlurred(false)
+    }
+
+    private fun setCountryPickerBlurred(blurred: Boolean) {
+        // The dialog window already dims the Phone Locator screen behind it.
+        // Do not apply a RenderEffect to the activity root: on some devices it
+        // also affects the dialog window and makes the picker text/flags blurry.
     }
 
     @Deprecated("Deprecated in Android API; intercept back while the picker overlay is open")
     override fun onBackPressed() {
-        if (findViewById<View>(R.id.country_picker_overlay).visibility == View.VISIBLE) {
+        if (countryDialog?.isShowing == true) {
             hideCountryPicker()
         } else if (findViewById<View>(R.id.phone_form).visibility == View.VISIBLE) {
             AdsManager.showInterHomeBack(this) {
@@ -223,13 +273,28 @@ class PhoneLocatorActivity : AppCompatActivity() {
     private fun searchNumber() {
         hideKeyboard()
         val raw = findViewById<EditText>(R.id.phone_input).text.toString().trim()
+        if (raw.isEmpty()) {
+            Toast.makeText(this, "Please enter a phone number to search", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val digitCount = raw.count(Char::isDigit)
+        if (digitCount !in 4..15) {
+            showNoResult()
+            return
+        }
         val phoneUtil = PhoneNumberUtil.getInstance()
         val parsed = try {
             phoneUtil.parse(raw, selectedIso)
         } catch (_: Exception) {
             null
         }
-        if (parsed == null || !phoneUtil.isValidNumber(parsed)) { showNoResult(); return }
+        // The global boundary is 4–15 digits, but the number must also be
+        // valid for the selected country. This prevents values such as "12"
+        // from being accepted for India or any other country.
+        if (parsed == null || !phoneUtil.isValidNumberForRegion(parsed, selectedIso)) {
+            showNoResult()
+            return
+        }
 
         val fullNumber = phoneUtil.format(parsed, PhoneNumberUtil.PhoneNumberFormat.E164)
         val info = CarrierDetector.detect(this, fullNumber, selectedIso) ?: run {

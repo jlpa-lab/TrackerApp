@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="Look up country and area codes"
+            android:text="Look up phone area codes by location"
             android:textColor="@color/home_text_subtitle"
             android:fontFamily="@font/inter_regular"
             android:textSize="11sp" />

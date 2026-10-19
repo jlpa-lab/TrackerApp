@@ -2,6 +2,7 @@ package com.mobile.trackerapp.ui.connection
 
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -13,6 +14,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.bindNativeAllAd
 import com.mobile.trackerapp.ads.AdsManager
@@ -56,6 +59,31 @@ class TrackFriendRequestsActivity : DashboardActivity() {
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
         setContentView(layoutResource)
+        val scroll = findViewById<android.widget.ScrollView>(R.id.friend_requests_scroll)
+        val friendCodeInput = findViewById<EditText>(R.id.friend_code_input)
+        val addPanel = findViewById<View>(R.id.add_panel)
+        val initialBottomPadding = scroll.paddingBottom
+        fun revealAddPanel() {
+            val panelRect = Rect()
+            addPanel.getDrawingRect(panelRect)
+            scroll.offsetDescendantRectToMyCoords(addPanel, panelRect)
+            val visibleBottom = scroll.height - scroll.paddingBottom
+            val requiredScroll = panelRect.bottom - visibleBottom + 8
+            if (requiredScroll > 0) scroll.smoothScrollBy(0, requiredScroll)
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { _, insets ->
+            val imeBottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            scroll.setPadding(scroll.paddingLeft, scroll.paddingTop, scroll.paddingRight,
+                initialBottomPadding + imeBottom)
+            if (imeBottom > 0) addPanel.post { revealAddPanel() }
+            insets
+        }
+        friendCodeInput.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) friendCodeInput.postDelayed({
+                if (ViewCompat.getRootWindowInsets(scroll)
+                        ?.isVisible(WindowInsetsCompat.Type.ime()) == true) revealAddPanel()
+            }, 250)
+        }
         AdsManager.showNativeAllAndPreload(this, R.layout.layout_native_ad_small)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))
         findViewById<TextView>(R.id.my_invite_code)?.text = "------"
@@ -450,6 +478,8 @@ class TrackFriendRequestsActivity : DashboardActivity() {
         findViewById<View>(R.id.add_panel).visibility = if (selectedId == R.id.friend_add) View.VISIBLE else View.GONE
         findViewById<View>(R.id.received_panel).visibility = if (selectedId == R.id.friend_received) View.VISIBLE else View.GONE
         findViewById<View>(R.id.sent_panel).visibility = if (selectedId == R.id.friend_sent) View.VISIBLE else View.GONE
+        findViewById<View>(R.id.received_guidance).visibility = if (selectedId == R.id.friend_received) View.VISIBLE else View.GONE
+        findViewById<View>(R.id.sent_guidance).visibility = if (selectedId == R.id.friend_sent) View.VISIBLE else View.GONE
     }
 }
 

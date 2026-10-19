@@ -227,6 +227,10 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
     private fun saveZone() {
         val name = zoneName.text?.toString()?.trim().orEmpty()
         if (name.isBlank()) { zoneName.error = "Enter a zone name"; return }
+        if (!enterCheck.isChecked && !exitCheck.isChecked) {
+            Toast.makeText(this, "Select Alert on Enter or Alert on Exit", Toast.LENGTH_SHORT).show()
+            return
+        }
         val point = selectedLocation
         if (point == null) { Toast.makeText(this, "Choose a location on the map first.", Toast.LENGTH_SHORT).show(); return }
         val old = if (zoneId == NO_ZONE) null else ZoneStore.get(this).get(zoneId)

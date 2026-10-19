@@ -3,6 +3,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.app.Activity
+import android.app.Dialog
 import android.net.Uri
 import android.provider.Settings
 import android.location.Geocoder
@@ -12,11 +13,14 @@ import android.os.Bundle
 import android.os.Looper
 import android.widget.TextView
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.widget.ImageView
+import android.widget.FrameLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,7 +36,6 @@ import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.databinding.ActivityLiveLocationBinding
 import com.mobile.trackerapp.network.RealtimeLocationClient
 import com.mobile.trackerapp.network.TrackerBackendClient
 import com.mobile.trackerapp.service.LocationSharingService
@@ -47,7 +50,8 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
-    private lateinit var binding: ActivityLiveLocationBinding
+    private var friendsDialog: Dialog? = null
+    private var friendsPanel: View? = null
     protected open val locationLayout: Int = R.layout.activity_live_location
     private val friendsOnly by lazy { intent.getBooleanExtra("friends_only", false) }
     private lateinit var map: GoogleMap
@@ -101,12 +105,11 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(state)
         AdsManager.loadInterBack(this, ignoreLimit = true)
         fused = LocationServices.getFusedLocationProviderClient(this)
-        binding = ActivityLiveLocationBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(layoutInflater.inflate(locationLayout, null))
         AdsManager.loadBanner(
             this,
             AdRemoteConfig.banner_all,
-            binding.frBanner,
+            findViewById(R.id.fr_banner),
             isCollapse = false
         )
         AdsManager.loadInterHome(this, ignoreLimit = true)
@@ -321,18 +324,43 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         if (findViewById<View>(R.id.friend_rows)?.visibility == View.VISIBLE) renderFriendRows()
     }
     private fun toggleFriendsPanel() {
-        val panel = findViewById<View>(R.id.friend_empty_state)
-        val visible = panel.visibility != View.VISIBLE
-        setFriendsPanelVisible(visible)
-        if (!visible) return
-        findViewById<TextView>(R.id.friend_empty_message).text = "Loading accepted friends…"
-        findViewById<TextView>(R.id.friend_empty_message).visibility = View.VISIBLE
+        if (friendsDialog?.isShowing == true) {
+            friendsDialog?.dismiss()
+            return
+        }
+        val panel = friendsPanel ?: findViewById<View>(R.id.friend_empty_state)
+            ?: return
+        friendsPanel = panel
+        (panel.parent as? ViewGroup)?.removeView(panel)
+        panel.visibility = View.VISIBLE
+        val dialog = Dialog(this)
+        dialog.setContentView(panel)
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setOnDismissListener { friendsDialog = null }
+        dialog.window?.apply {
+            setBackgroundDrawableResource(android.R.color.transparent)
+            setDimAmount(0.32f)
+            addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            setGravity(Gravity.BOTTOM)
+        }
+        friendsDialog = dialog
+        dialog.show()
+        dialog.window?.setLayout(
+            resources.displayMetrics.widthPixels - dp(24),
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        dialog.window?.attributes = dialog.window?.attributes?.apply { y = dp(10) }
+        panel.findViewById<TextView>(R.id.friend_empty_message).text = "Loading accepted friends…"
+        panel.findViewById<TextView>(R.id.friend_empty_message).visibility = View.VISIBLE
         loadAcceptedFriends()
     }
 
     private fun setFriendsPanelVisible(visible: Boolean) {
-        findViewById<View>(R.id.friend_empty_state).visibility = if (visible) View.VISIBLE else View.GONE
-        findViewById<View>(R.id.friend_panel_scrim).visibility = if (visible) View.VISIBLE else View.GONE
+        if (visible) {
+            if (friendsDialog?.isShowing != true) toggleFriendsPanel()
+        } else {
+            friendsDialog?.dismiss()
+        }
     }
 
     private fun loadAcceptedFriends() {
@@ -386,9 +414,10 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     )
 
     private fun renderFriendRows() {
-        val rows = findViewById<LinearLayout>(R.id.friend_rows)
-        val empty = findViewById<TextView>(R.id.friend_empty_message)
-        val count = findViewById<TextView>(R.id.friend_count)
+        val panel = friendsPanel ?: return
+        val rows = panel.findViewById<LinearLayout>(R.id.friend_rows)
+        val empty = panel.findViewById<TextView>(R.id.friend_empty_message)
+        val count = panel.findViewById<TextView>(R.id.friend_count)
         rows.removeAllViews()
         count.text = "${acceptedFriends.size} ${if (acceptedFriends.size == 1) "friend" else "friends"}"
         empty.text = when {
@@ -403,7 +432,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
                 setPadding(dp(16), dp(12), dp(16), dp(12))
-                setBackgroundResource(R.drawable.bg_phone_input)
+                setBackgroundColor(Color.TRANSPARENT)
                 isClickable = true
                 isFocusable = true
                 setOnClickListener {
@@ -424,12 +453,12 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             row.addView(TextView(this).apply {
                 text = name.trim().firstOrNull()?.uppercase(Locale.getDefault()) ?: "?"
-                textSize = 18f
+                textSize = 16f
                 setTextColor(Color.rgb(12, 20, 38))
                 setTypeface(null, Typeface.BOLD)
                 gravity = Gravity.CENTER
                 background = getDrawable(R.drawable.bg_friend_icon_soft)
-            }, LinearLayout.LayoutParams(dp(48), dp(48)))
+            }, LinearLayout.LayoutParams(dp(20), dp(20)))
 
             val details = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
             details.addView(TextView(this@LiveLocationActivity).apply {
@@ -453,14 +482,21 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             row.addView(details, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginStart = dp(12) })
             val right = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
-                gravity = Gravity.CENTER_HORIZONTAL
-            }
-            right.addView(TextView(this).apply {
-                text = "●"
-                textSize = 14f
-                setTextColor(if (friendMarkers.containsKey(id)) Color.rgb(0, 166, 70) else Color.rgb(170, 180, 185))
                 gravity = Gravity.CENTER
-            }, LinearLayout.LayoutParams(dp(20), dp(22)))
+            }
+            right.addView(FrameLayout(this).apply {
+                val online = friendMarkers.containsKey(id)
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(Color.rgb(232, 243, 232))
+                }
+                addView(View(this@LiveLocationActivity).apply {
+                    background = GradientDrawable().apply {
+                        shape = GradientDrawable.OVAL
+                        setColor(if (online) Color.rgb(0, 166, 70) else Color.rgb(210, 55, 55))
+                    }
+                }, FrameLayout.LayoutParams(dp(6), dp(6), Gravity.CENTER))
+            }, LinearLayout.LayoutParams(dp(20), dp(20)))
             if (!friendPermissionGranted[id].orFalse()) {
                 val pending = friendLocationRequestStatus[id] == "pending"
                 right.addView(TextView(this).apply {
@@ -474,8 +510,8 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                     setOnClickListener { requestFriendLocation(id) }
                 }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(28)))
             }
-            row.addView(right, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(50)))
-            rows.addView(row, LinearLayout.LayoutParams(-1, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
+            row.addView(right, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+            rows.addView(row, LinearLayout.LayoutParams(-1, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) })
         }
     }
     private fun Boolean?.orFalse() = this == true
