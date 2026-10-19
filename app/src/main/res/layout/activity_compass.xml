@@ -8,7 +8,7 @@
     android:fillViewport="true"
     android:scrollbars="none"
     android:orientation="vertical"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="false">
 
     <ScrollView
         android:layout_width="match_parent"

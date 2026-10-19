@@ -31,6 +31,12 @@
     "reloadIntervalSeconds": 30,
     "enable_ua_check": false
   },
+  "banner_collapsible_home": {
+    "id": "ca-app-pub-3940256099942544/9214589741",
+    "isEnable": true,
+    "reloadIntervalSeconds": 30,
+    "enable_ua_check": false
+  },
   "banner_splash_uninstall": {
     "id": "ca-app-pub-3940256099942544/9214589741",
     "isEnable": true,

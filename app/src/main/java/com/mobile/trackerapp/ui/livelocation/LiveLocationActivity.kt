@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.IntentSenderRequest
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.location.*
 import com.google.android.gms.common.api.ResolvableApiException
@@ -32,7 +33,6 @@ import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityLiveLocationBinding
-import com.mobile.trackerapp.databinding.ActivityToolsBinding
 import com.mobile.trackerapp.network.RealtimeLocationClient
 import com.mobile.trackerapp.network.TrackerBackendClient
 import com.mobile.trackerapp.service.LocationSharingService
@@ -46,7 +46,8 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
 
-open class LiveLocationActivity : FragmentActivity(), OnMapReadyCallback {
+open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
+    private lateinit var binding: ActivityLiveLocationBinding
     protected open val locationLayout: Int = R.layout.activity_live_location
     private val friendsOnly by lazy { intent.getBooleanExtra("friends_only", false) }
     private lateinit var map: GoogleMap
@@ -100,7 +101,14 @@ open class LiveLocationActivity : FragmentActivity(), OnMapReadyCallback {
         super.onCreate(state)
         AdsManager.loadInterBack(this, ignoreLimit = true)
         fused = LocationServices.getFusedLocationProviderClient(this)
-        setContentView(locationLayout)
+        binding = ActivityLiveLocationBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        AdsManager.loadBanner(
+            this,
+            AdRemoteConfig.banner_all,
+            binding.frBanner,
+            isCollapse = false
+        )
         AdsManager.loadInterHome(this, ignoreLimit = true)
         if (friendsOnly) {
             realtime = RealtimeLocationClient(this) { payload -> runOnUiThread { showFriendLocation(payload) } }

@@ -74,6 +74,9 @@ val AdRemoteConfig.Companion.inter_onboarding: AdUnitConfig
 val AdRemoteConfig.Companion.banner_home: AdUnitConfig
     get() = getInstance().banner_home
 
+val AdRemoteConfig.Companion.banner_collapsible_home: AdUnitConfig
+    get() = getInstance().banner_collapsible_home
+
 val AdRemoteConfig.Companion.native_survey: AdUnitConfig
     get() = getInstance().native_survey
 

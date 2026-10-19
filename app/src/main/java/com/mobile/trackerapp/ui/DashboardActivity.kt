@@ -31,7 +31,7 @@ abstract class DashboardActivity : AppCompatActivity() {
         val root = android.widget.LinearLayout(this)
         root.orientation = android.widget.LinearLayout.VERTICAL
         root.setBackgroundColor(Color.rgb(248, 252, 249))
-        root.fitsSystemWindows = true
+        root.fitsSystemWindows = false
         root.setPadding(dp(16), dp(16), dp(16), 0)
         val scroll = android.widget.ScrollView(this)
         val content = android.widget.LinearLayout(this)
@@ -47,33 +47,40 @@ abstract class DashboardActivity : AppCompatActivity() {
     protected fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
     protected fun wrap() = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
     protected fun nav(active: String): android.widget.LinearLayout = android.widget.LinearLayout(this).apply {
-        gravity = android.view.Gravity.CENTER; setBackgroundResource(com.mobile.trackerapp.R.drawable.bg_bottom_nav); setPadding(0, dp(12), 0, dp(12))
-        val items = listOf(
-            Triple("Home", com.mobile.trackerapp.ui.home.HomeActivity::class.java, com.mobile.trackerapp.R.drawable.ic_nav_home),
-            Triple("Tools", com.mobile.trackerapp.ui.tools.ToolsActivity::class.java, com.mobile.trackerapp.R.drawable.ic_nav_tools),
-            Triple("Connection", com.mobile.trackerapp.ui.connection.ConnectionActivity::class.java, com.mobile.trackerapp.R.drawable.ic_nav_connection),
-            Triple("Setting", com.mobile.trackerapp.ui.settings.SettingsActivity::class.java, com.mobile.trackerapp.R.drawable.ic_nav_settings)
+        val bar = layoutInflater.inflate(com.mobile.trackerapp.R.layout.home_bottom_nav, this, false) as android.widget.LinearLayout
+        val tabs = listOf(
+            "Home" to bar.getChildAt(0),
+            "Tools" to bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_tools),
+            "Connection" to bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_connection),
+            "Setting" to bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_settings)
         )
-        items.forEach { (label, target, icon) ->
-            val item = android.widget.LinearLayout(this@DashboardActivity).apply { orientation = android.widget.LinearLayout.VERTICAL; gravity = android.view.Gravity.CENTER }
-            item.addView(android.widget.ImageView(this@DashboardActivity).apply {
-                setImageResource(
-                    when {
-                        label == "Tools" && label == active -> com.mobile.trackerapp.R.drawable.ic_nav_tools_active
-                        label == "Home" && label != active -> com.mobile.trackerapp.R.drawable.ic_nav_home_inactive
-                        else -> icon
-                    }
+        tabs.forEach { (name, tab) ->
+            val selected = name == active
+            (tab as android.view.ViewGroup).getChildAt(1).let { label ->
+                (label as android.widget.TextView).setTextColor(
+                    if (selected) Color.rgb(8, 163, 49) else Color.rgb(120, 132, 148)
                 )
-                alpha = 1f
-                if (label == active && label != "Tools") {
-                    setColorFilter(Color.rgb(8, 163, 49))
-                } else {
-                    clearColorFilter()
-                }
-            }, android.widget.LinearLayout.LayoutParams(dp(24), dp(24)))
-            item.addView(text(label, 14f, if (label == active) Color.rgb(8, 163, 49) else Color.rgb(72, 76, 82)).apply { gravity = android.view.Gravity.CENTER; setPadding(0, dp(2), 0, 0) })
-            addView(item, android.widget.LinearLayout.LayoutParams(0, wrap(), 1f)); item.setOnClickListener { if (label != active) { startActivity(Intent(this@DashboardActivity, target)); finish() } }
+                label.typeface = android.graphics.Typeface.create(
+                    if (selected) "sans-serif-medium" else "sans-serif", android.graphics.Typeface.NORMAL
+                )
+            }
+            ((tab as android.view.ViewGroup).getChildAt(0) as? android.widget.ImageView)?.apply {
+                if (selected) setColorFilter(Color.rgb(8, 163, 49)) else clearColorFilter()
+            }
         }
+        bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_tools).setOnClickListener {
+            if (active != "Tools") { startActivity(Intent(this@DashboardActivity, com.mobile.trackerapp.ui.tools.ToolsActivity::class.java)); finish() }
+        }
+        bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_connection).setOnClickListener {
+            if (active != "Connection") { startActivity(Intent(this@DashboardActivity, com.mobile.trackerapp.ui.connection.ConnectionActivity::class.java)); finish() }
+        }
+        bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_settings).setOnClickListener {
+            if (active != "Setting") { startActivity(Intent(this@DashboardActivity, com.mobile.trackerapp.ui.settings.SettingsActivity::class.java)); finish() }
+        }
+        bar.getChildAt(0).setOnClickListener {
+            if (active != "Home") { startActivity(Intent(this@DashboardActivity, com.mobile.trackerapp.ui.home.HomeActivity::class.java)); finish() }
+        }
+        addView(bar, android.widget.LinearLayout.LayoutParams(-1, wrap()))
     }
 }
 

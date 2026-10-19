@@ -1,53 +1,60 @@
 package com.mobile.trackerapp.ui.tools
 
 import android.os.Bundle
-import android.view.View
+import android.content.Intent
 import android.widget.LinearLayout
-import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.ads.banner_splash
-import com.mobile.trackerapp.ads.banner_splash_uninstall
-import com.mobile.trackerapp.databinding.ActivitySplashBinding
 import com.mobile.trackerapp.databinding.ActivityToolsBinding
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.rating.RateAppManager
 
 class ToolsActivity : DashboardActivity() {
     private lateinit var binding: ActivityToolsBinding
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
-        val root = layoutInflater.inflate(R.layout.activity_tools, null) as LinearLayout
-        //root.addView(nav("Tools"), LinearLayout.LayoutParams(-1, wrap()))
         binding = ActivityToolsBinding.inflate(layoutInflater)
+        val toolsBanner = binding.frBanner
+        binding.root.removeView(toolsBanner)
+        binding.root.addView(nav("Tools"), LinearLayout.LayoutParams(-1, wrap()))
+        binding.root.addView(toolsBanner)
         setContentView(binding.root)
         AdsManager.loadInterHome(this, ignoreLimit = true)
         hideNavigationBar()
         loadToolsBanner()
-        root.findViewById<View>(R.id.tool_compass_row).setOnClickListener {
-            startActivity(android.content.Intent(this, CompassActivity::class.java))
+        binding.toolCompassRow.root.setOnClickListener {
+            RateAppManager.markGpsToolUsed()
+            startActivity(Intent(this, CompassActivity::class.java))
         }
-        root.findViewById<View>(R.id.tool_speedometer_row).setOnClickListener {
-            startActivity(android.content.Intent(this, SpeedometerActivity::class.java))
+        binding.toolSpeedometerRow.root.setOnClickListener {
+            RateAppManager.markGpsToolUsed()
+            startActivity(Intent(this, SpeedometerActivity::class.java))
         }
-        root.findViewById<View>(R.id.tool_level_row).setOnClickListener {
-            startActivity(android.content.Intent(this, LevelMeterActivity::class.java))
+        binding.toolLevelRow.root.setOnClickListener {
+            RateAppManager.markGpsToolUsed()
+            startActivity(Intent(this, LevelMeterActivity::class.java))
         }
-        root.findViewById<View>(R.id.tool_area_codes_row).setOnClickListener {
-            startActivity(android.content.Intent(this, AreaCodesActivity::class.java))
+        binding.toolAreaCodesRow.root.setOnClickListener {
+            RateAppManager.markGpsToolUsed()
+            startActivity(Intent(this, AreaCodesActivity::class.java))
         }
-        root.findViewById<View>(R.id.tool_stopwatch_row).setOnClickListener {
-            startActivity(android.content.Intent(this, StopwatchActivity::class.java))
+        binding.toolStopwatchRow.root.setOnClickListener {
+            RateAppManager.markGpsToolUsed()
+            startActivity(Intent(this, StopwatchActivity::class.java))
         }
-        root.findViewById<View>(R.id.tool_traffic_row).setOnClickListener {
-            startActivity(android.content.Intent(this, TrafficAlertActivity::class.java))
+        binding.toolTrafficRow.root.setOnClickListener {
+            RateAppManager.markCoreFeatureUsed()
+            startActivity(Intent(this, TrafficAlertActivity::class.java))
         }
-        root.findViewById<View>(R.id.tool_zone_row).setOnClickListener {
-            startActivity(android.content.Intent(this, ZoneAlertActivity::class.java))
+        binding.toolZoneRow.root.setOnClickListener {
+            RateAppManager.markZoneCreated()
+            startActivity(Intent(this, ZoneAlertActivity::class.java))
         }
-        root.findViewById<View>(R.id.tool_nearby_row).setOnClickListener {
-            startActivity(android.content.Intent(this, NearbyActivity::class.java))
+        binding.toolNearbyRow.root.setOnClickListener {
+            RateAppManager.markNearbyUsed()
+            startActivity(Intent(this, NearbyActivity::class.java))
         }
     }
 

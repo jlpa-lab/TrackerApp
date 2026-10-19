@@ -14,6 +14,7 @@ import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.inter_home
 import com.mobile.trackerapp.ads.inter_splash
 import com.mobile.trackerapp.ads.inter_splash_uninstall
+import com.mobile.trackerapp.ads.banner_collapsible_home
 import com.mobile.trackerapp.bases.ext.isNetwork
 import com.mobile.trackerapp.ads.populateNativeAdView
 import com.mobile.trackerapp.databinding.ActivityMainBinding
@@ -30,6 +31,8 @@ import com.mobile.trackerapp.ui.phonelocator.PhoneLocatorActivity
 import com.mobile.trackerapp.ui.livelocation.LiveLocationActivity
 import com.mobile.trackerapp.ui.tracker.TrackFriendMapActivity
 import com.mobile.trackerapp.ui.tracker.TrackFriendActivity
+import com.mobile.trackerapp.ui.rating.RateAppActivity
+import com.mobile.trackerapp.ui.rating.RateAppManager
 import com.mobile.trackerapp.utils.Routes
 
 class HomeActivity : AppCompatActivity() {
@@ -43,6 +46,30 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(state)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val homeRoot = binding.root
+        val homeNav = homeRoot.getChildAt(homeRoot.childCount - 1)
+        val navTabs = listOf(
+            homeNav.findViewById<View>(R.id.nav_tools),
+            homeNav.findViewById<View>(R.id.nav_connection),
+            homeNav.findViewById<View>(R.id.nav_settings)
+        )
+        navTabs.forEach { tab ->
+            (tab as android.view.ViewGroup).getChildAt(1).apply {
+                (this as android.widget.TextView).setTextColor(android.graphics.Color.rgb(120, 132, 148))
+                typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.NORMAL)
+            }
+            ((tab as android.view.ViewGroup).getChildAt(0) as? android.widget.ImageView)?.clearColorFilter()
+        }
+        homeRoot.removeView(binding.frBannerCollapsibleHome)
+        homeRoot.removeView(homeNav)
+        homeRoot.addView(homeNav)
+        homeRoot.addView(binding.frBannerCollapsibleHome)
+        AdsManager.loadBanner(
+            this,
+            AdRemoteConfig.banner_collapsible_home,
+            binding.frBannerCollapsibleHome,
+            isCollapse = true
+        )
         nativeHomeContainer = binding.nativeHomeContainer
         nativeHomeAdContainer = binding.frNativeHome
         nativeHomeShimmer = binding.nativeHomeShimmer.root
@@ -125,6 +152,13 @@ class HomeActivity : AppCompatActivity() {
         }
         findViewById<android.view.View>(R.id.nav_settings).setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (RateAppManager.shouldShowRateDialog(this)) {
+            startActivity(Intent(this, RateAppActivity::class.java))
         }
     }
 

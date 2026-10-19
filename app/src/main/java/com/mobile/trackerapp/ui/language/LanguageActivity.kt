@@ -48,13 +48,6 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
         super.onCreate(savedInstanceState)
         // CHANGE: BaseActivity already inflated and attached this layout as mBinding.
         // Reusing it prevents the ad from being rendered into a detached copy.
-        val root = mBinding.languageRoot
-        ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
-            val statusBarTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            view.setPadding(view.paddingLeft, statusBarTop, view.paddingRight, view.paddingBottom)
-            insets
-        }
-
         Log.d("AppEvent", "LanguageActivity")
       //  FirebaseAnalytics.getInstance(this).logEvent("LanguageActivity", null)
       //  configureRemoteConfig()

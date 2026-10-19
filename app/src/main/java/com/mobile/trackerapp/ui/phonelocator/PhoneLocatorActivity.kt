@@ -1,10 +1,12 @@
 package com.mobile.trackerapp.ui.phonelocator
+import android.Manifest
 
 import android.content.Intent
 import android.provider.ContactsContract
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.content.pm.PackageManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
@@ -16,6 +18,7 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.bindNativeAllAd
@@ -28,6 +31,15 @@ class PhoneLocatorActivity : AppCompatActivity() {
     private var selectedIso = "VN"
     private var selectedDialCode = "+84"
     private var currentNumber = ""
+    private var pendingLookupNumber = ""
+    private val contactsPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted && pendingLookupNumber.isNotBlank()) {
+            applyKnownContact(pendingLookupNumber)
+        }
+        pendingLookupNumber = ""
+    }
 
     private lateinit var binding: ActivityPhoneLocatorBinding
 
@@ -40,6 +52,9 @@ class PhoneLocatorActivity : AppCompatActivity() {
         AdsManager.loadInterHome(this, ignoreLimit = true)
         AdsManager.loadInterBack(this, ignoreLimit = true)
         WindowCompat.setDecorFitsSystemWindows(window, true)
+        if (checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            contactsPermission.launch(Manifest.permission.READ_CONTACTS)
+        }
         showForm()
         val input = findViewById<EditText>(R.id.phone_input)
         input.background = null
@@ -226,6 +241,55 @@ class PhoneLocatorActivity : AppCompatActivity() {
         showDetails()
         findViewById<TextView>(R.id.details_number).text = fullNumber
         findViewById<TextView>(R.id.details_country).text = info.country
+        if (checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            applyKnownContact(fullNumber)
+        } else {
+            pendingLookupNumber = fullNumber
+            contactsPermission.launch(Manifest.permission.READ_CONTACTS)
+        }
+    }
+
+    private fun applyKnownContact(number: String) {
+        var contactName: String? = null
+        val lookupUri = ContactsContract.PhoneLookup.CONTENT_FILTER_URI.buildUpon()
+            .appendPath(Uri.encode(number))
+            .build()
+        contentResolver.query(
+            lookupUri,
+            arrayOf(ContactsContract.PhoneLookup.DISPLAY_NAME),
+            null,
+            null,
+            null
+        )?.use { cursor ->
+            if (cursor.moveToFirst()) contactName = cursor.getString(0)
+        }
+        if (contactName.isNullOrBlank()) {
+            val targetDigits = number.filter(Char::isDigit).takeLast(10)
+            contentResolver.query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER),
+                null, null, null
+            )?.use { cursor ->
+                val nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+                val numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                while (cursor.moveToNext()) {
+                    val savedDigits = cursor.getString(numberIndex).orEmpty().filter(Char::isDigit)
+                    if (savedDigits.takeLast(10) == targetDigits) {
+                        contactName = cursor.getString(nameIndex)
+                        break
+                    }
+                }
+            }
+        }
+        val nameView = findViewById<TextView>(R.id.details_name)
+        val locationView = findViewById<View>(R.id.details_location)
+        if (contactName.isNullOrBlank()) {
+            nameView.text = "Unknown"
+            locationView.setBackgroundResource(R.drawable.bg_phone_pill_unknown)
+        } else {
+            nameView.text = contactName
+            locationView.setBackgroundResource(R.drawable.bg_phone_pill_known)
+        }
     }
 
     private fun dialNumber() {

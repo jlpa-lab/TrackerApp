@@ -10,6 +10,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.network.TrackerBackendClient
+import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,9 +40,13 @@ class RateAppActivity : AppCompatActivity() {
         count = findViewById(R.id.rate_count);
         action = findViewById(R.id.rate_action)
         rate_feedback_container = findViewById(R.id.rate_feedback_container)
-        findViewById<View>(R.id.rate_close).setOnClickListener { finish() }
-        findViewById<View>(R.id.rate_later).setOnClickListener { finish() }
+        findViewById<View>(R.id.rate_close).setOnClickListener {
+            RateAppManager.onRateDialogDismissed(); finish()
+        }
+        RateAppManager.onRateDialogShown()
         showStart()
+        stars.visibility = View.VISIBLE;
+        rate_feedback_container.visibility = View.GONE;
     }
 
     private fun showStart() {
@@ -69,6 +74,8 @@ class RateAppActivity : AppCompatActivity() {
             "Let us know how we can improve."
         )
         rate_feedback_container.visibility = View.VISIBLE;
+        stars.visibility = View.GONE;
+        feedback.visibility = View.VISIBLE
         count.visibility = View.VISIBLE;
         count.text = "${feedback.length()}/500"
         action.text = "Submit";
@@ -98,12 +105,9 @@ class RateAppActivity : AppCompatActivity() {
                 this@RateAppActivity
             ).submitFeedback(rating, text) }
                 .onSuccess {
-                    configure(
-                        R.drawable.rate_feedback,
-                        "Thanks for your feedback!",
-                        "We appreciate your help in making the app better."
-                    ); action.visibility = View.GONE; feedback.visibility =
-                    View.GONE; count.visibility = View.GONE
+                    RateAppManager.onUserRated(this@RateAppActivity)
+                    Toast.makeText(this@RateAppActivity, "Thanks for your feedback!", Toast.LENGTH_SHORT).show()
+                    finish()
                 }
                 .onFailure {
                     submitting = false; action.isEnabled = true; action.text =
@@ -141,7 +145,18 @@ class RateAppActivity : AppCompatActivity() {
     }
 
     private fun openPlay() {
-        val id = packageName; runCatching {
+        RateAppManager.onUserRated(this)
+        val id = packageName
+        runCatching {
+            val reviewManager = ReviewManagerFactory.create(this)
+            reviewManager.requestReviewFlow().addOnSuccessListener { info ->
+                reviewManager.launchReviewFlow(this, info)
+            }.addOnFailureListener { openPlayStore(id) }
+        }.onFailure { openPlayStore(id) }
+    }
+
+    private fun openPlayStore(id: String) {
+        runCatching {
             startActivity(
                 Intent(
                     Intent.ACTION_VIEW,
@@ -155,7 +170,8 @@ class RateAppActivity : AppCompatActivity() {
                     Uri.parse("https://play.google.com/store/apps/details?id=$id")
                 )
             )
-        }; finish()
+        }
+        finish()
     }
 
     private val Int.dp get() = (this * resources.displayMetrics.density).toInt()

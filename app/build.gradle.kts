@@ -10,6 +10,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
   //  alias(libs.plugins.hilt)
     kotlin("kapt")
     id("kotlin-parcelize")
@@ -46,12 +48,18 @@ android {
             buildConfigField("String", "ERAIN_STUDIO_VERSION", "\"$erain_studio_version\"")
             buildConfigField("String", "PLAY_SERVICES_ADS_VERSION", "\"$play_services_ads_version\"")
             buildConfigField("String", "GDPR_MODULE_VERSION", "\"$module_update_gdpr_version\"")
+            firebaseCrashlytics {
+                mappingFileUploadEnabled = false
+            }
         }
         release {
             buildConfigField("String", "ERAIN_STUDIO_VERSION", "\"$erain_studio_version\"")
             buildConfigField("String", "PLAY_SERVICES_ADS_VERSION", "\"$play_services_ads_version\"")
             buildConfigField("String", "GDPR_MODULE_VERSION", "\"$module_update_gdpr_version\"")
             isMinifyEnabled = false
+            firebaseCrashlytics {
+                mappingFileUploadEnabled = true
+            }
         }
     }
     compileOptions {
@@ -75,6 +83,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.config)
     implementation(libs.onesignal)
     implementation(libs.androidx.lifecycle.runtime.ktx)

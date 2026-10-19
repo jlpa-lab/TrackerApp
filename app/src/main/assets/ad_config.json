@@ -21,6 +21,18 @@
     "reloadIntervalSeconds": 30,
     "enable_ua_check": false
   },
+  "banner_all": {
+    "id": "ca-app-pub-2864154863223892/1889686722",
+    "isEnable": true,
+    "reloadIntervalSeconds": 30,
+    "enable_ua_check": false
+  },
+  "banner_collapsible_home": {
+    "id": "ca-app-pub-2864154863223892/7508844913",
+    "isEnable": true,
+    "reloadIntervalSeconds": 30,
+    "enable_ua_check": false
+  },
   "open_resume": {
     "id": "ca-app-pub-7208941695689653/4237597942",
     "isEnable": true,

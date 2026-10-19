@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/home_bg"
-    android:fitsSystemWindows="true"
+    android:fitsSystemWindows="false"
     android:orientation="vertical">
 
     <ScrollView
@@ -55,35 +55,35 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp">
 
-                <include layout="@layout/tool_row_compass" />
+                <include android:id="@+id/tool_compass_row" layout="@layout/tool_row_compass" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="#E8EDEA" />
 
-                <include layout="@layout/tool_row_speedometer" />
+                <include android:id="@+id/tool_speedometer_row" layout="@layout/tool_row_speedometer" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="#E8EDEA" />
 
-                <include layout="@layout/tool_row_level" />
+                <include android:id="@+id/tool_level_row" layout="@layout/tool_row_level" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="#E8EDEA" />
 
-                <include layout="@layout/tool_row_area" />
+                <include android:id="@+id/tool_area_codes_row" layout="@layout/tool_row_area" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="#E8EDEA" />
 
-                <include layout="@layout/tool_row_stopwatch" />
+                <include android:id="@+id/tool_stopwatch_row" layout="@layout/tool_row_stopwatch" />
             </LinearLayout>
 
             <TextView
@@ -103,21 +103,21 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp">
 
-                <include layout="@layout/tool_row_nearby" />
+                <include android:id="@+id/tool_nearby_row" layout="@layout/tool_row_nearby" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="#E8EDEA" />
 
-                <include layout="@layout/tool_row_traffic" />
+                <include android:id="@+id/tool_traffic_row" layout="@layout/tool_row_traffic" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="#E8EDEA" />
 
-                <include layout="@layout/tool_row_zone" />
+                <include android:id="@+id/tool_zone_row" layout="@layout/tool_row_zone" />
             </LinearLayout>
             </LinearLayout>
     </ScrollView>

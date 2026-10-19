@@ -75,7 +75,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/bg_track_friend"
-                android:visibility="gone"
                 android:gravity="top"
                 android:hint="Write your feedback here..."
                 android:inputType="textMultiLine"
@@ -114,15 +113,5 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/rate_later"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_semibold"
-            android:gravity="center"
-            android:paddingTop="14dp"
-            android:text="Maybe later"
-            android:textColor="@color/home_green_background"
-            android:textSize="12sp" />
     </LinearLayout>
 </LinearLayout>

@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.mobile.trackerapp.TrackerApplication
 
 class AppActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
@@ -16,6 +18,18 @@ class AppActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
 
     override fun onActivityResumed(activity: Activity) {
         TrackerApplication.currentActivity = activity
+        val content = activity.findViewById<View>(android.R.id.content)
+        if (activity::class.java.simpleName !in setOf(
+                "SplashActivity", "LanguageActivity", "OnBoardingActivity", "WelcomeActivity",
+                "ReasonActivity", "ConfirmUninstallActivity"
+            )) {
+            ViewCompat.setOnApplyWindowInsetsListener(content) { view, insets ->
+                val statusTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+                view.setPadding(view.paddingLeft, statusTop, view.paddingRight, 0)
+                insets
+            }
+            ViewCompat.requestApplyInsets(content)
+        }
         if (activity::class.java.simpleName !in setOf(
                 "SplashActivity",
                 "LanguageActivity",

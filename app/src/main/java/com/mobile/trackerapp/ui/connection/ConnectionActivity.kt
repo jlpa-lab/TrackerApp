@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -18,17 +17,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.pm.PackageManager
-import androidx.appcompat.widget.SwitchCompat
-import com.ads.module.ads.wrapper.ApNativeAd
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.ads.bindNativeAllAd
 import com.mobile.trackerapp.databinding.ActivityConnectionBinding
-import com.mobile.trackerapp.databinding.ActivityToolsBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import com.mobile.trackerapp.ui.tools.ZoneStore
+import com.mobile.trackerapp.ui.rating.RateAppManager
 
 class ConnectionActivity : DashboardActivity() {
     private lateinit var binding: ActivityConnectionBinding
@@ -52,20 +48,20 @@ class ConnectionActivity : DashboardActivity() {
         super.onCreate(state)
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         val content = layoutInflater.inflate(R.layout.activity_connection, root, false)
+        binding = ActivityConnectionBinding.bind(content)
+        val contentBanner = binding.frBanner
+        (content as? LinearLayout)?.removeView(contentBanner)
         root.addView(content, LinearLayout.LayoutParams(-1, 0, 1f))
-        root.addView(layoutInflater.inflate(R.layout.layout_native_all, root, false))
         root.addView(nav("Connection"), LinearLayout.LayoutParams(-1, wrap()))
-        binding = ActivityConnectionBinding.inflate(layoutInflater)
+        contentBanner?.let { root.addView(it, LinearLayout.LayoutParams(-1, wrap())) }
         setContentView(root)
         loadConnectionBanner()
         AdsManager.loadInterHome(this, ignoreLimit = true)
-        AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
-        bindNativeAllAd(this, findViewById(R.id.native_all_container))
-        findViewById<View>(R.id.connection_share_invite).setOnClickListener { startActivity(Intent(this, ShareConnectionActivity::class.java)) }
-        findViewById<View>(R.id.connection_show_qr).setOnClickListener { startActivity(Intent(this, MyQrActivity::class.java)) }
-        findViewById<View>(R.id.connection_manage_requests).setOnClickListener { startActivity(Intent(this, FriendRequestsActivity::class.java)) }
+        binding.connectionShareInvite.setOnClickListener { startActivity(Intent(this, ShareConnectionActivity::class.java)) }
+        binding.connectionShowQr.setOnClickListener { startActivity(Intent(this, MyQrActivity::class.java)) }
+        binding.connectionManageRequests.setOnClickListener { startActivity(Intent(this, FriendRequestsActivity::class.java)) }
         val prefs = getSharedPreferences("tracker_location", MODE_PRIVATE)
-        val sharing = findViewById<SwitchCompat>(R.id.connection_location_switch)
+        val sharing = binding.connectionLocationSwitch
         sharing.isChecked = prefs.getBoolean("enabled", false)
         if (sharing.isChecked && !hasBackgroundLocation()) {
             prefs.edit().putBoolean("enabled", false).apply()
@@ -98,7 +94,7 @@ class ConnectionActivity : DashboardActivity() {
     }
 
     private fun attemptEnableSharing() {
-        val sharing = findViewById<SwitchCompat>(R.id.connection_location_switch)
+        val sharing = binding.connectionLocationSwitch
         if (!hasForegroundLocation()) {
             setSharingChecked(false)
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST)
@@ -130,6 +126,7 @@ class ConnectionActivity : DashboardActivity() {
             setSharingChecked(true)
             updateSharingSummary(true)
             Toast.makeText(this@ConnectionActivity, "Your location is being shared with your friends", Toast.LENGTH_SHORT).show()
+            RateAppManager.markConnectionAdded()
             ContextCompat.startForegroundService(this@ConnectionActivity, Intent(this@ConnectionActivity, LocationSharingService::class.java))
         }
     }
@@ -160,11 +157,11 @@ class ConnectionActivity : DashboardActivity() {
             .show()
     }
 
-    private fun updateSharingSummary(enabled: Boolean) { findViewById<TextView>(R.id.connection_location_summary).text = if (enabled) "Your location is being shared with your approved friends." else "Location sharing is off" }
+    private fun updateSharingSummary(enabled: Boolean) { binding.connectionLocationSummary.text = if (enabled) "Your location is being shared with your approved friends." else "Location sharing is off" }
 
     private fun setSharingChecked(checked: Boolean) {
         suppressSharingChange = true
-        findViewById<SwitchCompat>(R.id.connection_location_switch).isChecked = checked
+        binding.connectionLocationSwitch.isChecked = checked
         suppressSharingChange = false
     }
 
@@ -175,7 +172,7 @@ class ConnectionActivity : DashboardActivity() {
         if (!::backend.isInitialized) backend = TrackerBackendClient(this)
         CoroutineScope(Dispatchers.Main).launch { runCatching { backend.register(); backend.listRequests() }.onSuccess { result ->
             val count = result.optJSONArray("requests")?.let { array -> (0 until array.length()).count { array.optJSONObject(it)?.optString("status", "pending") == "pending" } } ?: 0
-            findViewById<TextView>(R.id.connection_request_count).apply { text = count.toString(); visibility = if (count > 0) View.VISIBLE else View.GONE }
+            binding.connectionRequestCount.apply { text = count.toString(); visibility = if (count > 0) View.VISIBLE else View.GONE }
         } }
     }
 

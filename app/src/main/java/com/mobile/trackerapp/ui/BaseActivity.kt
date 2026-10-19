@@ -126,8 +126,7 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity() {
                 controller.hide(WindowInsetsCompat.Type.navigationBars())
                 controller.systemBarsBehavior = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             } else {
-                val navigationBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-                view.updatePadding(bottom = navigationBarInsets.bottom)
+                view.updatePadding(bottom = view.resources.displayMetrics.density.toInt())
             }
 
             val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
