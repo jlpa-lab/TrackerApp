@@ -24,6 +24,11 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
+import com.mobile.trackerapp.databinding.ActivityScanQrBinding
+import com.mobile.trackerapp.databinding.ActivitySpeedometerBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import java.util.Locale
 import kotlin.math.cos
@@ -64,7 +69,7 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
             if (trip == TripState.RUNNING) timerHandler.postDelayed(this, 1000L)
         }
     }
-
+    private lateinit var binding: ActivitySpeedometerBinding
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         window.statusBarColor = android.graphics.Color.rgb(246, 251, 248)
@@ -72,9 +77,9 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-        val binding =
-            com.mobile.trackerapp.databinding.ActivitySpeedometerBinding.inflate(layoutInflater)
+        binding = ActivitySpeedometerBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.speedometerBack.setOnClickListener { finish() }
+        loadSpeedometerBanner()
         gauge = SpeedometerGauge(this); binding.speedometerGaugeHost.addView(
             gauge,
             android.widget.FrameLayout.LayoutParams(-1, -1)
@@ -277,6 +282,12 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
         if (hasLocationPermission()) startGpsUpdates()
     }
 
+    private fun loadSpeedometerBanner() {
+        val bannerConfig = AdRemoteConfig.banner_all
+        AdsManager.loadBanner(
+            this, bannerConfig, binding.frBanner, isCollapse = false
+        )
+    }
     private fun startGpsUpdates() {
         if (locationUpdatesStarted || !hasLocationPermission()) return
         try {

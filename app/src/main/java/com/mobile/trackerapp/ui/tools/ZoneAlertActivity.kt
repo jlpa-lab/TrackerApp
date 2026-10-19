@@ -38,7 +38,11 @@ import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
+import com.mobile.trackerapp.databinding.ActivityTrafficAlertBinding
+import com.mobile.trackerapp.databinding.ActivityZoneAlertBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import com.mobile.trackerapp.ui.ZoneToggleView
 import com.mobile.trackerapp.network.RealtimeLocationClient
@@ -50,6 +54,8 @@ import kotlinx.coroutines.launch
 
 /** Saved safe/danger zones and entry/exit monitoring controls. */
 class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
+
+    private lateinit var binding: ActivityZoneAlertBinding
     private val ink = Color.rgb(17, 24, 39)
     private val muted = Color.rgb(125, 137, 153)
     private val green = Color.rgb(0, 164, 76)
@@ -84,10 +90,11 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
-        val binding = com.mobile.trackerapp.databinding.ActivityZoneAlertBinding.inflate(layoutInflater)
+        binding = ActivityZoneAlertBinding.inflate(layoutInflater)
         setContentView(binding.root)
         AdsManager.loadInterHome(this, ignoreLimit = true)
         binding.zoneBack.setOnClickListener { onBackPressed() };
+        loadZoneAlertBanner()
         binding.zoneAdd.setOnClickListener { startActivity(Intent(this, CreateZoneActivity::class.java)) }
         binding.zoneCount.setOnClickListener {
             if (store.all().isNotEmpty()) {
@@ -160,7 +167,12 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         }
         ensureFriendZoneMonitor(zones, hasAcceptedFriends)
     }
-
+    private fun loadZoneAlertBanner() {
+        val bannerConfig = AdRemoteConfig.banner_all
+        AdsManager.loadBanner(
+            this, bannerConfig, binding.frBanner, isCollapse = false
+        )
+    }
     private fun zoneCard(zone: ZoneRecord): View = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
         setPadding(dp(12), dp(10), dp(12), dp(10))

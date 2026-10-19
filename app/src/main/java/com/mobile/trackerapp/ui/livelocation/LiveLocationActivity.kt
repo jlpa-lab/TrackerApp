@@ -31,6 +31,8 @@ import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.banner_all
+import com.mobile.trackerapp.databinding.ActivityLiveLocationBinding
+import com.mobile.trackerapp.databinding.ActivityToolsBinding
 import com.mobile.trackerapp.network.RealtimeLocationClient
 import com.mobile.trackerapp.network.TrackerBackendClient
 import com.mobile.trackerapp.service.LocationSharingService
@@ -515,13 +517,6 @@ open class LiveLocationActivity : FragmentActivity(), OnMapReadyCallback {
     }
     override fun onDestroy() { callback?.let { fused.removeLocationUpdates(it) }; if (::realtime.isInitialized) realtime.close(); super.onDestroy() }
 
-
-//    private fun loadLiveLocationBanner() {
-//        val bannerConfig = AdRemoteConfig.banner_all
-//        AdsManager.loadBanner(
-//            this, bannerConfig, binding.frBanner, isCollapse = false
-//        )
-//    }
     override fun onBackPressed() {
         AdsManager.showInterHomeBack(this) {
             finish()

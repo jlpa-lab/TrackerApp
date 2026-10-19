@@ -1,7 +1,9 @@
 package com.mobile.trackerapp.ui.tracker
 
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.ui.livelocation.LiveLocationActivity
 
 /** Dedicated Track Friend map entry. It owns the Track Friend map flow and its Add Friend action. */

@@ -1,20 +1,21 @@
 {
   "project_info": {
-    "project_number": "123456789012",
-    "project_id": "phone-tracker-demo",
-    "storage_bucket": "phone-tracker-demo.appspot.com"
+    "project_number": "816844427394",
+    "project_id": "pa-mkt-12-phone-tracker",
+    "storage_bucket": "pa-mkt-12-phone-tracker.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789012:android:0000000000000000000000",
+        "mobilesdk_app_id": "1:816844427394:android:4003be117a8024445e249b",
         "android_client_info": {
           "package_name": "com.mobile.trackerapp"
         }
       },
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "DEMO_API_KEY_REPLACE_WITH_FIREBASE_KEY"
+          "current_key": "AIzaSyDc-M6AOSB2QZRMK7D2Suk7CG7R7j_HU90"
         }
       ],
       "services": {

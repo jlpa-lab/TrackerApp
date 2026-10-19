@@ -24,6 +24,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
+import com.mobile.trackerapp.databinding.ActivityCompassBinding
+import com.mobile.trackerapp.databinding.ActivityStopwatchBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import java.util.Locale
 import kotlin.math.abs
@@ -33,6 +38,8 @@ import kotlin.math.sin
 
 /** Live magnetic compass, opened from the Compass row in Tools. */
 class CompassActivity : DashboardActivity(), SensorEventListener, LocationListener {
+
+    private lateinit var binding: ActivityCompassBinding
     private val ink = android.graphics.Color.rgb(13, 22, 39)
     private val green = android.graphics.Color.rgb(0, 164, 76)
     private val muted = android.graphics.Color.rgb(119, 130, 148)
@@ -64,9 +71,10 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
-        val binding = com.mobile.trackerapp.databinding.ActivityCompassBinding.inflate(layoutInflater)
+        binding = ActivityCompassBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.compassBack.setOnClickListener { finish() }
+        loadCompassBanner()
         dial = CompassDialView()
         binding.compassDialHost.addView(dial, android.widget.FrameLayout.LayoutParams(-1, -1))
         headingValue = binding.compassHeading; directionValue = binding.compassDirection
@@ -77,7 +85,12 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
         renderAccuracy()
         if (!hasLocationPermission()) requestLocationPermission()
     }
-
+    private fun loadCompassBanner() {
+        val bannerConfig = AdRemoteConfig.banner_all
+        AdsManager.loadBanner(
+            this, bannerConfig, binding.frBanner, isCollapse = false
+        )
+    }
     private fun detailRow(title: String): Pair<LinearLayout, TextView> {
         val row = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL; setPadding(0, dp(10), 0, dp(10)) }
         row.addView(text(title, 14f, muted), LinearLayout.LayoutParams(0, wrap(), 1f))

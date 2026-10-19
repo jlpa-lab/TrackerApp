@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/home_bg"
     android:clipToPadding="false"
     android:fillViewport="true"
+    android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:scrollbars="none">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,8 +21,7 @@
         android:orientation="vertical"
         android:paddingStart="16dp"
         android:paddingTop="14dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="24dp">
+        android:paddingEnd="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -221,4 +227,17 @@
                 android:textSize="13sp" />
         </LinearLayout>
     </LinearLayout>
-</ScrollView>
+    </ScrollView>
+    <FrameLayout
+        android:id="@+id/fr_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black">
+
+        <include
+            android:id="@+id/include_banner"
+            layout="@layout/layout_banner_control"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+</LinearLayout>

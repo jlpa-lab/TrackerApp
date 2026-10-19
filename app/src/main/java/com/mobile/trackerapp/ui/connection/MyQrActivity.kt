@@ -7,14 +7,20 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.network.TrackerBackendClient
 import com.mobile.trackerapp.data.LocalTrackerDb
+import com.mobile.trackerapp.databinding.ActivityMyQrBinding
+import com.mobile.trackerapp.databinding.ActivityScanQrBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.mobile.trackerapp.ui.DashboardActivity
 
 class MyQrActivity : DashboardActivity() {
+    private lateinit var binding: ActivityMyQrBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.statusBarColor = Color.rgb(246, 251, 248)
@@ -22,11 +28,13 @@ class MyQrActivity : DashboardActivity() {
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
-        setContentView(R.layout.activity_my_qr)
+        binding = ActivityMyQrBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        loadMyQrBanner()
         val inviteCode = ConnectionInvite.code(this)
         findViewById<View>(R.id.my_qr_back).setOnClickListener { finish() }
         val sharing = getSharedPreferences("tracker_location", MODE_PRIVATE).getBoolean("enabled", false)
-        findViewById<TextView>(R.id.my_qr_status).text = if (sharing) "●  Live Location Sharing Active" else "●  Location sharing is off"
+        findViewById<TextView>(R.id.my_qr_status).text = if (sharing) "Live Location Sharing Active" else "Location sharing is off"
         val render: (String) -> Unit = { code ->
             findViewById<TextView>(R.id.my_qr_code_text).text = code
             findViewById<ImageView>(R.id.my_qr_image).setImageBitmap(ConnectionInvite.qrBitmap(code, 640))
@@ -43,5 +51,11 @@ class MyQrActivity : DashboardActivity() {
             putExtra(Intent.EXTRA_TEXT, "Connect with me on GPS Tracker. My invite code is $code")
         }
         startActivity(Intent.createChooser(send, "Share friend invite"))
+    }
+    private fun loadMyQrBanner() {
+        val bannerConfig = AdRemoteConfig.banner_all
+        AdsManager.loadBanner(
+            this, bannerConfig, binding.frBanner, isCollapse = false
+        )
     }
 }

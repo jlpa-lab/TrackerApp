@@ -39,6 +39,11 @@ import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
+import com.mobile.trackerapp.databinding.ActivityCreateZoneBinding
+import com.mobile.trackerapp.databinding.ActivityZoneAlertBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import com.mobile.trackerapp.ui.ZoneToggleView
 import java.util.Locale
@@ -46,6 +51,8 @@ import java.util.concurrent.Executors
 
 /** Map-based create/edit screen for a saved geofence. */
 class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
+
+    private lateinit var binding: ActivityCreateZoneBinding
     private val ink = Color.rgb(17, 24, 39)
     private val muted = Color.rgb(125, 137, 153)
     private val green = Color.rgb(0, 164, 76)
@@ -82,9 +89,11 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
+        binding = ActivityCreateZoneBinding.inflate(layoutInflater)
         zoneId = intent.getLongExtra(EXTRA_ZONE_ID, NO_ZONE)
         val binding = com.mobile.trackerapp.databinding.ActivityCreateZoneBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.createZoneBack.setOnClickListener { finish() }
+        loadCreateZoneBanner()
         mapView=binding.createZoneMap; zoneName=binding.createZoneName; searchInput=binding.createZoneSearch; addressText=binding.createZoneAddress; radiusText=binding.createZoneRadiusText; radiusBar=binding.createZoneRadius; safeButton=binding.createZoneSafe; dangerButton=binding.createZoneDanger; saveButton=binding.createZoneSave; enterCheck=binding.createZoneEnter; exitCheck=binding.createZoneExit; enterCheck.isChecked = true; exitCheck.isChecked = true; locationHint=binding.createZoneLocationHint
         // The map is inside a ScrollView. Keep vertical drags on the map from
         // being intercepted by the page so the user can pan the zone normally.
@@ -107,7 +116,12 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
     private fun typeButton(title: String) = text(title, 13f, muted, true).apply {
         gravity = Gravity.CENTER; setPadding(dp(7), dp(10), dp(7), dp(10)); isClickable = true; isFocusable = true
     }
-
+    private fun loadCreateZoneBanner() {
+        val bannerConfig = AdRemoteConfig.banner_all
+        AdsManager.loadBanner(
+            this, bannerConfig, binding.frBanner, isCollapse = false
+        )
+    }
     private fun renderTypeButtons() {
         safeButton.background = typeBordered(if (isSafe) Color.rgb(237, 250, 245) else Color.WHITE, if (isSafe) green else Color.rgb(229, 237, 233), dp(12))
         safeButton.setTextColor(if (isSafe) green else muted)

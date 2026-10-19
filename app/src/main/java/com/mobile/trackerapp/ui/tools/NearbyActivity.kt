@@ -38,7 +38,10 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.BuildConfig
+import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
+import com.mobile.trackerapp.databinding.ActivityNearbyBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -64,6 +67,8 @@ private data class NearbyPlace(
 
 /** Nearby search backed by live OpenStreetMap data, with routes opened in the installed maps app. */
 class NearbyActivity : DashboardActivity() {
+
+    private lateinit var binding: ActivityNearbyBinding
     private val ink = Color.rgb(17, 24, 39)
     private val muted = Color.rgb(126, 137, 153)
     private val green = Color.rgb(0, 164, 76)
@@ -83,7 +88,7 @@ class NearbyActivity : DashboardActivity() {
     private lateinit var stateDescription: TextView
     private lateinit var stateAction: TextView
     private lateinit var loading: ProgressBar
-    private lateinit var nearbyRoot: ScrollView
+    private lateinit var nearbyRoot: LinearLayout
     private var selectedCategory = "Coffee"
     private var lastLocation: Location? = null
     private var requestVersion = 0
@@ -101,10 +106,11 @@ class NearbyActivity : DashboardActivity() {
         restoreNearbyWindow()
         selectedCategory = state?.getString(STATE_CATEGORY) ?: "Coffee"
         currentQuery = state?.getString(STATE_QUERY).orEmpty()
-        val binding = com.mobile.trackerapp.databinding.ActivityNearbyBinding.inflate(layoutInflater)
+        binding = ActivityNearbyBinding.inflate(layoutInflater)
         setContentView(binding.root)
         AdsManager.loadInterHome(this, ignoreLimit = true)
         binding.nearbyBack.setOnClickListener { onBackPressed() }
+        loadNearByBanner()
         nearbyRoot = binding.root
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
@@ -481,7 +487,12 @@ class NearbyActivity : DashboardActivity() {
             results.addView(placeCard(place), LinearLayout.LayoutParams(-1, wrap()).apply { bottomMargin = dp(8) })
         }
     }
-
+    private fun loadNearByBanner() {
+        val bannerConfig = AdRemoteConfig.banner_all
+        AdsManager.loadBanner(
+            this, bannerConfig, binding.frBanner, isCollapse = false
+        )
+    }
     private fun placeCard(place: NearbyPlace): View = LinearLayout(this).apply {
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL

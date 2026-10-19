@@ -34,13 +34,17 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
+import com.mobile.trackerapp.databinding.ActivityNearbyBinding
 import com.mobile.trackerapp.databinding.ActivityTrafficAlertBinding
 import kotlin.math.ceil
 import kotlin.math.max
 
 /** Live Google Maps traffic overlay centered on the user's current location. */
 class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
+
     private val fusedLocation by lazy { LocationServices.getFusedLocationProviderClient(this) }
     private lateinit var binding: ActivityTrafficAlertBinding
     private lateinit var locationHint: TextView
@@ -92,6 +96,7 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(binding.root)
         AdsManager.loadInterHome(this, ignoreLimit = true)
         binding.trafficBack.setOnClickListener { onBackPressed() }
+        loadTrafficAlertBanner()
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
             view.setPadding(0, statusBarInset, 0, 0)
@@ -124,7 +129,12 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
         updateTrafficSummary()
         requestLocationAccess()
     }
-
+    private fun loadTrafficAlertBanner() {
+        val bannerConfig = AdRemoteConfig.banner_all
+        AdsManager.loadBanner(
+            this, bannerConfig, binding.frBanner, isCollapse = false
+        )
+    }
     private fun requestLocationAccess() {
         if (hasLocationPermission()) {
             ensureLocationSettings()

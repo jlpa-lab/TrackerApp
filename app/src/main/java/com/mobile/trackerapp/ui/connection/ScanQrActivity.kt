@@ -21,9 +21,16 @@ import com.google.zxing.common.HybridBinarizer
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
+import com.mobile.trackerapp.databinding.ActivityScanQrBinding
+import com.mobile.trackerapp.databinding.ActivityToolsBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 
 class ScanQrActivity : DashboardActivity() {
+
+    private lateinit var binding: ActivityScanQrBinding
     private val galleryPicker = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             result.data?.data?.let { uri ->
@@ -44,8 +51,10 @@ class ScanQrActivity : DashboardActivity() {
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
-        setContentView(R.layout.activity_scan_qr)
+        binding = ActivityScanQrBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         barcodeView = findViewById(R.id.scan_barcode_view)
+        loadScanQrBanner()
         barcodeView.decodeSingle { result -> result.text?.takeIf { it.isNotBlank() }?.let(::returnCode) }
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST) else barcodeView.resume()
         findViewById<View>(R.id.scan_back).setOnClickListener { finish() }
@@ -89,6 +98,12 @@ class ScanQrActivity : DashboardActivity() {
     private fun returnCode(code: String) {
         setResult(RESULT_OK, Intent().putExtra(EXTRA_SCANNED_CODE, code.trim()))
         finish()
+    }
+    private fun loadScanQrBanner() {
+        val bannerConfig = AdRemoteConfig.banner_all
+        AdsManager.loadBanner(
+            this, bannerConfig, binding.frBanner, isCollapse = false
+        )
     }
 
     companion object {

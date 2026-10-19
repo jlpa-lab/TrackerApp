@@ -14,6 +14,11 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
+import com.mobile.trackerapp.databinding.ActivityAreaCodesBinding
+import com.mobile.trackerapp.databinding.ActivityStopwatchBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import java.util.Locale
 
@@ -29,6 +34,7 @@ class StopwatchActivity : DashboardActivity() {
     private lateinit var lapList: LinearLayout
     private lateinit var leftButton: TextView
     private lateinit var mainButton: TextView
+    private lateinit var binding: ActivityStopwatchBinding
 
     private val ticker = object : Runnable {
         override fun run() {
@@ -46,8 +52,9 @@ class StopwatchActivity : DashboardActivity() {
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
-        val binding = com.mobile.trackerapp.databinding.ActivityStopwatchBinding.inflate(layoutInflater)
+        binding = ActivityStopwatchBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.stopwatchBack.setOnClickListener { finish() }
+        loadStopWatchBanner()
         elapsedText = binding.stopwatchElapsed; stateText = binding.stopwatchState; currentLapText = binding.stopwatchCurrentLap
         lapCountText = binding.stopwatchLapCount; lapList = binding.stopwatchLapList; leftButton = binding.stopwatchLeft; mainButton = binding.stopwatchMain; totalTimeText = binding.textTime; currentLapRowLabel = binding.textCurrentlap
         leftButton.setOnClickListener { if (timer.isRunning) { timer.recordLap(); renderLaps(); renderState() } else if (timer.elapsedMillis() > 0L || timer.laps.isNotEmpty()) { timer.reset(); renderLaps(); renderState() } }
@@ -55,7 +62,12 @@ class StopwatchActivity : DashboardActivity() {
         renderState()
         renderLaps()
     }
-
+    private fun loadStopWatchBanner() {
+        val bannerConfig = AdRemoteConfig.banner_all
+        AdsManager.loadBanner(
+            this, bannerConfig, binding.frBanner, isCollapse = false
+        )
+    }
     private fun actionButton(title: String, primary: Boolean) = label(title, 14f, if (primary) Color.WHITE else GREEN, true).apply {
         gravity = Gravity.CENTER
         setPadding(dp(12), dp(14), dp(12), dp(14))

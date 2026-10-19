@@ -16,6 +16,11 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
+import com.mobile.trackerapp.databinding.ActivityLevelMeterBinding
+import com.mobile.trackerapp.databinding.ActivityScanQrBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import java.util.Locale
 import kotlin.math.abs
@@ -27,6 +32,8 @@ import kotlin.math.sqrt
 
 /** Accelerometer-based surface level, horizontal level, and vertical plumb tool. */
 class LevelMeterActivity : DashboardActivity(), SensorEventListener {
+
+    private lateinit var binding: ActivityLevelMeterBinding
     private val ink = android.graphics.Color.rgb(15, 23, 42)
     private val green = android.graphics.Color.rgb(8, 163, 73)
     private val muted = android.graphics.Color.rgb(119, 130, 148)
@@ -56,8 +63,9 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
         window.navigationBarColor = android.graphics.Color.rgb(246, 251, 248)
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-        val binding = com.mobile.trackerapp.databinding.ActivityLevelMeterBinding.inflate(layoutInflater)
+        binding = ActivityLevelMeterBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.levelBack.setOnClickListener { finish() }
+        loadLevelMeterBanner()
         modeTitle = binding.levelModeTitle; pitchValue = binding.levelPitch; rollValue = binding.levelRoll
         instrument = InstrumentView(); binding.levelInstrumentHost.addView(instrument, android.widget.FrameLayout.LayoutParams(-1, -1))
         holdButton = binding.levelHold
@@ -94,7 +102,12 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
         instrument.mode = selected
         instrument.invalidate()
     }
-
+    private fun loadLevelMeterBanner() {
+        val bannerConfig = AdRemoteConfig.banner_all
+        AdsManager.loadBanner(
+            this, bannerConfig, binding.frBanner, isCollapse = false
+        )
+    }
     private fun toggleHold() {
         if (heldReading == null) {
             heldReading = currentReading.copy()

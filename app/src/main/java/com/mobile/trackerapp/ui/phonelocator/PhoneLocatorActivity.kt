@@ -188,7 +188,13 @@ class PhoneLocatorActivity : AppCompatActivity() {
             showForm()
         }
     }
+    private fun hideKeyboard() {
+        val view = currentFocus ?: window.decorView
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
 
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        view.clearFocus()
+    }
     private fun regionToFlag(region: String): String {
         val flag = StringBuilder()
         region.uppercase(Locale.US).forEach { letter ->
@@ -200,6 +206,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
 
     // ---------- search ----------
     private fun searchNumber() {
+        hideKeyboard()
         val raw = findViewById<EditText>(R.id.phone_input).text.toString().trim()
         val phoneUtil = PhoneNumberUtil.getInstance()
         val parsed = try {

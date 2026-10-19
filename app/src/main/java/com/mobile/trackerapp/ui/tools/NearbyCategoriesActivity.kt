@@ -7,6 +7,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -25,8 +26,6 @@ class NearbyCategoriesActivity : DashboardActivity() {
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
-        window.statusBarColor = Color.rgb(246, 251, 248)
-        window.navigationBarColor = Color.rgb(246, 251, 248)
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
@@ -35,31 +34,325 @@ class NearbyCategoriesActivity : DashboardActivity() {
         setContentView(binding.root); binding.categoriesBack.setOnClickListener { finish() }
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            view.setPadding(dp(16), statusBarInset + dp(16), dp(16), dp(16))
+            view.setPadding(dp(16), statusBarInset, dp(16),16 )
             insets
         }
         ViewCompat.requestApplyInsets(binding.root)
         populateCategoryGrid(binding.categoriesGrid)
     }
 
+//    private fun populateCategoryGrid(gridRows: LinearLayout) {
+//        NearbyCategoryCatalog.all.chunked(3).forEach { rowItems ->
+//            val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.TOP }
+//            rowItems.forEach { category ->
+//                val tile = LinearLayout(this).apply {
+//                    orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER; setPadding(dp(6), dp(12), dp(6), dp(12))
+//                    background = bordered(Color.WHITE, Color.rgb(229, 237, 233), dp(15)); isClickable = true; isFocusable = true
+//                    setOnClickListener { setResult(Activity.RESULT_OK, intent.putExtra(EXTRA_CATEGORY, category.name)); finish() }
+//                }
+//                tile.addView(label(category.icon, 24f, green).apply { gravity = Gravity.CENTER; setPadding(dp(6), dp(5), dp(6), dp(5)); background = rounded(Color.rgb(237, 249, 244), dp(25)) })
+//                tile.addView(label(category.name, 12f, ink, true).apply { gravity = Gravity.CENTER; maxLines = 2; setPadding(0, dp(7), 0, 0) }, LinearLayout.LayoutParams(-1, wrap()))
+//                row.addView(tile, LinearLayout.LayoutParams(0, wrap(), 1f).apply { marginEnd = dp(7); bottomMargin = dp(8) })
+//            }
+//            repeat(3 - rowItems.size) { row.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f).apply { marginEnd = dp(7) }) }
+//            gridRows.addView(row, LinearLayout.LayoutParams(-1, wrap()))
+//        }
+//    }
+
+//    private fun populateCategoryGrid(gridRows: LinearLayout) {
+//        NearbyCategoryCatalog.all.chunked(3).forEach { rowItems ->
+//
+//            val row = LinearLayout(this).apply {
+//                orientation = LinearLayout.HORIZONTAL
+//                gravity = Gravity.TOP
+//            }
+//
+//            rowItems.forEach { category ->
+//
+//                val tile = LinearLayout(this).apply {
+//                    orientation = LinearLayout.VERTICAL
+//                    gravity = Gravity.CENTER
+//
+//                    // 3dp space around the inner tile
+//                    setPadding(dp(3), dp(3), dp(3), dp(3))
+//
+//                    // Outer background
+//                    background = rounded(
+//                        Color.parseColor("#E8F3E8"),
+//                        dp(12)
+//                    )
+//
+//                    isClickable = true
+//                    isFocusable = true
+//
+//                    setOnClickListener {
+//                        setResult(
+//                            Activity.RESULT_OK,
+//                            intent.putExtra(EXTRA_CATEGORY, category.name)
+//                        )
+//                        finish()
+//                    }
+//                }
+//
+//                // Inner white tile
+//                val innerTile = LinearLayout(this).apply {
+//                    orientation = LinearLayout.VERTICAL
+//                    gravity = Gravity.CENTER
+//
+//                    setPadding(dp(6), dp(9), dp(6), dp(9))
+//
+//                    background = rounded(
+//                        Color.WHITE,
+//                        dp(10)
+//                    )
+//                }
+//
+//                // Icon background
+//                innerTile.addView(
+//                    label(category.icon, 24f, green).apply {
+//                        gravity = Gravity.CENTER
+//                        setPadding(dp(6), dp(5), dp(6), dp(5))
+//                        background = rounded(
+//                            Color.parseColor("#E8F3E8"),
+//                            dp(25)
+//                        )
+//                    }
+//                )
+//
+//                // Category name
+//                innerTile.addView(
+//                    label(category.name, 12f, ink, true).apply {
+//                        gravity = Gravity.CENTER
+//                        maxLines = 2
+//                        setPadding(0, dp(7), 0, 0)
+//                    },
+//                    LinearLayout.LayoutParams(-1, wrap())
+//                )
+//
+//                tile.addView(
+//                    innerTile,
+//                    LinearLayout.LayoutParams(-1, wrap())
+//                )
+//
+//                row.addView(
+//                    tile,
+//                    LinearLayout.LayoutParams(0, wrap(), 1f).apply {
+//                        marginEnd = dp(7)
+//                        bottomMargin = dp(8)
+//                    }
+//                )
+//            }
+//
+//            // Fill remaining columns if the last row has fewer than 3 items
+//            repeat(3 - rowItems.size) {
+//                row.addView(
+//                    View(this),
+//                    LinearLayout.LayoutParams(0, 1, 1f).apply {
+//                        marginEnd = dp(7)
+//                    }
+//                )
+//            }
+//
+//            gridRows.addView(
+//                row,
+//                LinearLayout.LayoutParams(-1, wrap())
+//            )
+//        }
+//    }
+//private fun populateCategoryGrid(gridRows: LinearLayout) {
+//    NearbyCategoryCatalog.all.chunked(3).forEach { rowItems ->
+//
+//        val row = LinearLayout(this).apply {
+//            orientation = LinearLayout.HORIZONTAL
+//            gravity = Gravity.TOP
+//        }
+//
+//        rowItems.forEach { category ->
+//
+//            val tile = LinearLayout(this).apply {
+//                orientation = LinearLayout.VERTICAL
+//                gravity = Gravity.CENTER
+//                setPadding(dp(6), dp(8), dp(6), dp(8))
+//
+//                // Outer light-green background
+//                background = rounded(
+//                    Color.parseColor("#E8F3E8"),
+//                    dp(12)
+//                )
+//
+//                isClickable = true
+//                isFocusable = true
+//
+//                setOnClickListener {
+//                    setResult(
+//                        Activity.RESULT_OK,
+//                        intent.putExtra(EXTRA_CATEGORY, category.name)
+//                    )
+//                    finish()
+//                }
+//            }
+//
+//            // Background wraps only the icon
+//            val iconView = label(category.icon, 24f, green).apply {
+//                gravity = Gravity.CENTER
+//                setPadding(dp(8), dp(5), dp(8), dp(5))
+//
+//                background = rounded(
+//                    Color.parseColor("#F2F7F2"),
+//                    dp(50)
+//                )
+//            }
+//
+//            // Wrap icon background around the icon's content
+//            val iconContainer = FrameLayout(this).apply {
+//                addView(
+//                    iconView,
+//                    FrameLayout.LayoutParams(
+//                        wrap(),
+//                        wrap(),
+//                        Gravity.CENTER
+//                    )
+//                )
+//            }
+//
+//            tile.addView(
+//                iconContainer,
+//                LinearLayout.LayoutParams(
+//                    wrap(),
+//                    wrap()
+//                )
+//            )
+//
+//            // Category name stays directly on the outer tile
+//            tile.addView(
+//                label(category.name, 12f, ink, true).apply {
+//                    gravity = Gravity.CENTER
+//                    maxLines = 2
+//                    setPadding(0, dp(5), 0, 0)
+//                },
+//                LinearLayout.LayoutParams(
+//                    -1,
+//                    wrap()
+//                )
+//            )
+//
+//            row.addView(
+//                tile,
+//                LinearLayout.LayoutParams(0, wrap(), 1f).apply {
+//                    marginEnd = dp(7)
+//                    bottomMargin = dp(8)
+//                }
+//            )
+//        }
+//
+//        repeat(3 - rowItems.size) {
+//            row.addView(
+//                View(this),
+//                LinearLayout.LayoutParams(0, 1, 1f).apply {
+//                    marginEnd = dp(7)
+//                }
+//            )
+//        }
+//
+//        gridRows.addView(
+//            row,
+//            LinearLayout.LayoutParams(-1, wrap())
+//        )
+//    }
+//}
+
     private fun populateCategoryGrid(gridRows: LinearLayout) {
         NearbyCategoryCatalog.all.chunked(3).forEach { rowItems ->
-            val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.TOP }
-            rowItems.forEach { category ->
-                val tile = LinearLayout(this).apply {
-                    orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER; setPadding(dp(6), dp(12), dp(6), dp(12))
-                    background = bordered(Color.WHITE, Color.rgb(229, 237, 233), dp(15)); isClickable = true; isFocusable = true
-                    setOnClickListener { setResult(Activity.RESULT_OK, intent.putExtra(EXTRA_CATEGORY, category.name)); finish() }
-                }
-                tile.addView(label(category.icon, 24f, green).apply { gravity = Gravity.CENTER; setPadding(dp(6), dp(5), dp(6), dp(5)); background = rounded(Color.rgb(237, 249, 244), dp(25)) })
-                tile.addView(label(category.name, 12f, ink, true).apply { gravity = Gravity.CENTER; maxLines = 2; setPadding(0, dp(7), 0, 0) }, LinearLayout.LayoutParams(-1, wrap()))
-                row.addView(tile, LinearLayout.LayoutParams(0, wrap(), 1f).apply { marginEnd = dp(7); bottomMargin = dp(8) })
+
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.TOP
             }
-            repeat(3 - rowItems.size) { row.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f).apply { marginEnd = dp(7) }) }
-            gridRows.addView(row, LinearLayout.LayoutParams(-1, wrap()))
+
+            rowItems.forEach { category ->
+
+                val tile = LinearLayout(this).apply {
+                    orientation = LinearLayout.VERTICAL
+                    gravity = Gravity.CENTER
+                    setPadding(dp(4), dp(6), dp(4), dp(6))
+
+                    // Outer background with slight corners
+                    background = rounded(
+                        Color.parseColor("#E8F3E8"),
+                        dp(4)
+                    )
+
+                    isClickable = true
+                    isFocusable = true
+
+                    setOnClickListener {
+                        setResult(
+                            Activity.RESULT_OK,
+                            intent.putExtra(EXTRA_CATEGORY, category.name)
+                        )
+                        finish()
+                    }
+                }
+
+                // Icon background wraps only around the icon
+                val iconView = label(category.icon, 24f, green).apply {
+                    gravity = Gravity.CENTER
+                    setPadding(dp(8), dp(5), dp(8), dp(5))
+
+                    background = rounded(
+                        Color.parseColor("#F2F7F2"),
+                        dp(4)
+                    )
+                }
+
+                tile.addView(
+                    iconView,
+                    LinearLayout.LayoutParams(
+                        wrap(),
+                        wrap()
+                    )
+                )
+
+                // Single-line category text with ellipsis
+                tile.addView(
+                    label(category.name, 12f, ink, true).apply {
+                        gravity = Gravity.CENTER
+                        maxLines = 1
+                        isSingleLine = true
+                        ellipsize = android.text.TextUtils.TruncateAt.END
+                        setPadding(0, dp(5), 0, 0)
+                    },
+                    LinearLayout.LayoutParams(
+                        -1,
+                        wrap()
+                    )
+                )
+
+                row.addView(
+                    tile,
+                    LinearLayout.LayoutParams(0, wrap(), 1f).apply {
+                        marginEnd = dp(7)
+                        bottomMargin = dp(8)
+                    }
+                )
+            }
+
+            // Fill empty columns in the last row
+            repeat(3 - rowItems.size) {
+                row.addView(
+                    View(this),
+                    LinearLayout.LayoutParams(0, 1, 1f).apply {
+                        marginEnd = dp(7)
+                    }
+                )
+            }
+
+            gridRows.addView(
+                row,
+                LinearLayout.LayoutParams(-1, wrap())
+            )
         }
     }
-
     private fun label(value: String, size: Float, color: Int, bold: Boolean = false) = TextView(this).apply {
         text = value; textSize = size; setTextColor(color)
         if (bold) typeface = Typeface.create("sans-serif", Typeface.BOLD)

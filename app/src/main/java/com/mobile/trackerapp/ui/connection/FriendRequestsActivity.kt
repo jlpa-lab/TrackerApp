@@ -20,6 +20,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.animation.ValueAnimator
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
@@ -78,9 +81,18 @@ open class FriendRequestsActivity : DashboardActivity() {
         findViewById<View>(R.id.show_my_qr_button).setOnClickListener {
             startActivity(Intent(this, MyQrActivity::class.java))
         }
+        findViewById<View>(R.id.iv_copy).setOnClickListener { copyConnectionCode(myInviteCode) }
         findViewById<View>(R.id.share_invite_button).setOnClickListener { shareInvite() }
         findViewById<View>(R.id.friend_connect_button).setOnClickListener { submitInviteCode() }
         showPanel(R.id.friend_add)
+    }
+
+    private fun copyConnectionCode(myInviteCode: String) {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Connection Code", myInviteCode)
+        clipboard.setPrimaryClip(clip)
+
+        Toast.makeText(this, "Code copied to clipboard", Toast.LENGTH_SHORT).show()
     }
 
     private fun startCodeWave(view: TextView) {

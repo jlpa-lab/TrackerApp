@@ -38,6 +38,11 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.geocoding.PhoneNumberOfflineGeocoder
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
+import com.mobile.trackerapp.databinding.ActivityAreaCodesBinding
+import com.mobile.trackerapp.databinding.ActivityLevelMeterBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import java.io.File
 import java.io.FileOutputStream
@@ -48,6 +53,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 /** Offline, country-aware area-code lookup. */
 class AreaCodesActivity : DashboardActivity() {
+
+    private lateinit var binding: ActivityAreaCodesBinding
     private val dark = android.graphics.Color.rgb(15, 23, 42)
     private val muted = android.graphics.Color.rgb(119, 130, 148)
     private val green = android.graphics.Color.rgb(8, 163, 73)
@@ -82,12 +89,13 @@ class AreaCodesActivity : DashboardActivity() {
         hideNavigationBar()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         selectedCountry = detectDefaultCountry()
-        val binding = com.mobile.trackerapp.databinding.ActivityAreaCodesBinding.inflate(layoutInflater)
+        binding = ActivityAreaCodesBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.areaBack.setOnClickListener { finish() }
+        loadAreaCodeBanner()
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
             val contentInset = dp(16)
-            view.setPadding(contentInset, statusBarInset + contentInset, contentInset, 0)
+            view.setPadding(contentInset, statusBarInset, contentInset, 0)
             insets
         }
         ViewCompat.requestApplyInsets(binding.root)
@@ -201,7 +209,12 @@ class AreaCodesActivity : DashboardActivity() {
         card.addView(clear, LinearLayout.LayoutParams(wrap(), wrap()).apply { topMargin = dp(12) })
         resultHost.addView(card, FrameLayout.LayoutParams(-1, wrap()))
     }
-
+    private fun loadAreaCodeBanner() {
+        val bannerConfig = AdRemoteConfig.banner_all
+        AdsManager.loadBanner(
+            this, bannerConfig, binding.frBanner, isCollapse = false
+        )
+    }
     private fun loadCountryEntries(country: AreaCountry) {
         loading = true
         allEntries = emptyList()

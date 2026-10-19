@@ -25,6 +25,8 @@ class RateAppActivity : AppCompatActivity() {
     private lateinit var count: TextView
     private lateinit var action: TextView
 
+    private lateinit var rate_feedback_container: RelativeLayout
+
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         window.setBackgroundDrawableResource(android.R.color.transparent)
@@ -36,6 +38,7 @@ class RateAppActivity : AppCompatActivity() {
         feedback = findViewById(R.id.rate_feedback);
         count = findViewById(R.id.rate_count);
         action = findViewById(R.id.rate_action)
+        rate_feedback_container = findViewById(R.id.rate_feedback_container)
         findViewById<View>(R.id.rate_close).setOnClickListener { finish() }
         findViewById<View>(R.id.rate_later).setOnClickListener { finish() }
         showStart()
@@ -65,9 +68,8 @@ class RateAppActivity : AppCompatActivity() {
             "Share your feedback",
             "Let us know how we can improve."
         )
-        feedback.visibility = View.VISIBLE;
+        rate_feedback_container.visibility = View.VISIBLE;
         count.visibility = View.VISIBLE;
-
         count.text = "${feedback.length()}/500"
         action.text = "Submit";
         action.setOnClickListener { submitFeedback() }
