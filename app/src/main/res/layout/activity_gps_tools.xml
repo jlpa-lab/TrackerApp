@@ -1,34 +1,87 @@
 <?xml version='1.0' encoding='utf-8'?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#F6FBF8" android:orientation="vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6FBF8"
+    android:orientation="vertical">
 
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:padding="18dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="18dp">
 
-        <ImageView android:id="@+id/gps_tools_back" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true" android:contentDescription="Back" android:focusable="true" android:paddingEnd="8dp" android:src="@drawable/ic_back_chevron" />
+        <ImageView
+            android:id="@+id/gps_tools_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:contentDescription="Back"
+            android:focusable="true"
+            android:paddingEnd="8dp"
+            android:src="@drawable/ic_back_chevron" />
 
 
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="14dp" android:layout_weight="1" android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GPS Tools" android:textColor="@color/home_phone_locator_text" android:textSize="22sp" android:fontFamily="@font/inter_bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:text="GPS Tools"
+                android:textColor="@color/home_phone_locator_text"
+                android:textSize="22sp" />
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Your everyday navigation toolkit" android:textColor="@color/home_text_subtitle" android:fontFamily="@font/inter_regular" android:textSize="13sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="Your everyday navigation toolkit"
+                android:textColor="@color/home_text_subtitle"
+                android:textSize="13sp" />
         </LinearLayout>
     </LinearLayout>
 
-    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:clipToPadding="false">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false">
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingHorizontal="16dp" android:paddingVertical="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="16dp">
 
-            <include android:id="@+id/gps_compass_row" layout="@layout/gps_tool_row_compass" />
+            <include
+                android:id="@+id/gps_compass_row"
+                layout="@layout/gps_tool_row_compass" />
 
-            <include android:id="@+id/gps_stopwatch_row" layout="@layout/gps_tool_row_stopwatch" />
+            <include
+                android:id="@+id/gps_stopwatch_row"
+                layout="@layout/gps_tool_row_stopwatch" />
 
-            <include android:id="@+id/gps_speedometer_row" layout="@layout/gps_tool_row_speedometer" />
+            <include
+                android:id="@+id/gps_speedometer_row"
+                layout="@layout/gps_tool_row_speedometer" />
 
-            <include android:id="@+id/gps_area_codes_row" layout="@layout/gps_tool_row_area" />
+            <include
+                android:id="@+id/gps_area_codes_row"
+                layout="@layout/gps_tool_row_area" />
 
-            <include android:id="@+id/gps_level_meter_row" layout="@layout/gps_tool_row_level" />
+            <include
+                android:id="@+id/gps_level_meter_row"
+                layout="@layout/gps_tool_row_level" />
         </LinearLayout>
     </ScrollView>
+
     <include layout="@layout/layout_native_all" />
 </LinearLayout>
 

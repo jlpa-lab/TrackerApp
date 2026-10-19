@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.mobile.trackerapp" />
-                  <option name="mobileSdkAppId" value="1:123456789012:android:0000000000000000000000" />
-                  <option name="projectId" value="phone-tracker-demo" />
-                  <option name="projectNumber" value="123456789012" />
+                  <option name="mobileSdkAppId" value="1:816844427394:android:4003be117a8024445e249b" />
+                  <option name="projectId" value="pa-mkt-12-phone-tracker" />
+                  <option name="projectNumber" value="816844427394" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

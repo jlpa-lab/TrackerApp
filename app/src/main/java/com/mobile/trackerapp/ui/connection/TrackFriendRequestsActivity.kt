@@ -28,6 +28,8 @@ import android.animation.ValueAnimator
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.widget.ImageView
+import androidx.core.content.res.ResourcesCompat
 import com.mobile.trackerapp.ui.DashboardActivity
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -282,12 +284,24 @@ class TrackFriendRequestsActivity : DashboardActivity() {
             val identity = identityRow(name, handle, time)
             addView(identity)
             if (status == "pending") {
-                val actions = LinearLayout(this@TrackFriendRequestsActivity).apply { orientation = LinearLayout.HORIZONTAL }
-                actions.addView(actionButton("Accept", true) { decideRequest(requestId, "accept") }, LinearLayout.LayoutParams(0, dp(44), 1f))
-                actions.addView(actionButton("Decline", false) { decideRequest(requestId, "reject") }, LinearLayout.LayoutParams(0, dp(44), 1f).apply { marginStart = dp(8) })
-                addView(actions, LinearLayout.LayoutParams(-1, dp(44)).apply { topMargin = dp(12) })
+                val actions = LinearLayout(this@TrackFriendRequestsActivity).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                }
+                actions.addView(
+                    actionButton("Accept", true) { decideRequest(requestId, "accept") },
+                    LinearLayout.LayoutParams(0, dp(32), 1f)
+                )
+                actions.addView(actionButton("Decline", false) {
+                    decideRequest(
+                        requestId,
+                        "reject"
+                    )
+                }, LinearLayout.LayoutParams(0, dp(32), 1f).apply { marginStart = dp(8) })
+                addView(actions, LinearLayout.LayoutParams(-1, dp(32)).apply { topMargin = dp(12) })
             } else {
-                addView(statusLabel(status), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(10) })
+                addView(
+                    statusLabel(status),
+                    LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(10) })
             }
         }
 
@@ -300,9 +314,9 @@ class TrackFriendRequestsActivity : DashboardActivity() {
             val top = identityRow(name, handle, "")
             val statusView = TextView(this@TrackFriendRequestsActivity).apply {
                 text = "◷  ${status.replaceFirstChar { it.uppercase() }}"
-                textSize = 13f
-                setTextColor(Color.rgb(117, 126, 143))
-                typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+                textSize = 11f
+                setTextColor(Color.parseColor("#787E8D"))
+                typeface = ResourcesCompat.getFont(this@TrackFriendRequestsActivity, R.font.inter_regular)
                 gravity = Gravity.CENTER_VERTICAL
             }
             (top as LinearLayout).addView(statusView, LinearLayout.LayoutParams(wrap(), wrap()))
@@ -312,41 +326,59 @@ class TrackFriendRequestsActivity : DashboardActivity() {
             bottom.addView(TextView(this@TrackFriendRequestsActivity).apply {
                 text = if (status == "pending") "Sent $time" else status.replaceFirstChar { it.uppercase() }
                 textSize = 13f
-                setTextColor(Color.rgb(117, 126, 143))
+                setTextColor(Color.parseColor("#787E8D"))
+                typeface = ResourcesCompat.getFont(this@TrackFriendRequestsActivity, R.font.inter_regular)
             }, LinearLayout.LayoutParams(0, wrap(), 1f))
             if (status == "pending") {
-                bottom.addView(actionButton("Cancel Request", false) { cancelRequest(requestId) }, LinearLayout.LayoutParams(dp(116), dp(44)))
+                bottom.addView(
+                    actionButton("Cancel Request", false) {
+                        cancelRequest(requestId)
+                    }.apply {
+                        textSize = 12f
+                        setTextColor(Color.parseColor("#787E8D"))
+                    },
+                    LinearLayout.LayoutParams(dp(116), dp(32))
+                )
             }
-            addView(bottom, LinearLayout.LayoutParams(-1, dp(44)).apply { topMargin = dp(12) })
+            addView(bottom, LinearLayout.LayoutParams(-1, dp(32)).apply { topMargin = dp(12) })
         }
 
     private fun identityRow(name: String, handle: String, time: String): View = LinearLayout(this).apply {
         gravity = Gravity.CENTER_VERTICAL
         val avatar = TextView(this@TrackFriendRequestsActivity).apply {
             text = name.trim().firstOrNull()?.uppercase() ?: "?"
+            textSize = 13f
             textSize = 18f
+            setTextColor(Color.parseColor("#0A1120"))
             setTextColor(Color.rgb(17, 24, 39))
             gravity = Gravity.CENTER
-            background = rounded(Color.rgb(232, 244, 233), 100)
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(
+                dp(28),
+                dp(28)
+            )
+            background = rounded(Color.parseColor("#E8F3E8"), 100)
         }
         addView(avatar, LinearLayout.LayoutParams(dp(48), dp(48)))
         val names = LinearLayout(this@TrackFriendRequestsActivity).apply { orientation = LinearLayout.VERTICAL }
         names.addView(TextView(this@TrackFriendRequestsActivity).apply {
             text = name
-            textSize = 17f
-            setTextColor(Color.rgb(17, 24, 39))
-            typeface = Typeface.create("sans-serif", Typeface.BOLD)
+            textSize = 13f
+            setTextColor(Color.parseColor("#0A1120"))
+            typeface = ResourcesCompat.getFont(this@TrackFriendRequestsActivity, R.font.inter_bold)
         })
         names.addView(TextView(this@TrackFriendRequestsActivity).apply {
             text = handle
-            textSize = 13f
-            setTextColor(Color.rgb(117, 126, 143))
+            textSize = 11f
+            setTextColor(Color.parseColor("#787E8D"))
+            typeface = ResourcesCompat.getFont(this@TrackFriendRequestsActivity, R.font.inter_regular)
         }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(2) })
         addView(names, LinearLayout.LayoutParams(0, wrap(), 1f).apply { marginStart = dp(12) })
         if (time.isNotBlank()) addView(TextView(this@TrackFriendRequestsActivity).apply {
             text = time
-            textSize = 13f
-            setTextColor(Color.rgb(117, 126, 143))
+            textSize = 11f
+            setTextColor(Color.parseColor("#787E8D"))
+            typeface = ResourcesCompat.getFont(this@TrackFriendRequestsActivity, R.font.inter_regular)
             gravity = Gravity.CENTER_VERTICAL
         }, LinearLayout.LayoutParams(wrap(), wrap()))
     }
@@ -472,8 +504,14 @@ class TrackFriendRequestsActivity : DashboardActivity() {
             val tab = findViewById<TextView>(id)
             val selected = id == selectedId
             tab.setBackgroundResource(if (selected) R.drawable.bg_friend_tab_selected else android.R.color.transparent)
-            tab.setTextColor(if (selected) Color.rgb(0, 150, 60) else Color.rgb(117, 126, 143))
-            tab.setTypeface(null, if (selected) Typeface.BOLD else Typeface.NORMAL)
+            tab.setTextColor(
+                Color.parseColor(if (selected) "#008D31" else "#787E8D")
+            )
+
+            tab.typeface = resources.getFont(
+                if (selected) R.font.inter_bold
+                else R.font.inter_regular
+            )
         }
         findViewById<View>(R.id.add_panel).visibility = if (selectedId == R.id.friend_add) View.VISIBLE else View.GONE
         findViewById<View>(R.id.received_panel).visibility = if (selectedId == R.id.friend_received) View.VISIBLE else View.GONE

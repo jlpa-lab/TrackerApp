@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://android.com">
+    <!-- Thumb color when ON -->
+    <item android:state_checked="true" android:color="@color/white" />
+
+    <!-- Thumb color when OFF -->
+    <item android:state_checked="false" android:color="#FFFFFF"/>
+</selector>

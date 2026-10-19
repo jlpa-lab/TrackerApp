@@ -56,9 +56,34 @@
             android:layout_marginTop="14dp"
             android:background="@drawable/bg_friend_tabs"
             android:padding="3dp">
-            <TextView android:id="@+id/friend_add" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="Add Friend" android:textSize="13sp" />
-            <TextView android:id="@+id/friend_received" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="Received" android:textSize="13sp" />
-            <TextView android:id="@+id/friend_sent" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="Sent" android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/friend_add"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Add Friend"
+                android:fontFamily="@font/inter_bold"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/friend_received"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Received"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/friend_sent"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Sent"
+                android:textSize="13sp" />
         </LinearLayout>
     </LinearLayout>
 

@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@android:id/background">
+<!-- Unfilled background track -->
+<item android:id="@android:id/background">
+    <shape android:shape="rectangle">
+        <corners android:radius="4dp" />
+        <solid android:color="#DFE9E3" />
+    </shape>
+</item>
+
+<!-- Filled progress track -->
+<item android:id="@android:id/progress">
+    <clip>
         <shape android:shape="rectangle">
-            <size android:height="4dp" />
-            <corners android:radius="100dp" />
-            <solid android:color="#DCE7E1" />
+            <corners android:radius="4dp" />
+            <solid android:color="@color/app_color" />
         </shape>
-    </item>
-    <item android:id="@android:id/progress">
-        <clip android:clipOrientation="horizontal" android:gravity="left">
-            <shape android:shape="rectangle">
-                <size android:height="4dp" />
-                <corners android:radius="100dp" />
-                <solid android:color="#00A548" />
-            </shape>
-        </clip>
-    </item>
+    </clip>
+</item>
 </layer-list>

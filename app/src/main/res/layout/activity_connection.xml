@@ -92,8 +92,8 @@
                             android:layout_width="36dp"
                             android:layout_height="22dp"
                             android:contentDescription="Location sharing"
-                            app:thumbTint="@color/white"
-                            app:trackTint="@color/app_color" />
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:trackTint="@color/switch_track_selector"/>
 
                     </LinearLayout>
 
@@ -106,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:fontFamily="@font/inter_regular"
-                    android:text="your connections can see your live location."
+                    android:text="Your connections can see your live location."
                     android:textColor="@color/home_text_subtitle"
                     android:textSize="12sp" />
             </LinearLayout>

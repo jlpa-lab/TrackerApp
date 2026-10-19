@@ -196,17 +196,20 @@
                 android:textColor="@color/home_green_background"
                 android:textSize="12sp" />
         </LinearLayout>
+
         <SeekBar
             android:id="@+id/create_zone_radius"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:max="9"
+            android:layout_height="wrap_content"
+            android:minHeight="4dp"
+            android:maxHeight="4dp"
             android:progress="4"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
+            android:max="9"
+            android:layout_marginTop="5dp"
             android:progressDrawable="@drawable/bg_zone_radius_progress"
-            android:splitTrack="false"
-            android:thumb="@drawable/zone_radius_thumb" />
+            android:thumb="@drawable/seekbar_thumb" />
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
