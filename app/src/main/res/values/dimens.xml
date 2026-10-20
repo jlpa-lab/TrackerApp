@@ -9,6 +9,9 @@
 
     <dimen name="border_button">@dimen/_12sdp</dimen>
     <dimen name="border_dialog">@dimen/_8sdp</dimen>
+    <dimen name="phone_details_avatar_padding">22dp</dimen>
+    <!-- Display-based picker lift; the runtime calculation caps this at 60dp. -->
+    <dimen name="country_picker_keyboard_offset_max">60dp</dimen>
 
     <dimen name="space_horizontal_common">@dimen/_12sdp</dimen>
 </resources>

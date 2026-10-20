@@ -98,22 +98,12 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
         val languageList = findViewById<LinearLayout>(R.id.language_list)
         val inflater = LayoutInflater.from(this)
 
-        val currentLanguage = LocaleManager.currentLanguage(this)
-        pendingLocale = currentLanguage
         languages.forEach { language ->
             val row = inflater.inflate(R.layout.item_language_option, languageList, false)
             val labels = getString(language.labelRes).split("\n", limit = 2)
             row.findViewById<TextView>(R.id.language_native_name).text = labels.first()
             row.findViewById<TextView>(R.id.language_english_name).text = labels.getOrElse(1) { labels.first() }
             val radio = row.findViewById<RadioButton>(R.id.language_radio)
-
-            if (language.locale == currentLanguage) {
-                row.isSelected = true
-                radio.isChecked = true
-                selectedRow = row
-                selectedRadio = radio
-                confirmButton.visibility = View.VISIBLE
-            }
 
             row.setOnClickListener {
                 // Switch to the click-stage ad only during onboarding, never from Settings.

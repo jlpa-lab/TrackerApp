@@ -3,6 +3,7 @@ import com.mobile.trackerapp.ui.home.HomeActivity
 import com.mobile.trackerapp.ui.splash.SplashActivity
 import com.mobile.trackerapp.ui.welcome.WelcomeActivity
 import com.mobile.trackerapp.ui.language.LanguageActivity
+import com.mobile.trackerapp.ui.onboarding.OnBoardingActivity
 import com.mobile.trackerapp.ui.uninstall.ConfirmUninstallActivity
 import com.mobile.trackerapp.ui.uninstall.ReasonActivity
 import com.mobile.trackerapp.localization.LocaleManager
@@ -85,8 +86,8 @@ class TrackerApplication : AdsMultiDexApplication() {
         Admob.getInstance().setOpenActivityAfterShowInterAds(false)
         AppOpenManager.getInstance().disableAppResumeWithActivity(SplashActivity::class.java)
         AppOpenManager.getInstance().disableAppResumeWithActivity(LanguageActivity::class.java)
-//        AppOpenManager.getInstance().disableAppResumeWithActivity(OnBoardingActivity::class.java)
-//        AppOpenManager.getInstance().disableAppResumeWithActivity(ConfirmUninstallActivity::class.java)
+        AppOpenManager.getInstance().disableAppResumeWithActivity(OnBoardingActivity::class.java)
+        AppOpenManager.getInstance().disableAppResumeWithActivity(WelcomeActivity::class.java)
 
     }
     private fun initBilling() {

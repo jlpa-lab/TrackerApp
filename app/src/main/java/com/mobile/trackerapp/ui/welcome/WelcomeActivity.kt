@@ -12,6 +12,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.OnBackPressedCallback
+import com.ads.module.admob.AppOpenManager
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.app.AppConstants
 import com.mobile.trackerapp.ui.phonelocator.PhoneLocatorActivity
@@ -24,6 +26,7 @@ class WelcomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppOpenManager.getInstance().disableAppResume()
         when (intent.getStringExtra(AppConstants.FROM_SHORTCUT)) {
             AppConstants.ACTION_OPEN_PHONE_LOCATOR -> {
                 startActivity(Intent(this, PhoneLocatorActivity::class.java))
@@ -54,6 +57,15 @@ class WelcomeActivity : AppCompatActivity() {
         applySystemInsets(findViewById(R.id.welcome_root))
         Log.d("AppEvent", "WelcomeActivity")
 
+        // Android's swipe-back gesture uses OnBackInvokedDispatcher on newer
+        // devices. Register through AndroidX so it follows the same ad flow as
+        // the hardware back button.
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                AdsManager.showInterWelcome(this@WelcomeActivity) { finish() }
+            }
+        })
+
         // CHANGE: preload the Welcome interstitial before allowing Start, matching the reference flow.
         AdsManager.loadInterWelcome(this)
         handler.postDelayed({ startReady = true }, AppConstants.DEFAULT_TIME_DELAY_LOAD_INTER_WELCOME)
@@ -65,12 +77,14 @@ class WelcomeActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        AdsManager.showInterWelcome(this) { finish() }
+    override fun onResume() {
+        super.onResume()
+        AppOpenManager.getInstance().disableAppResume()
     }
 
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)
+        AppOpenManager.getInstance().disableAppResume()
         super.onDestroy()
     }
 

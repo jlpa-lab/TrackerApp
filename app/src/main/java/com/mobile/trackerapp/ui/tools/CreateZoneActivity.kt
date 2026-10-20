@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewParent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.content.Context
@@ -66,8 +67,10 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
     private lateinit var addressText: TextView
     private lateinit var radiusText: TextView
     private lateinit var radiusBar: SeekBar
-    private lateinit var safeButton: TextView
-    private lateinit var dangerButton: TextView
+    private lateinit var safeButton: LinearLayout
+    private lateinit var dangerButton: LinearLayout
+    private lateinit var safeButtonLabel: TextView
+    private lateinit var dangerButtonLabel: TextView
     private lateinit var saveButton: TextView
     private lateinit var enterCheck: ZoneToggleView
     private lateinit var exitCheck: ZoneToggleView
@@ -92,19 +95,9 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
         hideNavigationBar()
         binding = ActivityCreateZoneBinding.inflate(layoutInflater)
         zoneId = intent.getLongExtra(EXTRA_ZONE_ID, NO_ZONE)
-        val binding = com.mobile.trackerapp.databinding.ActivityCreateZoneBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.createZoneBack.setOnClickListener { finish() }
         loadCreateZoneBanner()
-        mapView=binding.createZoneMap; zoneName=binding.createZoneName; searchInput=binding.createZoneSearch; addressText=binding.createZoneAddress; radiusText=binding.createZoneRadiusText; radiusBar=binding.createZoneRadius; safeButton=binding.createZoneSafe; dangerButton=binding.createZoneDanger; saveButton=binding.createZoneSave; enterCheck=binding.createZoneEnter; exitCheck=binding.createZoneExit; enterCheck.isChecked = true; exitCheck.isChecked = true; locationHint=binding.createZoneLocationHint
-        // The map is inside a ScrollView. Keep vertical drags on the map from
-        // being intercepted by the page so the user can pan the zone normally.
-        mapView.setOnTouchListener { view, event ->
-            when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> view.parent?.requestDisallowInterceptTouchEvent(true)
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> view.parent?.requestDisallowInterceptTouchEvent(false)
-            }
-            false
-        }
+        mapView=binding.createZoneMap; zoneName=binding.createZoneName; searchInput=binding.createZoneSearch; addressText=binding.createZoneAddress; radiusText=binding.createZoneRadiusText; radiusBar=binding.createZoneRadius; safeButton=binding.createZoneSafe; dangerButton=binding.createZoneDanger; safeButtonLabel=binding.createZoneSafeLabel; dangerButtonLabel=binding.createZoneDangerLabel; saveButton=binding.createZoneSave; enterCheck=binding.createZoneEnter; exitCheck=binding.createZoneExit; enterCheck.isChecked = true; exitCheck.isChecked = true; locationHint=binding.createZoneLocationHint
         binding.createZoneSearchButton.setOnClickListener { searchLocation() }; binding.createZoneLocate.setOnClickListener { moveToCurrentLocation() }; safeButton.setOnClickListener { isSafe = true; renderTypeButtons() }; dangerButton.setOnClickListener { isSafe = false; renderTypeButtons() }; saveButton.setOnClickListener { saveZone() }
         searchInput.setOnEditorActionListener { _, action, _ -> if (action == EditorInfo.IME_ACTION_SEARCH) { searchLocation(); true } else false }
         radiusBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener { override fun onStartTrackingTouch(seekBar: SeekBar)=Unit; override fun onStopTrackingTouch(seekBar: SeekBar)=Unit; override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) { radiusMeters=(progress+1)*100; radiusText.text=if(radiusMeters==1000) "1,000m" else "${radiusMeters}m"; drawCircle() } })
@@ -112,6 +105,23 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
         mapView.onCreate(state)
         mapView.getMapAsync(this)
         if (zoneId != NO_ZONE) loadZone(zoneId)
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+            val focusedView = currentFocus
+            if (focusedView is EditText && !isTouchInside(focusedView, event.rawX, event.rawY)) {
+                hideKeyboard(focusedView)
+            }
+        }
+        return super.dispatchTouchEvent(event)
+    }
+
+    private fun isTouchInside(view: View, rawX: Float, rawY: Float): Boolean {
+        val location = IntArray(2)
+        view.getLocationOnScreen(location)
+        return rawX >= location[0] && rawX <= location[0] + view.width &&
+            rawY >= location[1] && rawY <= location[1] + view.height
     }
 
     private fun typeButton(title: String) = text(title, 13f, muted, true).apply {
@@ -125,9 +135,9 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
     }
     private fun renderTypeButtons() {
         safeButton.background = typeBordered(if (isSafe) Color.rgb(237, 250, 245) else Color.WHITE, if (isSafe) green else Color.rgb(229, 237, 233), dp(12))
-        safeButton.setTextColor(if (isSafe) green else muted)
+        safeButtonLabel.setTextColor(if (isSafe) green else muted)
         dangerButton.background = typeBordered(if (!isSafe) Color.rgb(255, 242, 241) else Color.WHITE, if (!isSafe) red else Color.rgb(229, 237, 233), dp(12))
-        dangerButton.setTextColor(if (!isSafe) red else muted)
+        dangerButtonLabel.setTextColor(if (!isSafe) red else muted)
         drawCircle()
     }
 
@@ -259,7 +269,14 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
     }
 
     private fun hideKeyboard() {
-        (getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.hideSoftInputFromWindow(searchInput.windowToken, 0)
+        hideKeyboard(currentFocus)
+    }
+
+    private fun hideKeyboard(target: View?) {
+        val view = target ?: window.decorView
+        (getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
+            ?.hideSoftInputFromWindow(view.windowToken, 0)
+        target?.clearFocus()
     }
 
     private fun hasForegroundLocation() = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||

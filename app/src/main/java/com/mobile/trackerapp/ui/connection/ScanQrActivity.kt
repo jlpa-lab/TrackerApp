@@ -54,6 +54,11 @@ class ScanQrActivity : DashboardActivity() {
         binding = ActivityScanQrBinding.inflate(layoutInflater)
         setContentView(binding.root)
         barcodeView = findViewById(R.id.scan_barcode_view)
+        // DecoratedBarcodeView includes its own bottom prompt and viewfinder.
+        // This screen supplies both elements itself; leaving the library
+        // layers visible makes the prompt sit underneath the flashlight pill.
+        barcodeView.getStatusView()?.visibility = View.GONE
+        barcodeView.getViewFinder().visibility = View.GONE
         loadScanQrBanner()
         barcodeView.decodeSingle { result -> result.text?.takeIf { it.isNotBlank() }?.let(::returnCode) }
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST) else barcodeView.resume()

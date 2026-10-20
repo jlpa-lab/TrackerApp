@@ -107,6 +107,7 @@ class NearbyActivity : DashboardActivity() {
         restoreNearbyWindow()
         selectedCategory = state?.getString(STATE_CATEGORY) ?: "Coffee"
         currentQuery = state?.getString(STATE_QUERY).orEmpty()
+        if (currentQuery.isNotBlank()) selectedCategory = ""
         selectedRadiusKm = DEFAULT_RADIUS_KM
         binding = ActivityNearbyBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -142,7 +143,9 @@ class NearbyActivity : DashboardActivity() {
             search.text?.clear()
             suppressTextListener = false
             currentQuery = ""
+            selectedCategory = "Coffee"
             updateClearVisibility()
+            updateChips()
             if (hasLocationPermission()) queryCurrentSelection()
         }
         search.setOnEditorActionListener { _, action, _ ->
@@ -154,7 +157,18 @@ class NearbyActivity : DashboardActivity() {
         search.addTextChangedListener(SimpleTextWatcher {
             if (suppressTextListener) return@SimpleTextWatcher
             currentQuery = search.text?.toString()?.trim().orEmpty()
+            // Free-text search and quick-category search are mutually
+            // exclusive. Clear the category as soon as the user types.
+            if (currentQuery.isNotBlank()) selectedCategory = ""
+            else if (selectedCategory.isBlank()) selectedCategory = "Coffee"
+            // Invalidate an in-flight category/text request immediately. Without
+            // this, a previous request (for example Coffee) can finish during
+            // the debounce window and briefly replace the newly entered query.
+            searchJob?.cancel()
+            searchGeneration.begin()
+            clearRenderedResultsForNewSearch()
             updateClearVisibility()
+            updateChips()
             debounceJob?.cancel()
             debounceJob = lifecycleScope.launch {
                 delay(SEARCH_DEBOUNCE_MS)
@@ -196,11 +210,17 @@ class NearbyActivity : DashboardActivity() {
     }
 
     private fun chooseCategory(name: String) {
+        debounceJob?.cancel()
+        searchJob?.cancel()
         selectedCategory = name
         suppressTextListener = true
         search.text?.clear()
         suppressTextListener = false
         currentQuery = ""
+        search.clearFocus()
+        (getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager)
+            .hideSoftInputFromWindow(search.windowToken, 0)
+        clearRenderedResultsForNewSearch()
         updateClearVisibility()
         updateChips()
         title.text = "$name near you"
@@ -225,6 +245,7 @@ class NearbyActivity : DashboardActivity() {
 
     private fun updateChips() {
         if (!::chips.isInitialized) return
+        val freeTextSearchActive = currentQuery.isNotBlank()
         val quick = when (selectedCategory) {
             "Cafe" -> "Coffee"
             "Fuel station" -> "Gas"
@@ -234,7 +255,9 @@ class NearbyActivity : DashboardActivity() {
         for (index in 0 until chips.childCount) {
             val chip = chips.getChildAt(index) as TextView
             val name = listOf("Coffee", "Food", "Gas", "More")[index]
-            val selected = quick == name
+            val selected = !freeTextSearchActive && quick == name
+            chip.isEnabled = true          // always tappable
+            chip.alpha = 1f                // or 0.7f if you want a subtle dim during text search
             chip.setTextColor(if (selected) Color.WHITE else muted)
             chip.compoundDrawableTintList = ColorStateList.valueOf(if (selected) Color.WHITE else muted)
             chip.background = if (selected) rounded(green, 100) else bordered(Color.WHITE, Color.rgb(221, 229, 225), 100)
@@ -248,18 +271,24 @@ class NearbyActivity : DashboardActivity() {
     private fun runSearchNow() {
         debounceJob?.cancel()
         currentQuery = search.text?.toString()?.trim().orEmpty()
+        if (currentQuery.isNotBlank()) selectedCategory = ""
+        else if (selectedCategory.isBlank()) selectedCategory = "Coffee"
+        clearRenderedResultsForNewSearch()
+        updateChips()
         if (currentQuery.isBlank()) queryCurrentSelection()
         else if (hasLocationPermission()) requestPlaces(currentQuery)
         else showLocationPermissionState()
     }
 
     /** Starts a category/radius search immediately; only free-text input is debounced. */
-    private fun queryCurrentSelection() {
+    private fun queryCurrentSelection(queryOverride: String? = null) {
         if (!hasLocationPermission()) {
             showLocationPermissionState()
             return
         }
-        val query = currentQuery
+        // Keep the query that initiated this search. When location resolution is
+        // still in progress, currentQuery can change before the request starts.
+        val query = queryOverride ?: currentQuery
         val version = beginSearch()
         showState(getString(R.string.nearby_finding_places), getString(R.string.nearby_using_recent_location), showLoading = true)
         val started = SystemClock.elapsedRealtime()
@@ -281,7 +310,7 @@ class NearbyActivity : DashboardActivity() {
     private fun requestPlaces(query: String) {
         val location = lastLocation?.takeIf { NearbyLocationPolicy.isUsable(it) }
         if (location == null) {
-            queryCurrentSelection()
+            queryCurrentSelection(query)
             return
         }
         val version = beginSearch()
@@ -308,6 +337,9 @@ class NearbyActivity : DashboardActivity() {
         kotlinx.coroutines.currentCoroutineContext().ensureActive()
         check(searchGeneration.isCurrent(version)) { "stale nearby search" }
     }
+
+    private fun isQueryCurrent(version: Int, query: String): Boolean =
+        searchGeneration.isCurrent(version) && currentQuery == query.trim()
 
     private suspend fun resolveLocation(): Location {
         lastLocation?.takeIf { NearbyLocationPolicy.isUsable(it) }?.let { return it }
@@ -343,12 +375,14 @@ class NearbyActivity : DashboardActivity() {
 
     private suspend fun performSearch(query: String, origin: Location, version: Int, started: Long) {
         val textQuery = query.trim().takeIf { it.isNotEmpty() }
-        val category = textQuery?.let { null } ?: selectedCategoryDefinition()
+        val category = if (textQuery == null) selectedCategoryDefinition() else null
+        if (!isQueryCurrent(version, query)) return
         title.text = if (textQuery == null) getString(R.string.nearby_category_near_you, selectedCategory) else getString(R.string.area_search_results)
         val key = NearbyCacheKey(category?.googleType, textQuery?.lowercase(Locale.ROOT), selectedRadiusKm, NearbyLocationBucket.from(origin))
         val cached = cache.get(key)
         if (cached != null) {
             ensureCurrent(version)
+            if (!isQueryCurrent(version, query)) return
             val label = if (cached.isFresh) getString(R.string.nearby_cached_refreshing) else getString(R.string.nearby_old_cache_refreshing)
             Log.d(TAG, "search=$version stage=cache ageMs=${cached.ageMillis} status=${if (cached.isFresh) "fresh" else "stale"} count=${cached.places.size}")
             showPlaces(cached.places, textQuery.orEmpty(), label)
@@ -359,6 +393,7 @@ class NearbyActivity : DashboardActivity() {
         val networkStarted = SystemClock.elapsedRealtime()
         val places = fetchPlaces(category, textQuery, origin, version)
         ensureCurrent(version)
+        if (!isQueryCurrent(version, query)) return
         Log.d(TAG, "search=$version stage=network ms=${SystemClock.elapsedRealtime() - networkStarted} results=${places.size}")
         cache.put(key, places)
         showPlaces(places, textQuery.orEmpty(), null)
@@ -418,13 +453,17 @@ class NearbyActivity : DashboardActivity() {
                 put("radius", searchRadiusMeters().toDouble())
             }))
         }
+        Log.d(TAG, "textSearch query=${query.trim()} payload=$body")
         val requestStarted = SystemClock.elapsedRealtime()
         val request = googleRequest("https://places.googleapis.com/v1/places:searchText", body)
         Log.d(TAG, "stage=request ms=${SystemClock.elapsedRealtime() - requestStarted} endpoint=text")
         NearbyHttpClient.client.await(request).use { response ->
             val responseBody = response.body?.string().orEmpty()
             if (!response.isSuccessful) throw GooglePlacesHttpException(response.code, googleErrorMessage(responseBody))
-            return parseGooglePlaces(JSONObject(responseBody).optJSONArray("places"), origin, selectedCategory)
+            // A free-text search must never inherit the selected quick chip as
+            // its displayed category; that made Pizza results appear labelled
+            // as Coffee when the API omitted primaryType.
+            return parseGooglePlaces(JSONObject(responseBody).optJSONArray("places"), origin, query)
         }
     }
 
@@ -727,6 +766,15 @@ class NearbyActivity : DashboardActivity() {
         stateAction.visibility = View.GONE
     }
 
+    private fun clearRenderedResultsForNewSearch() {
+        latestPlaces = emptyList()
+        showAllResults = false
+        adapter.submitList(emptyList())
+        resetResultsHeight()
+        count.text = ""
+        count.isClickable = false
+    }
+
     private fun obtainLocationAndSearch() {
         if (currentQuery.length >= 2) requestPlaces(currentQuery) else queryCurrentSelection()
     }
@@ -762,7 +810,8 @@ class NearbyActivity : DashboardActivity() {
     }
 
     private fun selectedCategoryDefinition(): NearbyCategory =
-        NearbyCategoryCatalog.find(selectedCategory) ?: NearbyCategoryCatalog.categoryForQuickChip("Coffee")!!
+        NearbyCategoryCatalog.find(selectedCategory)
+            ?: error("No category selected") 
 
     private fun searchRadiusMeters(): Int = selectedRadiusKm * 1_000
 

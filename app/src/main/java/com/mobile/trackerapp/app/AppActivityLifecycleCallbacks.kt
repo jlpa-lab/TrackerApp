@@ -9,7 +9,10 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.ads.module.admob.AppOpenManager
 import com.mobile.trackerapp.TrackerApplication
+import com.mobile.trackerapp.app.ResumeAdsEntryRule
+import com.mobile.trackerapp.service.LocationSharingCoordinator
 
 class AppActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
@@ -18,6 +21,12 @@ class AppActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
 
     override fun onActivityResumed(activity: Activity) {
         TrackerApplication.currentActivity = activity
+        LocationSharingCoordinator.syncAcceptedFriends(activity.applicationContext)
+        if (ResumeAdsEntryRule.shouldShowWelcomeOnResume() ||
+            !ResumeAdsEntryRule.shouldEnableOpenResume()
+        ) {
+            AppOpenManager.getInstance().disableAppResume()
+        }
         val content = activity.findViewById<View>(android.R.id.content)
         if (activity::class.java.simpleName !in setOf(
                 "SplashActivity", "LanguageActivity", "OnBoardingActivity", "WelcomeActivity",

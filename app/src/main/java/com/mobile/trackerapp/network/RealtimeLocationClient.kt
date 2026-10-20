@@ -12,7 +12,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
-class RealtimeLocationClient(context: Context, private val onLocation: (JSONObject) -> Unit) {
+class RealtimeLocationClient(
+    context: Context,
+    private val onFriendshipAccepted: (JSONObject) -> Unit = {},
+    private val onLocation: (JSONObject) -> Unit
+) {
     private val appContext = context.applicationContext
     private val prefs = appContext.getSharedPreferences("tracker_backend", Context.MODE_PRIVATE)
     private val deviceId = android.provider.Settings.Secure.getString(appContext.contentResolver, android.provider.Settings.Secure.ANDROID_ID)
@@ -33,6 +37,9 @@ class RealtimeLocationClient(context: Context, private val onLocation: (JSONObje
             }
         }
         socket.on(Socket.EVENT_DISCONNECT) { authenticated = false }
+        socket.on("friendship_accepted") { args ->
+            (args.firstOrNull() as? JSONObject)?.let { payload -> onFriendshipAccepted(payload) }
+        }
         socket.on("location_updated") { args -> (args.firstOrNull() as? JSONObject)?.let { payload -> LocalTrackerDb(appContext).write("friend_location_${payload.optString("device_id")}", payload.toString()); onLocation(payload) } }
         scope.launch {
             val registered = runCatching { TrackerBackendClient(appContext).register(); true }.getOrDefault(false)

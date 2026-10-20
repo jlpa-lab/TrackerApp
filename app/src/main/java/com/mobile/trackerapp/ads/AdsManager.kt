@@ -403,14 +403,25 @@ object AdsManager {
         if (loaded?.isReady == true) emit(loaded)
     }
 
-    fun loadInterWelcome(context: Context, ignoreLimit: Boolean = false) {
+    fun loadInterWelcome(
+        context: Context,
+        ignoreLimit: Boolean = false,
+        onLoaded: (ApInterstitialAd?) -> Unit = {}
+    ) {
         val cached = interWelcomeAdLive.value?.takeIf { it.isReady }
         val request = MutableLiveData<ApInterstitialAd?>()
         interWelcomeAdLive = request
+        var callbackInvoked = false
         fun emit(ad: ApInterstitialAd?) {
             request.value = ad
+            if (!callbackInvoked) {
+                callbackInvoked = true
+                onLoaded(ad)
+            }
         }
-        val config = AdRemoteConfig.inter_welcome
+        // The Welcome Back flow has its own ad unit. Keep the live data name
+        // stable because the screen consumes the same cache for start/back.
+        val config = AdRemoteConfig.inter_welcome_back
         if (!config.isEnable
             || AppPurchase.getInstance().isPurchased(context)
             || (!ignoreLimit && !ERainAd.getInstance()
@@ -460,24 +471,46 @@ object AdsManager {
 
     fun showInterWelcome(context: Context, ignoreLimit: Boolean = false, onAction: () -> Unit) {
         val interstitial = interWelcomeAdLive.value
+        val config = AdRemoteConfig.inter_welcome_back
+        val isPurchased = AppPurchase.getInstance().isPurchased(context)
         val allowShow = ignoreLimit || ERainAd.getInstance()
-            .getShouldDisplayInterWelcomeBack(AdRemoteConfig.inter_welcome.enableUaCheck)
-        if (interstitial != null && interstitial.isReady && !AppPurchase.getInstance()
-                .isPurchased(context) && allowShow
+            .getShouldDisplayInterWelcomeBack(config.enableUaCheck)
+        if (interstitial != null && interstitial.isReady && !isPurchased && allowShow
         ) {
-            ERainAd.getInstance()
-                .forceShowInterstitial(context, interstitial, object : AdCallback() {
-                    override fun onNextAction() {
-                        super.onNextAction()
-                        interWelcomeAdLive = MutableLiveData()
-                        // Refill the cache immediately after the displayed ad is consumed.
-                        loadInterWelcome(context, ignoreLimit = true)
-                        onAction()
-                    }
-                }, false)
+            showLoadedWelcomeInterstitial(context, interstitial, onAction)
+        } else if (config.isEnable && !isPurchased && allowShow) {
+            // The first preload can legitimately be skipped while the 35-second
+            // interval is still closed. When the user presses Start/back after
+            // the interval opens, request the ad again instead of treating the
+            // earlier empty cache as a permanent result.
+            loadInterWelcome(context, ignoreLimit = true) { loaded ->
+                if (loaded?.isReady == true && !AppPurchase.getInstance().isPurchased(context)) {
+                    showLoadedWelcomeInterstitial(context, loaded, onAction)
+                } else {
+                    onAction()
+                }
+            }
         } else {
             onAction()
         }
+    }
+
+    private fun showLoadedWelcomeInterstitial(
+        context: Context,
+        interstitial: ApInterstitialAd,
+        onAction: () -> Unit
+    ) {
+        ERainAd.getInstance()
+            .forceShowInterstitial(context, interstitial, object : AdCallback() {
+                override fun onNextAction() {
+                    super.onNextAction()
+                    interWelcomeAdLive = MutableLiveData()
+                    // Keep the next Welcome Back flow preloaded while the
+                    // interval gate controls when it may actually be shown.
+                    loadInterWelcome(context, ignoreLimit = true)
+                    onAction()
+                }
+            }, false)
     }
 
 

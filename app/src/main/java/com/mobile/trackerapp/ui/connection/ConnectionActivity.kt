@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.mobile.trackerapp.network.TrackerBackendClient
+import com.mobile.trackerapp.service.LocationSharingCoordinator
 import com.mobile.trackerapp.service.LocationSharingService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +61,7 @@ class ConnectionActivity : DashboardActivity() {
         binding.connectionShareInvite.setOnClickListener { startActivity(Intent(this, ShareConnectionActivity::class.java)) }
         binding.connectionShowQr.setOnClickListener { startActivity(Intent(this, MyQrActivity::class.java)) }
         binding.connectionManageRequests.setOnClickListener { startActivity(Intent(this, FriendRequestsActivity::class.java)) }
-        val prefs = getSharedPreferences("tracker_location", MODE_PRIVATE)
+        val prefs = getSharedPreferences(LocationSharingCoordinator.PREFS, MODE_PRIVATE)
         val sharing = binding.connectionLocationSwitch
         sharing.isChecked = prefs.getBoolean("enabled", false)
         if (sharing.isChecked && !hasBackgroundLocation()) {
@@ -85,6 +86,7 @@ class ConnectionActivity : DashboardActivity() {
     private lateinit var backend: TrackerBackendClient
     override fun onResume() {
         super.onResume()
+        LocationSharingCoordinator.syncAcceptedFriends(this)
         if (backgroundSettingsOpen) {
             backgroundSettingsOpen = false
             if (pendingSharingEnable && hasBackgroundLocation()) attemptEnableSharing()
@@ -114,7 +116,8 @@ class ConnectionActivity : DashboardActivity() {
             val hasFriends = runCatching { backend.hasAcceptedFriends() }.getOrDefault(false)
             if (!hasFriends) {
                 pendingSharingEnable = false
-                getSharedPreferences("tracker_location", MODE_PRIVATE).edit().putBoolean("enabled", false).apply()
+                getSharedPreferences(LocationSharingCoordinator.PREFS, MODE_PRIVATE)
+                    .edit().putBoolean(LocationSharingCoordinator.ENABLED, false).apply()
                 stopService(Intent(this@ConnectionActivity, LocationSharingService::class.java))
                 setSharingChecked(false)
                 updateSharingSummary(false)
@@ -122,17 +125,19 @@ class ConnectionActivity : DashboardActivity() {
                 return@launch
             }
             pendingSharingEnable = false
-            getSharedPreferences("tracker_location", MODE_PRIVATE).edit().putBoolean("enabled", true).apply()
+            getSharedPreferences(LocationSharingCoordinator.PREFS, MODE_PRIVATE)
+                .edit().putBoolean(LocationSharingCoordinator.ENABLED, true).apply()
             setSharingChecked(true)
             updateSharingSummary(true)
             Toast.makeText(this@ConnectionActivity, R.string.live_sharing_started, Toast.LENGTH_SHORT).show()
             RateAppManager.markConnectionAdded()
-            ContextCompat.startForegroundService(this@ConnectionActivity, Intent(this@ConnectionActivity, LocationSharingService::class.java))
+            LocationSharingCoordinator.startIfPermitted(this@ConnectionActivity)
         }
     }
 
     private fun disableSharing(message: String?) {
-        getSharedPreferences("tracker_location", MODE_PRIVATE).edit().putBoolean("enabled", false).apply()
+        getSharedPreferences(LocationSharingCoordinator.PREFS, MODE_PRIVATE)
+            .edit().putBoolean(LocationSharingCoordinator.ENABLED, false).apply()
         setSharingChecked(false)
         updateSharingSummary(false)
         val zonesNeedMonitoring = ZoneStore.get(this).all().any { it.enabled && (it.alertOnEnter || it.alertOnExit) }

@@ -1,7 +1,7 @@
 package com.mobile.trackerapp.app
 
 import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.inter_welcome
+import com.mobile.trackerapp.ads.inter_welcome_back
 import com.mobile.trackerapp.ads.native_welcome
 import com.mobile.trackerapp.ads.open_resume
 
@@ -18,7 +18,7 @@ object ResumeAdsEntryRule {
         val canUseOpenResume = AdRemoteConfig.open_resume.isEnable
         if (canUseOpenResume) return ResumeAdsEntryMode.OPEN_RESUME
 
-        val canUseWelcome = AdRemoteConfig.native_welcome.isEnable && AdRemoteConfig.inter_welcome.isEnable
+        val canUseWelcome = AdRemoteConfig.native_welcome.isEnable && AdRemoteConfig.inter_welcome_back.isEnable
         return if (canUseWelcome) ResumeAdsEntryMode.WELCOME else ResumeAdsEntryMode.NONE
     }
 

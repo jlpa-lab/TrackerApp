@@ -26,6 +26,21 @@ object NearbyCategoryCatalog {
     private fun emojiForCategory(name: String, group: String): String {
         val normalized = name.lowercase(Locale.ROOT)
         return when {
+            // Keep the Explore Categories property and destination icons
+            // explicit so broad group fallbacks do not make them all look the
+            // same.
+            normalized == "business center" -> "🏢"
+            normalized == "corporate office" -> "🏙️"
+            normalized == "art gallery" -> "🖼️"
+            normalized == "amusement center" || normalized == "amusement park" -> "🎡"
+            normalized.containsAny("bathroom", "toilet") -> "🚽"
+            normalized == "apartment building" -> "🏬"
+            normalized == "apartment complex" -> "🏘️"
+            normalized == "condominium complex" -> "🏙️"
+            normalized == "guest house" -> "🛖"
+            normalized == "beach" -> "🏖️"
+            normalized == "lake" -> "⛵"
+            normalized == "scenic spot" -> "🌅"
             normalized.containsAny("hospital") -> "🏥"
             normalized.containsAny("pharmacy", "drugstore") -> "💊"
             normalized.containsAny("doctor", "chiropractor", "physiotherapist") -> "👨‍⚕️"

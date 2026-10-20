@@ -38,6 +38,7 @@ import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.network.RealtimeLocationClient
 import com.mobile.trackerapp.network.TrackerBackendClient
+import com.mobile.trackerapp.service.LocationSharingCoordinator
 import com.mobile.trackerapp.service.LocationSharingService
 import com.mobile.trackerapp.ui.connection.TrackFriendRequestsActivity
 import kotlinx.coroutines.CoroutineScope
@@ -74,6 +75,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private val friendPermissionGranted = mutableMapOf<String, Boolean>()
     private val friendSharingEnabled = mutableMapOf<String, Boolean>()
     private val friendLocationRequestStatus = mutableMapOf<String, String>()
+    private var friendCameraFocused = false
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { grants ->
@@ -100,6 +102,13 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         notificationRequestAttempted = true
         startFriendSharingFeatures()
     }
+    private val backgroundLocationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        backgroundSettingsOpen = false
+        if (granted) startFriendSharingFeatures()
+        else pendingSharing = false
+    }
     private val geocoder by lazy { Geocoder(this, Locale.getDefault()) }
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -114,7 +123,16 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         )
         AdsManager.loadInterHome(this, ignoreLimit = true)
         if (friendsOnly) {
-            realtime = RealtimeLocationClient(this) { payload -> runOnUiThread { showFriendLocation(payload) } }
+            realtime = RealtimeLocationClient(
+                this,
+                onLocation = { payload -> runOnUiThread { showFriendLocation(payload) } },
+                onFriendshipAccepted = { payload ->
+                    runOnUiThread {
+                        val friendName = payload.optString("friend_name").ifBlank { payload.optString("name") }
+                        LocationSharingCoordinator.markAcceptedFriend(this, friendName)
+                    }
+                }
+            )
             realtime.connect()
         }
         intent.getStringExtra("screen_title")?.let { findViewById<TextView>(R.id.live_title).text = it }
@@ -148,7 +166,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         findViewById<View>(R.id.map_zoom_in).setOnClickListener { if (::map.isInitialized) map.animateCamera(CameraUpdateFactory.zoomIn()) }
         findViewById<View>(R.id.map_zoom_out).setOnClickListener { if (::map.isInitialized) map.animateCamera(CameraUpdateFactory.zoomOut()) }
         findViewById<View>(R.id.map_focus).setOnClickListener {
-            focusOnCurrentLocation()
+            if (friendsOnly) focusOnFriendLocations() else focusOnCurrentLocation()
         }
         supportFragmentManager.beginTransaction().replace(R.id.live_map, SupportMapFragment.newInstance()).commit()
         supportFragmentManager.executePendingTransactions()
@@ -169,6 +187,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         map.uiSettings.isMyLocationButtonEnabled = false
         pendingFriendLocations.values.toList().forEach { showFriendLocation(it) }
         pendingFriendLocations.clear()
+        if (friendsOnly) loadAcceptedFriends()
         requestPermission()
     }
     private fun requestPermission() {
@@ -193,10 +212,9 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun continueAfterLocationSettings() {
         if (pendingFocus) {
             pendingFocus = false
-            focusOnCurrentLocation()
+            if (friendsOnly) focusOnFriendLocations() else focusOnCurrentLocation()
         }
         if (friendsOnly) {
-            startLocationUpdates()
             startFriendSharingFeatures()
         } else {
             enableLocation()
@@ -218,14 +236,18 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             val hasFriends = runCatching { TrackerBackendClient(this@LiveLocationActivity).hasAcceptedFriends() }.getOrDefault(false)
             if (!hasFriends) {
                 pendingSharing = false
-                getSharedPreferences("tracker_location", MODE_PRIVATE).edit().putBoolean("enabled", false).apply()
+                getSharedPreferences(LocationSharingCoordinator.PREFS, MODE_PRIVATE).edit()
+                    .putBoolean(LocationSharingCoordinator.ENABLED, false)
+                    .apply()
                 stopService(Intent(this@LiveLocationActivity, LocationSharingService::class.java))
                 android.widget.Toast.makeText(this@LiveLocationActivity, R.string.live_accept_friend_before_sharing, android.widget.Toast.LENGTH_LONG).show()
                 return@launch
             }
             pendingSharing = false
-            getSharedPreferences("tracker_location", MODE_PRIVATE).edit().putBoolean("enabled", true).apply()
-            ContextCompat.startForegroundService(this@LiveLocationActivity, Intent(this@LiveLocationActivity, LocationSharingService::class.java))
+            getSharedPreferences(LocationSharingCoordinator.PREFS, MODE_PRIVATE).edit()
+                .putBoolean(LocationSharingCoordinator.ENABLED, true)
+                .apply()
+            LocationSharingCoordinator.startIfPermitted(this@LiveLocationActivity)
             android.widget.Toast.makeText(this@LiveLocationActivity, R.string.live_sharing_started, android.widget.Toast.LENGTH_SHORT).show()
         }
     }
@@ -238,7 +260,11 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             .setMessage(R.string.live_background_message)
             .setNegativeButton(R.string.common_not_now) { _, _ -> backgroundSettingsOpen = false; pendingSharing = false }
             .setPositiveButton(R.string.common_open_settings) { _, _ ->
-                startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+                    backgroundLocationPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                } else {
+                    startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
+                }
             }
             .show()
     }
@@ -316,12 +342,34 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             .ifBlank { id }
         val existing = friendMarkers[id]
         if (existing == null) {
-            friendMarkers[id] = map.addMarker(MarkerOptions().position(point).title(displayName))!!
+            friendMarkers[id] = map.addMarker(
+                MarkerOptions()
+                    .position(point)
+                    .title(displayName)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+            )!!
         } else {
             existing.position = point
             existing.title = displayName
         }
+        if (!friendCameraFocused) {
+            friendCameraFocused = true
+            focusOnFriendLocations(showInfoWindow = true)
+        }
         if (findViewById<View>(R.id.friend_rows)?.visibility == View.VISIBLE) renderFriendRows()
+    }
+
+    private fun focusOnFriendLocations(showInfoWindow: Boolean = false) {
+        if (!friendsOnly || !::map.isInitialized || friendMarkers.isEmpty()) return
+        if (friendMarkers.size == 1) {
+            val marker = friendMarkers.values.first()
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.position, 16f))
+            if (showInfoWindow) marker.showInfoWindow()
+            return
+        }
+        val bounds = LatLngBounds.Builder()
+        friendMarkers.values.forEach { bounds.include(it.position) }
+        map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), dp(72)))
     }
     private fun toggleFriendsPanel() {
         if (friendsDialog?.isShowing == true) {

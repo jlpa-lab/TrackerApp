@@ -7,8 +7,10 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -33,6 +35,8 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import androidx.core.content.res.ResourcesCompat
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.service.LocationSharingCoordinator
+import com.mobile.trackerapp.ui.tracker.TrackFriendMapActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -46,6 +50,11 @@ open class FriendRequestsActivity : DashboardActivity() {
     private var codeWave: ValueAnimator? = null
     private var backendReady = false
     override fun onDestroy() { codeWave?.cancel(); super.onDestroy() }
+
+    override fun onResume() {
+        super.onResume()
+        LocationSharingCoordinator.syncAcceptedFriends(this)
+    }
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -62,14 +71,14 @@ open class FriendRequestsActivity : DashboardActivity() {
         setContentView(layoutResource)
         val scroll = findViewById<android.widget.ScrollView>(R.id.friend_requests_scroll)
         val friendCodeInput = findViewById<EditText>(R.id.friend_code_input)
-        val friendPanel = findViewById<View>(R.id.friend_panel)
         val initialBottomPadding = scroll.paddingBottom
-        fun revealFriendPanel(container: android.widget.ScrollView, panel: View) {
-            val panelRect = Rect()
-            panel.getDrawingRect(panelRect)
-            container.offsetDescendantRectToMyCoords(panel, panelRect)
-            val visibleBottom = container.height - container.paddingBottom
-            val requiredScroll = panelRect.bottom - visibleBottom + dp(8)
+        fun revealFriendCodeInput(container: android.widget.ScrollView, input: View) {
+            val inputRect = Rect()
+            val visibleFrame = Rect()
+            if (!input.getGlobalVisibleRect(inputRect)) return
+            container.getWindowVisibleDisplayFrame(visibleFrame)
+            val safeBottom = visibleFrame.bottom - dp(12)
+            val requiredScroll = inputRect.bottom - safeBottom
             if (requiredScroll > 0) container.smoothScrollBy(0, requiredScroll)
         }
         friendCodeInput.setOnFocusChangeListener { _, hasFocus ->
@@ -78,16 +87,28 @@ open class FriendRequestsActivity : DashboardActivity() {
                 scroll.postDelayed({
                     if (ViewCompat.getRootWindowInsets(scroll)
                             ?.isVisible(WindowInsetsCompat.Type.ime()) == true) {
-                        revealFriendPanel(scroll, friendPanel)
+                        revealFriendCodeInput(scroll, friendCodeInput)
                     }
                 }, 300)
             }
+        }
+        scroll.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                val inputRect = Rect()
+                friendCodeInput.getGlobalVisibleRect(inputRect)
+                if (!inputRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    hideFriendKeyboard()
+                }
+            }
+            false
         }
         ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { _, insets ->
             val imeBottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
             scroll.setPadding(scroll.paddingLeft, scroll.paddingTop, scroll.paddingRight,
                 initialBottomPadding + imeBottom)
-            if (imeBottom > 0) friendPanel.post { revealFriendPanel(scroll, friendPanel) }
+            if (imeBottom > 0) friendCodeInput.post {
+                revealFriendCodeInput(scroll, friendCodeInput)
+            }
             insets
         }
         ViewCompat.requestApplyInsets(window.decorView)
@@ -117,9 +138,9 @@ open class FriendRequestsActivity : DashboardActivity() {
             }.onFailure { Toast.makeText(this@FriendRequestsActivity, getString(R.string.connection_backend_unavailable, it.message.orEmpty()), Toast.LENGTH_LONG).show() }
         }
         findViewById<View>(R.id.friend_back).setOnClickListener { onBackPressed() }
-        findViewById<View>(R.id.friend_add).setOnClickListener { showPanel(R.id.friend_add) }
-        findViewById<View>(R.id.friend_received).setOnClickListener { showPanel(R.id.friend_received); loadReceivedRequests() }
-        findViewById<View>(R.id.friend_sent).setOnClickListener { showPanel(R.id.friend_sent); loadSentRequests() }
+        findViewById<View>(R.id.friend_add).setOnClickListener { hideFriendKeyboard(); showPanel(R.id.friend_add) }
+        findViewById<View>(R.id.friend_received).setOnClickListener { hideFriendKeyboard(); showPanel(R.id.friend_received); loadReceivedRequests() }
+        findViewById<View>(R.id.friend_sent).setOnClickListener { hideFriendKeyboard(); showPanel(R.id.friend_sent); loadSentRequests() }
         findViewById<View>(R.id.show_my_qr_button).setOnClickListener {
             startActivity(Intent(this, MyQrActivity::class.java))
         }
@@ -223,14 +244,22 @@ open class FriendRequestsActivity : DashboardActivity() {
         }
     }
 
-    private fun decideRequest(id: String, action: String) {
+    private fun decideRequest(id: String, action: String, friendName: String = "") {
         CoroutineScope(Dispatchers.Main).launch {
             runCatching { backend.decideRequest(id, action) }
                 .onSuccess {
+                    if (action == "accept") startLocationSharingAfterAcceptance(friendName)
                     Toast.makeText(this@FriendRequestsActivity, if (action == "accept") R.string.connection_request_accepted else R.string.connection_request_rejected, Toast.LENGTH_SHORT).show()
                     loadReceivedRequests()
                 }
                 .onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: getString(R.string.connection_request_update_failed), Toast.LENGTH_LONG).show() }
+        }
+    }
+
+    private fun startLocationSharingAfterAcceptance(friendName: String) {
+        LocationSharingCoordinator.markAcceptedFriend(this, friendName)
+        if (!LocationSharingCoordinator.hasRequiredPermissions(this)) {
+            startActivity(Intent(this, TrackFriendMapActivity::class.java).putExtra("auto_start_sharing", true))
         }
     }
 
@@ -275,7 +304,7 @@ open class FriendRequestsActivity : DashboardActivity() {
             if (status == "pending") {
                 val actions = LinearLayout(this@FriendRequestsActivity).apply { orientation = LinearLayout.HORIZONTAL }
                 actions.addView(
-                    actionButton(getString(R.string.connection_accept), true) { decideRequest(requestId, "accept") },
+                    actionButton(getString(R.string.connection_accept), true) { decideRequest(requestId, "accept", name) },
                     LinearLayout.LayoutParams(0, dp(32), 1f)
                 )
                 actions.addView(actionButton(getString(R.string.connection_decline), false) {
@@ -446,6 +475,13 @@ open class FriendRequestsActivity : DashboardActivity() {
         findViewById<View>(R.id.add_panel).visibility = if (selectedId == R.id.friend_add) View.VISIBLE else View.GONE
         findViewById<View>(R.id.received_panel).visibility = if (selectedId == R.id.friend_received) View.VISIBLE else View.GONE
         findViewById<View>(R.id.sent_panel).visibility = if (selectedId == R.id.friend_sent) View.VISIBLE else View.GONE
+    }
+
+    private fun hideFriendKeyboard() {
+        val focusedView = currentFocus ?: window.decorView
+        val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(focusedView.windowToken, 0)
+        focusedView.clearFocus()
     }
 
     override fun onBackPressed() {

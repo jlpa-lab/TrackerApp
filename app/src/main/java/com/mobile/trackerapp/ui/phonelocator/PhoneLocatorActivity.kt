@@ -12,14 +12,18 @@ import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.BaseAdapter
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.mobile.trackerapp.R
@@ -27,13 +31,25 @@ import com.mobile.trackerapp.ads.bindNativeAllAd
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.databinding.ActivityPhoneLocatorBinding
 import java.util.Locale
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 class PhoneLocatorActivity : AppCompatActivity() {
     private companion object { const val CONTACT_PICKER_REQUEST = 7001 }
+    private data class KnownContact(
+        val number: String,
+        val name: String?,
+        val address: String?,
+        val photoUri: String? = null
+    )
+
     private var selectedIso = "VN"
     private var selectedDialCode = "+84"
     private var currentNumber = ""
+    private var currentAddress = ""
     private var pendingLookupNumber = ""
+    private var selectedContact: KnownContact? = null
+    private var applyingContactSelection = false
     private val contactsPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -50,6 +66,8 @@ class PhoneLocatorActivity : AppCompatActivity() {
         super.onCreate(state)
         binding = ActivityPhoneLocatorBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.root.isClickable = true
+        binding.root.setOnClickListener { hideKeyboard() }
         AdsManager.showNativeAllAndPreload(this, R.layout.layout_native_ad_small)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))
         AdsManager.loadInterHome(this, ignoreLimit = true)
@@ -86,6 +104,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
         input.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!applyingContactSelection) selectedContact = null
                 val hasText = !s.isNullOrEmpty()
                 clear.visibility = if (hasText) View.VISIBLE else View.GONE
                 contacts.visibility = if (hasText) View.GONE else View.VISIBLE
@@ -113,6 +132,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
 
     // ---------- country picker ----------
     private fun showCountryPicker() {
+        hideKeyboard()
         val util = PhoneNumberUtil.getInstance()
         val regions = util.supportedRegions.sortedBy { Locale("", it).displayCountry }
         data class CountryItem(val iso: String, val name: String, val code: String)
@@ -131,6 +151,10 @@ class PhoneLocatorActivity : AppCompatActivity() {
             setBackgroundDrawableResource(android.R.color.transparent)
             setDimAmount(0.32f)
             addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or
+                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+            )
             setGravity(Gravity.BOTTOM)
             attributes = attributes.apply {
                 width = ViewGroup.LayoutParams.MATCH_PARENT
@@ -143,8 +167,37 @@ class PhoneLocatorActivity : AppCompatActivity() {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
+        dialog.window?.decorView?.let { decorView ->
+            val maxKeyboardOffset = resources.getDimensionPixelSize(
+                R.dimen.country_picker_keyboard_offset_max
+            )
+            ViewCompat.setOnApplyWindowInsetsListener(decorView) { _, insets ->
+                val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime()) ||
+                    insets.getInsets(WindowInsetsCompat.Type.ime()).bottom > 0
+                val displayBasedOffset = (resources.displayMetrics.heightPixels * 0.08f).roundToInt()
+                val targetOffset = if (imeVisible) {
+                    min(maxKeyboardOffset, displayBasedOffset)
+                } else {
+                    0
+                }
+                dialog.window?.let { window ->
+                    val params = window.attributes
+                    if (params.y != targetOffset) {
+                        params.y = targetOffset
+                        window.attributes = params
+                    }
+                }
+                insets
+            }
+            ViewCompat.requestApplyInsets(decorView)
+        }
         setCountryPickerBlurred(true)
         val countrySearch = view.findViewById<EditText>(R.id.country_search)
+        val hideCountryKeyboard = {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+            imm.hideSoftInputFromWindow(countrySearch.windowToken, 0)
+            countrySearch.clearFocus()
+        }
         countrySearch.background = null
         countrySearch.setTextColor(Color.rgb(17, 24, 39))
         countrySearch.setHintTextColor(Color.rgb(176, 183, 195))
@@ -154,15 +207,27 @@ class PhoneLocatorActivity : AppCompatActivity() {
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH ||
                 actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE
             ) {
-                (getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager)
-                    .hideSoftInputFromWindow(countrySearch.windowToken, 0)
-                countrySearch.clearFocus()
+                hideCountryKeyboard()
                 true
             } else false
         }
         val list = view.findViewById<ListView>(R.id.country_list)
+        view.isClickable = true
+        view.setOnClickListener { hideCountryKeyboard() }
+        view.setOnTouchListener { _, event ->
+            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                hideCountryKeyboard()
+            }
+            false
+        }
         list.setBackgroundColor(Color.WHITE)
         list.cacheColorHint = Color.TRANSPARENT
+        list.setOnTouchListener { _, event ->
+            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                hideCountryKeyboard()
+            }
+            false
+        }
         val visibleCountries = allCountries.toMutableList()
         val selectedBg = Color.parseColor("#EDF9F3")
 
@@ -198,6 +263,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
             selectedIso = selected.iso
             selectedDialCode = selected.code
             findViewById<TextView>(R.id.country_selector).text = regionToFlag(selected.iso) + " " + selected.code
+            hideCountryKeyboard()
             adapter.notifyDataSetChanged()
         }
 
@@ -253,8 +319,8 @@ class PhoneLocatorActivity : AppCompatActivity() {
             showForm()
         }
     }
-    private fun hideKeyboard() {
-        val view = currentFocus ?: window.decorView
+    private fun hideKeyboard(target: View? = currentFocus) {
+        val view = target ?: window.decorView
         val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
 
         imm.hideSoftInputFromWindow(view.windowToken, 0)
@@ -283,21 +349,33 @@ class PhoneLocatorActivity : AppCompatActivity() {
             return
         }
         val phoneUtil = PhoneNumberUtil.getInstance()
+        val isInternationalNumber = raw.startsWith("+")
         val parsed = try {
-            phoneUtil.parse(raw, selectedIso)
+            phoneUtil.parse(raw, if (isInternationalNumber) null else selectedIso)
         } catch (_: Exception) {
             null
         }
         // The global boundary is 4–15 digits, but the number must also be
         // valid for the selected country. This prevents values such as "12"
         // from being accepted for India or any other country.
-        if (parsed == null || !phoneUtil.isValidNumberForRegion(parsed, selectedIso)) {
+        val isValid = parsed != null && if (isInternationalNumber) {
+            phoneUtil.isValidNumber(parsed)
+        } else {
+            phoneUtil.isValidNumberForRegion(parsed, selectedIso)
+        }
+        if (!isValid) {
             showNoResult()
             return
         }
 
         val fullNumber = phoneUtil.format(parsed, PhoneNumberUtil.PhoneNumberFormat.E164)
-        val info = CarrierDetector.detect(this, fullNumber, selectedIso) ?: run {
+        val knownContact = if (checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            selectedContact?.takeIf { numbersMatch(it.number, fullNumber) } ?: findKnownContact(fullNumber)
+        } else {
+            null
+        }
+        val info = CarrierDetector.detect(this, fullNumber, selectedIso)
+        if (info == null && knownContact == null) {
             showNoResult()
             return
         }
@@ -305,56 +383,160 @@ class PhoneLocatorActivity : AppCompatActivity() {
         currentNumber = fullNumber
         showDetails()
         findViewById<TextView>(R.id.details_number).text = fullNumber
-        findViewById<TextView>(R.id.details_country).text = info.country
+        val fallbackLocation = info?.country
+            ?: knownContact?.address?.takeIf { it.isNotBlank() }
+            ?: Locale("", phoneUtil.getRegionCodeForNumber(parsed)).displayCountry
+        findViewById<TextView>(R.id.details_country).text = fallbackLocation
         if (checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            applyKnownContact(fullNumber)
+            applyKnownContact(fullNumber, fallbackLocation)
         } else {
             pendingLookupNumber = fullNumber
             contactsPermission.launch(Manifest.permission.READ_CONTACTS)
         }
     }
 
-    private fun applyKnownContact(number: String) {
-        var contactName: String? = null
+    private fun applyKnownContact(number: String, fallbackLocation: String? = null) {
+        val contact = selectedContact?.takeIf { numbersMatch(it.number, number) }
+            ?: findKnownContact(number)
+        val nameView = findViewById<TextView>(R.id.details_name)
+        val locationView = findViewById<View>(R.id.details_location)
+        val locationViewText = findViewById<TextView>(R.id.details_country)
+        val navigateView = findViewById<View>(R.id.details_navigate)
+        val avatar = findViewById<ImageView>(R.id.details_avatar)
+        val isKnownContact = !contact?.name.isNullOrBlank()
+        if (!isKnownContact) {
+            nameView.setText(R.string.phone_unknown)
+            locationView.setBackgroundResource(R.drawable.bg_phone_pill_unknown)
+            navigateView.visibility = View.GONE
+            currentAddress = ""
+        } else {
+            nameView.text = contact.name
+            locationView.setBackgroundResource(R.drawable.bg_phone_pill_known)
+            navigateView.visibility = View.VISIBLE
+            currentAddress = contact.address
+                ?.takeIf { it.isNotBlank() }
+                ?: fallbackLocation
+                ?: locationViewText.text?.toString().orEmpty()
+        }
+        val photoUri = contact?.photoUri
+        if (isKnownContact && !photoUri.isNullOrBlank()) {
+            avatar.setImageURI(Uri.parse(photoUri))
+            avatar.setBackgroundResource(R.drawable.bg_phone_no_result_icon)
+            avatar.setPadding(0, 0, 0, 0)
+            avatar.scaleType = ImageView.ScaleType.CENTER_CROP
+            avatar.clipToOutline = true
+        } else {
+            avatar.setImageResource(R.drawable.ic_phone_person)
+            avatar.setBackgroundResource(R.drawable.bg_phone_no_result_icon)
+            val padding = resources.getDimensionPixelSize(R.dimen.phone_details_avatar_padding)
+            avatar.setPadding(padding, padding, padding, padding)
+            avatar.scaleType = ImageView.ScaleType.CENTER_INSIDE
+            avatar.clipToOutline = true
+        }
+        locationViewText.text = contact?.address?.takeIf { it.isNotBlank() }
+            ?: fallbackLocation
+            ?: locationViewText.text
+    }
+
+    private fun findKnownContact(number: String): KnownContact? {
         val lookupUri = ContactsContract.PhoneLookup.CONTENT_FILTER_URI.buildUpon()
             .appendPath(Uri.encode(number))
             .build()
         contentResolver.query(
             lookupUri,
-            arrayOf(ContactsContract.PhoneLookup.DISPLAY_NAME),
+            arrayOf(
+                ContactsContract.PhoneLookup.DISPLAY_NAME,
+                ContactsContract.PhoneLookup.CONTACT_ID,
+                ContactsContract.Contacts.PHOTO_URI
+            ),
             null,
             null,
             null
         )?.use { cursor ->
-            if (cursor.moveToFirst()) contactName = cursor.getString(0)
+            if (cursor.moveToFirst()) {
+                val name = cursor.getString(0)
+                val contactId = cursor.getLong(1)
+                return KnownContact(number, name, contactAddress(contactId), cursor.getString(2))
+            }
         }
-        if (contactName.isNullOrBlank()) {
-            val targetDigits = number.filter(Char::isDigit).takeLast(10)
-            contentResolver.query(
-                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER),
-                null, null, null
-            )?.use { cursor ->
-                val nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
-                val numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
-                while (cursor.moveToNext()) {
-                    val savedDigits = cursor.getString(numberIndex).orEmpty().filter(Char::isDigit)
-                    if (savedDigits.takeLast(10) == targetDigits) {
-                        contactName = cursor.getString(nameIndex)
-                        break
-                    }
+
+        val nameIndex = 0
+        val numberIndex = 1
+        val contactIdIndex = 2
+        contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            arrayOf(
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                ContactsContract.Contacts.PHOTO_URI
+            ),
+            null,
+            null,
+            null
+        )?.use { cursor ->
+            while (cursor.moveToNext()) {
+                val savedNumber = cursor.getString(numberIndex).orEmpty()
+                if (numbersMatch(savedNumber, number)) {
+                    val contactId = cursor.getLong(contactIdIndex)
+                    return KnownContact(
+                        number = savedNumber,
+                        name = cursor.getString(nameIndex),
+                        address = contactAddress(contactId),
+                        photoUri = cursor.getString(3)
+                    )
                 }
             }
         }
-        val nameView = findViewById<TextView>(R.id.details_name)
-        val locationView = findViewById<View>(R.id.details_location)
-        if (contactName.isNullOrBlank()) {
-            nameView.setText(R.string.phone_unknown)
-            locationView.setBackgroundResource(R.drawable.bg_phone_pill_unknown)
-        } else {
-            nameView.text = contactName
-            locationView.setBackgroundResource(R.drawable.bg_phone_pill_known)
+        return null
+    }
+
+    private fun contactAddress(contactId: Long): String? {
+        contentResolver.query(
+            ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI,
+            arrayOf(
+                ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS,
+                ContactsContract.CommonDataKinds.StructuredPostal.STREET,
+                ContactsContract.CommonDataKinds.StructuredPostal.CITY,
+                ContactsContract.CommonDataKinds.StructuredPostal.REGION,
+                ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE,
+                ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY
+            ),
+            "${ContactsContract.CommonDataKinds.StructuredPostal.CONTACT_ID}=?",
+            arrayOf(contactId.toString()),
+            null
+        )?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val formatted = cursor.getString(0).orEmpty().trim()
+                if (formatted.isNotBlank()) return formatted
+                val parts = (1 until cursor.columnCount)
+                    .map { cursor.getString(it).orEmpty().trim() }
+                    .filter { it.isNotBlank() }
+                return parts.joinToString(", ").ifBlank { null }
+            }
         }
+        return null
+    }
+
+    private fun numbersMatch(first: String, second: String): Boolean {
+        return normalizedNumberKeys(first).intersect(normalizedNumberKeys(second)).isNotEmpty()
+    }
+
+    private fun normalizedNumberKeys(number: String): Set<String> {
+        val digits = number.filter(Char::isDigit)
+        val keys = mutableSetOf<String>()
+        if (digits.isNotBlank()) keys += digits
+        if (digits.length >= 7) keys += digits.takeLast(10)
+        runCatching {
+            PhoneNumberUtil.getInstance().parse(number, selectedIso)
+        }.getOrNull()?.let { parsed ->
+            val e164 = PhoneNumberUtil.getInstance().format(
+                parsed,
+                PhoneNumberUtil.PhoneNumberFormat.E164
+            )
+            keys += e164.filter(Char::isDigit)
+        }
+        return keys
     }
 
     private fun dialNumber() {
@@ -366,9 +548,12 @@ class PhoneLocatorActivity : AppCompatActivity() {
     }
 
     private fun navigateToNumber() {
+        val destination = currentAddress
+            .takeIf { it.isNotBlank() }
+            ?: Locale("", selectedIso).displayCountry
         val intent = Intent(
             Intent.ACTION_VIEW,
-            Uri.parse("geo:0,0?q=${Uri.encode(currentNumber)}")
+            Uri.parse("geo:0,0?q=" + Uri.encode(destination))
         )
         if (intent.resolveActivity(packageManager) != null) startActivity(intent)
     }
@@ -395,15 +580,29 @@ class PhoneLocatorActivity : AppCompatActivity() {
         val uri = data?.data ?: return
         contentResolver.query(
             uri,
-            arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER),
+            arrayOf(
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                ContactsContract.Contacts.PHOTO_URI
+            ),
             null,
             null,
             null
         )?.use { cursor ->
             if (cursor.moveToFirst()) {
-                findViewById<EditText>(R.id.phone_input).setText(
-                    cursor.getString(0).orEmpty()
+                val number = cursor.getString(0).orEmpty()
+                if (number.isBlank()) return@use
+                val contactId = cursor.getLong(2)
+                selectedContact = KnownContact(
+                    number = number,
+                    name = cursor.getString(1),
+                    address = contactAddress(contactId),
+                    photoUri = cursor.getString(3)
                 )
+                applyingContactSelection = true
+                findViewById<EditText>(R.id.phone_input).setText(number)
+                applyingContactSelection = false
             }
         }
     }

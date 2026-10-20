@@ -11,8 +11,9 @@ import com.mobile.trackerapp.TrackerApplication
 import com.mobile.trackerapp.ui.uninstall.ReasonActivity
 import com.mobile.trackerapp.ui.welcome.WelcomeActivity
 import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.inter_welcome
+import com.mobile.trackerapp.ads.inter_welcome_back
 import com.mobile.trackerapp.ui.onboarding.OnBoardingActivity
+import com.mobile.trackerapp.service.LocationSharingCoordinator
 import com.mobile.trackerapp.utils.Routes
 import kotlin.jvm.java
 
@@ -30,14 +31,16 @@ class AppLifecycleObserver : DefaultLifecycleObserver {
     override fun onStart(owner: LifecycleOwner) {
         val currentActivity = TrackerApplication.currentActivity
         if (currentActivity != null) {
+            LocationSharingCoordinator.syncAcceptedFriends(currentActivity.applicationContext)
             val isDisable = listActivityDisableResume.any { clazz ->
                 clazz.isInstance(currentActivity)
             }
             if (!isDisable && ResumeAdsEntryRule.shouldShowWelcomeOnResume()
                 && !AppOpenManager.getInstance().isInterstitialShowing
                 && !AppPurchase.getInstance().isPurchased(currentActivity.applicationContext)
-                && ERainAd.getInstance().getShouldDisplayInterWelcomeBack(AdRemoteConfig.inter_welcome.enableUaCheck)
+                && ERainAd.getInstance().getShouldDisplayInterWelcomeBack(AdRemoteConfig.inter_welcome_back.enableUaCheck)
             ) {
+                AppOpenManager.getInstance().disableAppResume()
                 if (AppOpenManager.getInstance().isDisableAdResumeByClickAction)
                     AppOpenManager.getInstance().isDisableAdResumeByClickAction = false
                 else
