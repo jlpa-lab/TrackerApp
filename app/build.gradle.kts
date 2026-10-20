@@ -58,7 +58,7 @@ android {
             buildConfigField("String", "ERAIN_STUDIO_VERSION", "\"$erain_studio_version\"")
             buildConfigField("String", "PLAY_SERVICES_ADS_VERSION", "\"$play_services_ads_version\"")
             buildConfigField("String", "GDPR_MODULE_VERSION", "\"$module_update_gdpr_version\"")
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             firebaseCrashlytics {
                 mappingFileUploadEnabled = true
             }
