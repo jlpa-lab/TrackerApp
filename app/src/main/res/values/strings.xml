@@ -456,6 +456,7 @@
     <string name="nearby_subtitle">Find the places you need, close by</string>
     <string name="nearby_search">Search places or an address</string>
     <string name="nearby_explore_title">Explore categories</string>
+    <string name="nearby_categories_title">Explore categories</string>
     <string name="nearby_explore_subtitle">Find the right place near you</string>
     <string name="nearby_categories_search">Search categories</string>
     <string name="nearby_browse_categories">Browse categories</string>

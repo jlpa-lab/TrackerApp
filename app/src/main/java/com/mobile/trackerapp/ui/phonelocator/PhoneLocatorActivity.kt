@@ -16,6 +16,7 @@ import android.view.WindowManager
 import android.widget.BaseAdapter
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -31,8 +32,6 @@ import com.mobile.trackerapp.ads.bindNativeAllAd
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.databinding.ActivityPhoneLocatorBinding
 import java.util.Locale
-import kotlin.math.min
-import kotlin.math.roundToInt
 
 class PhoneLocatorActivity : AppCompatActivity() {
     private companion object { const val CONTACT_PICKER_REQUEST = 7001 }
@@ -61,6 +60,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPhoneLocatorBinding
     private var countryDialog: Dialog? = null
+    private var countryPickerKeyboardVisible = false
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -143,10 +143,17 @@ class PhoneLocatorActivity : AppCompatActivity() {
         countryDialog?.dismiss()
         val view = layoutInflater.inflate(R.layout.dialog_country_picker, null)
         view.setBackgroundResource(R.drawable.bg_country_sheet)
+        val countrySearch = view.findViewById<EditText>(R.id.country_search)
+        val list = view.findViewById<ListView>(R.id.country_list)
+        val defaultListHeight = list.layoutParams.height
         val dialog = Dialog(this)
         dialog.setContentView(view)
         dialog.setCanceledOnTouchOutside(true)
-        dialog.setOnCancelListener { setCountryPickerBlurred(false) }
+        dialog.setOnDismissListener {
+            countryPickerKeyboardVisible = false
+            if (countryDialog === dialog) countryDialog = null
+            setCountryPickerBlurred(false)
+        }
         dialog.window?.apply {
             setBackgroundDrawableResource(android.R.color.transparent)
             setDimAmount(0.32f)
@@ -167,24 +174,42 @@ class PhoneLocatorActivity : AppCompatActivity() {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
+
+        var pickerExpandedForKeyboard = false
         dialog.window?.decorView?.let { decorView ->
-            val maxKeyboardOffset = resources.getDimensionPixelSize(
-                R.dimen.country_picker_keyboard_offset_max
-            )
             ViewCompat.setOnApplyWindowInsetsListener(decorView) { _, insets ->
                 val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime()) ||
                     insets.getInsets(WindowInsetsCompat.Type.ime()).bottom > 0
-                val displayBasedOffset = (resources.displayMetrics.heightPixels * 0.08f).roundToInt()
-                val targetOffset = if (imeVisible) {
-                    min(maxKeyboardOffset, displayBasedOffset)
-                } else {
-                    0
-                }
-                dialog.window?.let { window ->
-                    val params = window.attributes
-                    if (params.y != targetOffset) {
-                        params.y = targetOffset
-                        window.attributes = params
+                countryPickerKeyboardVisible = imeVisible
+                if (imeVisible != pickerExpandedForKeyboard) {
+                    pickerExpandedForKeyboard = imeVisible
+                    val rootParams = view.layoutParams ?: ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                    val listParams = list.layoutParams
+                    if (imeVisible) {
+                        dialog.window?.setGravity(Gravity.TOP)
+                        rootParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                        listParams.height = 0
+                        if (listParams is LinearLayout.LayoutParams) listParams.weight = 1f
+                        view.layoutParams = rootParams
+                        list.layoutParams = listParams
+                        dialog.window?.setLayout(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        )
+                    } else {
+                        dialog.window?.setGravity(Gravity.BOTTOM)
+                        rootParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                        listParams.height = defaultListHeight
+                        if (listParams is LinearLayout.LayoutParams) listParams.weight = 0f
+                        view.layoutParams = rootParams
+                        list.layoutParams = listParams
+                        dialog.window?.setLayout(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                        )
                     }
                 }
                 insets
@@ -192,11 +217,21 @@ class PhoneLocatorActivity : AppCompatActivity() {
             ViewCompat.requestApplyInsets(decorView)
         }
         setCountryPickerBlurred(true)
-        val countrySearch = view.findViewById<EditText>(R.id.country_search)
         val hideCountryKeyboard = {
             val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
             imm.hideSoftInputFromWindow(countrySearch.windowToken, 0)
             countrySearch.clearFocus()
+            countryPickerKeyboardVisible = false
+        }
+        dialog.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == android.view.KeyEvent.KEYCODE_BACK &&
+                event.action == android.view.KeyEvent.ACTION_UP
+            ) {
+                if (countryPickerKeyboardVisible) hideCountryKeyboard() else hideCountryPicker()
+                true
+            } else {
+                false
+            }
         }
         countrySearch.background = null
         countrySearch.setTextColor(Color.rgb(17, 24, 39))
@@ -211,7 +246,6 @@ class PhoneLocatorActivity : AppCompatActivity() {
                 true
             } else false
         }
-        val list = view.findViewById<ListView>(R.id.country_list)
         view.isClickable = true
         view.setOnClickListener { hideCountryKeyboard() }
         view.setOnTouchListener { _, event ->
@@ -272,6 +306,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
         countrySearch.isFocusableInTouchMode = true
         countrySearch.setOnClickListener {
             countrySearch.requestFocus()
+            countryPickerKeyboardVisible = true
             countrySearch.post {
                 (getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager)
                     .showSoftInput(countrySearch, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
@@ -298,6 +333,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
     private fun hideCountryPicker() {
         countryDialog?.dismiss()
         countryDialog = null
+        countryPickerKeyboardVisible = false
         setCountryPickerBlurred(false)
     }
 
@@ -310,7 +346,12 @@ class PhoneLocatorActivity : AppCompatActivity() {
     @Deprecated("Deprecated in Android API; intercept back while the picker overlay is open")
     override fun onBackPressed() {
         if (countryDialog?.isShowing == true) {
-            hideCountryPicker()
+            if (countryPickerKeyboardVisible) {
+                countryDialog?.findViewById<EditText>(R.id.country_search)?.let { hideKeyboard(it) }
+                countryPickerKeyboardVisible = false
+            } else {
+                hideCountryPicker()
+            }
         } else if (findViewById<View>(R.id.phone_form).visibility == View.VISIBLE) {
             AdsManager.showInterHomeBack(this) {
                 finish()

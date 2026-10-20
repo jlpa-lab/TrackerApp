@@ -145,11 +145,16 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             findViewById<View>(R.id.friend_empty_state).visibility = View.GONE
             findViewById<View>(R.id.friend_people_button).setOnClickListener { toggleFriendsPanel() }
             findViewById<View>(R.id.friend_panel_scrim).setOnClickListener { setFriendsPanelVisible(false) }
-            findViewById<View>(R.id.friend_add_button).setOnClickListener { startActivity(Intent(this, TrackFriendRequestsActivity::class.java)) }
+            findViewById<View>(R.id.friend_add_button).setOnClickListener {
+                dismissFriendsPopup()
+                startActivity(Intent(this, TrackFriendRequestsActivity::class.java))
+            }
             findViewById<View>(R.id.friend_received_button).setOnClickListener {
+                dismissFriendsPopup()
                 startActivity(Intent(this, TrackFriendRequestsActivity::class.java).putExtra("open_tab", "received"))
             }
             findViewById<View>(R.id.friend_sent_button).setOnClickListener {
+                dismissFriendsPopup()
                 startActivity(Intent(this, TrackFriendRequestsActivity::class.java).putExtra("open_tab", "sent"))
             }
         }
@@ -407,8 +412,15 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         if (visible) {
             if (friendsDialog?.isShowing != true) toggleFriendsPanel()
         } else {
-            friendsDialog?.dismiss()
+            dismissFriendsPopup()
         }
+    }
+
+    /** Close the friends popup before leaving the map or opening another screen. */
+    protected fun dismissFriendsPopup() {
+        friendsDialog?.dismiss()
+        friendsDialog = null
+        friendsPanel?.visibility = View.GONE
     }
 
     private fun loadAcceptedFriends() {
@@ -607,9 +619,20 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             requestPermission()
         }
     }
-    override fun onDestroy() { callback?.let { fused.removeLocationUpdates(it) }; if (::realtime.isInitialized) realtime.close(); super.onDestroy() }
+    override fun onPause() {
+        dismissFriendsPopup()
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        dismissFriendsPopup()
+        callback?.let { fused.removeLocationUpdates(it) }
+        if (::realtime.isInitialized) realtime.close()
+        super.onDestroy()
+    }
 
     override fun onBackPressed() {
+        dismissFriendsPopup()
         AdsManager.showInterHomeBack(this) {
             finish()
         }

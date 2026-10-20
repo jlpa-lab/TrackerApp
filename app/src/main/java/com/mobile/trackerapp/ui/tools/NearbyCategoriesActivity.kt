@@ -1,65 +1,48 @@
 package com.mobile.trackerapp.ui.tools
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.Editable
-import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.content.Context
-import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.core.view.WindowCompat
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.ads.AdRemoteConfig
+import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityNearbyCategoriesBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 
-/** Searchable three-column category picker opened from Nearby's More chip. */
+/** Fixed nearby category picker matching the app's three-column reference design. */
 class NearbyCategoriesActivity : DashboardActivity() {
-    private val ink = Color.rgb(17, 24, 39)
-    private val cardStroke = Color.rgb(225, 235, 229)
-    private val iconBackground = Color.rgb(204, 237, 216)
-    private val iconAccent = Color.rgb(0, 112, 52)
-
-    // Keep the Explore screen focused on exactly 25 useful daily categories.
-    // The catalog still contains all Google Places subtypes for API requests,
-    // but those subtypes are not all shown in this picker.
-    private val mainCategoryNamesByGroup = mapOf(
-        "Automotive" to setOf("Gas station", "Parking"),
-        "Business" to setOf("Business center", "Corporate office"),
-        "Culture" to setOf("Art gallery"),
-        "Education" to setOf("School"),
-        "Entertainment and Recreation" to setOf("Amusement park", "Park"),
-        "Facilities" to setOf("Public bathroom"),
-        "Finance" to setOf("ATM", "Bank"),
-        "Food and Drink" to setOf("Cafe", "Pizza restaurant", "Restaurant"),
-        "Health and Wellness" to setOf("Doctor", "Hospital", "Pharmacy"),
-        "Housing" to setOf("Apartment building", "Apartment complex", "Condominium complex"),
-        "Lodging" to setOf("Guest house", "Hotel"),
-        "Natural Features" to setOf("Beach", "Lake", "Scenic spot"),
-    )
+    private val cardStroke = Color.rgb(232, 232, 232)
+    private val labelColor = Color.rgb(18, 18, 18)
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-        window.statusBarColor = Color.rgb(246, 251, 248)
-        window.navigationBarColor = Color.rgb(246, 251, 248)
+        window.decorView.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        window.statusBarColor = Color.WHITE
+        window.navigationBarColor = Color.WHITE
         hideNavigationBar()
         WindowCompat.setDecorFitsSystemWindows(window, true)
 
         val binding = ActivityNearbyCategoriesBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.root.isFocusableInTouchMode = true
-        binding.root.requestFocus()
         binding.categoriesBack.setOnClickListener { finish() }
+        AdsManager.loadBanner(this, AdRemoteConfig.banner_all, binding.frBanner, isCollapse = false)
 
         binding.categoriesSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(text: CharSequence?, start: Int, count: Int, after: Int) = Unit
@@ -79,119 +62,158 @@ class NearbyCategoriesActivity : DashboardActivity() {
             }
         }
         binding.categoriesSearchClear.setOnClickListener { binding.categoriesSearch.text?.clear() }
-
         renderCategories(binding, "")
     }
 
     private fun renderCategories(binding: ActivityNearbyCategoriesBinding, query: String) {
         val normalizedQuery = query.trim()
-        val filteredCategories = mainCategories().filter { category ->
+        val categories = exploreCategories().filter { category ->
             normalizedQuery.isBlank() ||
-                category.name.contains(normalizedQuery, ignoreCase = true) ||
-                category.group.contains(normalizedQuery, ignoreCase = true)
+                category.title.contains(normalizedQuery, ignoreCase = true) ||
+                category.catalogName.contains(normalizedQuery, ignoreCase = true)
         }
-        val matchCount = filteredCategories.size
-        val hasQuery = normalizedQuery.isNotBlank()
-
         binding.categoriesCount.text = getString(
-            if (hasQuery) R.string.nearby_categories_match_count else R.string.nearby_categories_count,
-            matchCount
+            if (normalizedQuery.isBlank()) R.string.nearby_categories_count
+            else R.string.nearby_categories_match_count,
+            categories.size
         )
-        binding.categoriesSearchClear.visibility = if (hasQuery) View.VISIBLE else View.GONE
-        binding.categoriesScroll.visibility = if (matchCount == 0) View.GONE else View.VISIBLE
-        binding.categoriesEmpty.visibility = if (matchCount == 0) View.VISIBLE else View.GONE
-
-        if (matchCount > 0) populateCategoryGrid(binding.categoriesGrid, filteredCategories)
-    }
-
-    private fun mainCategories(): List<NearbyCategory> =
-        NearbyCategoryCatalog.groups().flatMap { (group, categories) ->
-            val mainNames = mainCategoryNamesByGroup[group].orEmpty()
-            categories.filter { it.name in mainNames }
+        binding.categoriesSearchClear.visibility = if (normalizedQuery.isBlank()) View.GONE else View.VISIBLE
+        binding.categoriesScroll.visibility = if (categories.isEmpty()) View.GONE else View.VISIBLE
+        binding.categoriesEmpty.visibility = if (categories.isEmpty()) View.VISIBLE else View.GONE
+        if (categories.isNotEmpty()) {
+            populateCategoryGrid(binding.categoriesGrid, categories, BROWSE_COLUMN_COUNT)
         }
+    }
 
     private fun populateCategoryGrid(
         gridRows: LinearLayout,
-        categories: List<NearbyCategory>
+        categories: List<ExploreCategory>,
+        columns: Int
     ) {
         gridRows.removeAllViews()
-        categories.chunked(3).forEach { rowItems ->
+        categories.chunked(columns).forEach { rowItems ->
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.TOP
             }
             rowItems.forEachIndexed { index, category ->
-                row.addView(categoryTile(category), LinearLayout.LayoutParams(0, dp(112), 1f).apply {
-                    if (index < rowItems.lastIndex) marginEnd = dp(8)
-                    bottomMargin = dp(10)
-                })
+                row.addView(categoryTile(category), gridSlotParams(index, columns))
             }
-            repeat(3 - rowItems.size) {
-                row.addView(View(this), LinearLayout.LayoutParams(0, dp(112), 1f).apply {
-                    marginStart = dp(8)
-                    bottomMargin = dp(10)
-                })
+            repeat(columns - rowItems.size) { offset ->
+                row.addView(View(this), gridSlotParams(rowItems.size + offset, columns))
             }
             gridRows.addView(row, LinearLayout.LayoutParams(-1, wrap()))
         }
     }
 
-    private fun categoryTile(category: NearbyCategory): LinearLayout = LinearLayout(this).apply {
+    private fun gridSlotParams(index: Int, columns: Int) =
+        LinearLayout.LayoutParams(0, dp(96), 1f).apply {
+            if (index < columns - 1) marginEnd = dp(10)
+            bottomMargin = dp(10)
+        }
+
+    private fun categoryTile(category: ExploreCategory): LinearLayout = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        gravity = Gravity.CENTER_VERTICAL
-        setPadding(dp(6), dp(8), dp(6), dp(8))
-        background = bordered(Color.WHITE, cardStroke, 18)
+        gravity = Gravity.CENTER
+        setPadding(dp(4), dp(5), dp(4), dp(4))
+        background = GradientDrawable().apply {
+            setColor(Color.WHITE)
+            cornerRadius = dp(18).toFloat()
+            setStroke(dp(1f), cardStroke)
+        }
+        elevation = dp(2).toFloat()
         isClickable = true
         isFocusable = true
-        contentDescription = category.name
+        contentDescription = category.title
         setOnClickListener {
-            setResult(Activity.RESULT_OK, intent.putExtra(EXTRA_CATEGORY, category.name))
+            setResult(Activity.RESULT_OK, intent.putExtra(EXTRA_CATEGORY, category.catalogName))
             finish()
         }
 
-        addView(TextView(this@NearbyCategoriesActivity).apply {
-            text = category.emoji
-            textSize = 23f
-            setTextColor(iconAccent)
-            typeface = Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER
-            includeFontPadding = false
+        addView(ImageView(this@NearbyCategoriesActivity).apply {
+            setImageResource(category.iconRes)
+            scaleType = ImageView.ScaleType.CENTER_INSIDE
+            contentDescription = null
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-            background = rounded(iconBackground, 15).apply {
-                setStroke(dp(1f), Color.rgb(152, 211, 172))
-            }
-        }, LinearLayout.LayoutParams(dp(46), dp(46)))
+        }, LinearLayout.LayoutParams(dp(48), dp(48)))
 
-        addView(label(category.name, 13f, ink, true).apply {
+        addView(TextView(this@NearbyCategoriesActivity).apply {
+            text = category.title
+            textSize = 14f
+            setTextColor(labelColor)
+            typeface = Typeface.create("sans-serif", Typeface.NORMAL)
             gravity = Gravity.CENTER
-            maxLines = 2
-            ellipsize = TextUtils.TruncateAt.END
             includeFontPadding = false
-        }, LinearLayout.LayoutParams(-1, 0, 1f).apply {
-            gravity = Gravity.CENTER
-            topMargin = dp(6)
+            maxLines = 2
+            setLineSpacing(0f, 0.98f)
+        }, LinearLayout.LayoutParams(-1, dp(34)).apply {
+            topMargin = dp(4)
         })
     }
 
-    private fun label(value: String, size: Float, color: Int, bold: Boolean = false) = TextView(this).apply {
-        text = value
-        textSize = size
-        setTextColor(color)
-        if (bold) typeface = Typeface.create("sans-serif", Typeface.BOLD)
-    }
+    private fun exploreCategories() = listOf(
+        category("Art Gallery", "Art gallery", R.drawable.nearby_cat_art_gallery),
+        category("Bars", "Bar", R.drawable.nearby_cat_bars),
+        category("Bank", "Bank", R.drawable.nearby_cat_bank),
+        category("Bank ATMs", "ATM", R.drawable.nearby_cat_bank_atms),
+        category("Beauty Salons", "Beauty salon", R.drawable.nearby_cat_beauty_salons),
+        category("Book Stores", "Book store", R.drawable.nearby_cat_book_stores),
+        category("Coffee Shops", "Coffee shop", R.drawable.nearby_cat_coffee_shops),
+        category("Car Dealers", "Car dealer", R.drawable.nearby_cat_car_dealers),
+        category("Gas Station", "Gas station", R.drawable.nearby_cat_gas_station),
+        category("Gym", "Gym", R.drawable.nearby_cat_gym),
+        category("Hospitals", "Hospital", R.drawable.nearby_cat_hospitals),
+        category("Hotels", "Hotel", R.drawable.nearby_cat_hotels),
+        category("Parking", "Parking", R.drawable.nearby_cat_parking),
+        category("Restaurants", "Restaurant", R.drawable.nearby_cat_restaurants),
+        category("Pharmacy", "Pharmacy", R.drawable.nearby_cat_pharmacy),
+        category("Supermarket", "Supermarket", R.drawable.nearby_cat_supermarket),
+        category("Cinema", "Movie theater", R.drawable.nearby_cat_cinema),
+        category("Parks", "Park", R.drawable.nearby_cat_parks),
+        category("Zoo", "Zoo", R.drawable.nearby_cat_zoo),
+        category("Shopping Mall", "Shopping mall", R.drawable.nearby_cat_shopping_mall),
+        category("Airport", "Airport", R.drawable.nearby_cat_airport),
+        category("Bus Station", "Bus station", R.drawable.nearby_cat_bus_station),
+        category("Train Station", "Train station", R.drawable.nearby_cat_train_station),
+        category("Taxi Stand", "Taxi stand", R.drawable.nearby_cat_taxi_stand),
+        category("Bakery", "Bakery", R.drawable.nearby_cat_bakery),
+        category("Spa", "Spa", R.drawable.nearby_cat_spa),
+        category("Dentist", "Dentist", R.drawable.nearby_cat_dentist),
+        category("Pet Shop / Vet", "Pet store", R.drawable.nearby_cat_pet_shop_vet),
+        category("Night Club", "Night club", R.drawable.nearby_cat_night_club),
+        category("Post Office", "Post office", R.drawable.nearby_cat_post_office),
+        category("Police Station", "Police", R.drawable.nearby_cat_police_station),
+        category("School", "School", R.drawable.nearby_cat_school),
+        category("University", "University", R.drawable.nearby_cat_university),
+        category("Library", "Library", R.drawable.nearby_cat_library),
+        category("Laundry", "Laundry", R.drawable.nearby_cat_laundry),
+        category("Food Court", "Food court", R.drawable.nearby_cat_food_court),
+        category("Convenience Store", "Convenience store", R.drawable.nearby_cat_convenience_store),
+        category("Gaming Zone", "Video arcade", R.drawable.nearby_cat_gaming_zone),
+        category("Place of Worship", "Place of worship", R.drawable.nearby_cat_place_of_worship),
+        category("Laboratory", "Medical lab", R.drawable.nearby_cat_laboratory),
+        category("Swimming Pool", "Swimming pool", R.drawable.nearby_cat_swimming_pool),
+        category("Amusement Park", "Amusement park", R.drawable.nearby_cat_amusement_park),
+        category("Photo Studio", "Photo studio", R.drawable.nearby_cat_photo_studio),
+        category("Auto Repair", "Car repair", R.drawable.nearby_cat_auto_repair),
+        category("Electronics Store", "Electronics store", R.drawable.nearby_cat_electronics_store),
+        category("Hardware Store", "Hardware store", R.drawable.nearby_cat_hardware_store),
+        category("Toy Store", "Toy store", R.drawable.nearby_cat_toy_store),
+        category("Jewelry Store", "Jewelry store", R.drawable.nearby_cat_jewelry_store)
+    )
 
-    private fun rounded(color: Int, radiusDp: Int) = GradientDrawable().apply {
-        setColor(color)
-        cornerRadius = dp(radiusDp).toFloat()
-    }
+    private fun category(title: String, catalogName: String, @DrawableRes iconRes: Int) =
+        ExploreCategory(title, catalogName, iconRes)
 
-    private fun bordered(color: Int, stroke: Int, radiusDp: Int) = rounded(color, radiusDp).apply {
-        setStroke(dp(1f), stroke)
-    }
+    private data class ExploreCategory(
+        val title: String,
+        val catalogName: String,
+        @DrawableRes val iconRes: Int
+    )
 
     private fun dp(value: Float) = (value * resources.displayMetrics.density).toInt().coerceAtLeast(1)
-
     companion object {
         const val EXTRA_CATEGORY = "nearby_category"
+        private const val BROWSE_COLUMN_COUNT = 3
     }
 }

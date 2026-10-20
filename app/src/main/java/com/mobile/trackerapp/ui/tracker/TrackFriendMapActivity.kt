@@ -17,6 +17,7 @@ class TrackFriendMapActivity : LiveLocationActivity() {
         super.onCreate(state)
     }
     override fun onBackPressed() {
+        dismissFriendsPopup()
         AdsManager.showInterHomeBack(this) {
             finish()
         }

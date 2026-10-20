@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/home_bg"
     android:clipToPadding="false"
     android:fillViewport="true"
@@ -74,7 +75,8 @@
             <com.journeyapps.barcodescanner.DecoratedBarcodeView
                 android:id="@+id/scan_barcode_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                app:zxing_scanner_layout="@layout/zxing_barcode_scanner" />
 
             <com.mobile.trackerapp.ui.connection.ScanFrameOverlayView
                 android:layout_width="match_parent"
