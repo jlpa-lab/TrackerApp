@@ -19,7 +19,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="GPS Tools"
+        android:text="@string/home_gps_tools"
         android:textColor="@color/home_phone_locator_text"
         android:fontFamily="@font/inter_medium"
         android:textSize="12sp" />

@@ -6,19 +6,19 @@
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="16dp" android:paddingTop="0dp" android:paddingEnd="16dp" android:paddingBottom="22dp">
 
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-            <ImageView android:id="@+id/traffic_back" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true" android:contentDescription="Back" android:focusable="true" android:paddingEnd="8dp" android:src="@drawable/ic_phone_back" />
+            <ImageView android:id="@+id/traffic_back" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true" android:contentDescription="@string/common_back" android:focusable="true" android:paddingEnd="8dp" android:src="@drawable/ic_phone_back" />
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                <TextView android:id="@+id/traffic_header_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/inter_bold" android:text="Traffic Alert" android:textColor="@color/home_phone_locator_text" android:textSize="22sp" />
-                <TextView android:id="@+id/traffic_subtitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:fontFamily="@font/inter_regular" android:text="Stay one step ahead on the road" android:textColor="@color/home_text_subtitle" android:textSize="13sp" />
+                <TextView android:id="@+id/traffic_header_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/inter_bold" android:text="@string/traffic_title" android:textColor="@color/home_phone_locator_text" android:textSize="22sp" />
+                <TextView android:id="@+id/traffic_subtitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:fontFamily="@font/inter_regular" android:text="@string/traffic_subtitle" android:textColor="@color/home_text_subtitle" android:textSize="13sp" />
             </LinearLayout>
         </LinearLayout>
 
         <LinearLayout android:layout_width="match_parent" android:layout_height="80dp" android:layout_marginTop="12dp" android:background="@drawable/bg_traffic_status" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="16dp" android:paddingEnd="16dp">
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                <TextView android:id="@+id/traffic_status_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/inter_semibold" android:text="Traffic is a little busy" android:textColor="#0A1120" android:textSize="16sp" />
-                <TextView android:id="@+id/traffic_status_detail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:fontFamily="@font/inter_regular" android:text="Waiting for your location" android:textColor="#C65D22" android:textSize="12sp" />
+                <TextView android:id="@+id/traffic_status_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/inter_semibold" android:text="@string/traffic_busy" android:textColor="#0A1120" android:textSize="16sp" />
+                <TextView android:id="@+id/traffic_status_detail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:fontFamily="@font/inter_regular" android:text="@string/traffic_waiting" android:textColor="#C65D22" android:textSize="12sp" />
             </LinearLayout>
-            <ImageView android:layout_width="96dp" android:layout_height="64dp" android:contentDescription="Traffic alert" android:scaleType="fitCenter" android:src="@drawable/home_traffic_alert" />
+            <ImageView android:layout_width="96dp" android:layout_height="64dp" android:contentDescription="@string/traffic_alert" android:scaleType="fitCenter" android:src="@drawable/home_traffic_alert" />
         </LinearLayout>
 
         <FrameLayout android:layout_width="match_parent" android:layout_height="560dp" android:layout_marginTop="12dp" android:background="@drawable/bg_traffic_map" android:clipToOutline="true">
@@ -26,24 +26,24 @@
 
             <LinearLayout android:layout_width="wrap_content" android:layout_height="36dp" android:layout_gravity="top|start" android:layout_marginStart="16dp" android:layout_marginTop="16dp" android:background="@drawable/bg_traffic_pill" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="12dp" android:paddingEnd="12dp">
                 <View android:layout_width="10dp" android:layout_height="10dp" android:background="@drawable/bg_traffic_clear_dot" />
-                <TextView android:id="@+id/traffic_live_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:fontFamily="@font/inter_semibold" android:text="Live traffic · — km" android:textColor="#0A1120" android:textSize="12sp" />
+                <TextView android:id="@+id/traffic_live_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:fontFamily="@font/inter_semibold" android:text="@string/traffic_live_label" android:textColor="#0A1120" android:textSize="12sp" />
             </LinearLayout>
 
-            <TextView android:id="@+id/traffic_location_hint" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom|center_horizontal" android:layout_margin="16dp" android:background="@drawable/bg_traffic_pill" android:fontFamily="@font/inter_semibold" android:paddingStart="12dp" android:paddingTop="10dp" android:paddingEnd="12dp" android:paddingBottom="10dp" android:text="Enable location to center the traffic map" android:textColor="#0A1120" android:textSize="11sp" android:visibility="gone" />
+            <TextView android:id="@+id/traffic_location_hint" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom|center_horizontal" android:layout_margin="16dp" android:background="@drawable/bg_traffic_pill" android:fontFamily="@font/inter_semibold" android:paddingStart="12dp" android:paddingTop="10dp" android:paddingEnd="12dp" android:paddingBottom="10dp" android:text="@string/traffic_center_map" android:textColor="#0A1120" android:textSize="11sp" android:visibility="gone" />
         </FrameLayout>
 
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center" android:orientation="horizontal">
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
                 <View android:layout_width="12dp" android:layout_height="12dp" android:background="@drawable/bg_traffic_clear_dot" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:fontFamily="@font/inter_regular" android:text="Clear" android:textColor="@color/home_text_subtitle" android:textSize="12sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:fontFamily="@font/inter_regular" android:text="@string/common_clear" android:textColor="@color/home_text_subtitle" android:textSize="12sp" />
             </LinearLayout>
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="24dp" android:gravity="center_vertical" android:orientation="horizontal">
                 <View android:layout_width="12dp" android:layout_height="12dp" android:background="@drawable/bg_traffic_moderate_dot" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:fontFamily="@font/inter_regular" android:text="Moderate" android:textColor="@color/home_text_subtitle" android:textSize="12sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:fontFamily="@font/inter_regular" android:text="@string/traffic_moderate" android:textColor="@color/home_text_subtitle" android:textSize="12sp" />
             </LinearLayout>
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="24dp" android:gravity="center_vertical" android:orientation="horizontal">
                 <View android:layout_width="12dp" android:layout_height="12dp" android:background="@drawable/bg_traffic_heavy_dot" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:fontFamily="@font/inter_regular" android:text="Heavy" android:textColor="@color/home_text_subtitle" android:textSize="12sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:fontFamily="@font/inter_regular" android:text="@string/traffic_heavy" android:textColor="@color/home_text_subtitle" android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

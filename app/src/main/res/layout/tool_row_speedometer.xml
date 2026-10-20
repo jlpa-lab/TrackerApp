@@ -21,7 +21,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Speedometer"
+            android:text="@string/gps_speedometer"
             android:textColor="@color/home_phone_locator_text"
             android:fontFamily="@font/inter_medium"
             android:textSize="14sp" />
@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="Track your current speed"
+            android:text="@string/gps_speedometer_description"
             android:textColor="@color/home_text_subtitle"
             android:fontFamily="@font/inter_regular"
             android:textSize="11sp" />

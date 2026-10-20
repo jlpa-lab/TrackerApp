@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_bold"
-            android:text="Area Codes"
+            android:text="@string/gps_area_codes"
             android:textColor="@color/home_phone_locator_text"
             android:textSize="14sp" />
 
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
             android:fontFamily="@font/inter_regular"
-            android:text="Look up phone area codes by location"
+            android:text="@string/gps_area_codes_description"
             android:textColor="@color/home_text_subtitle"
             android:textSize="12sp" />
     </LinearLayout>

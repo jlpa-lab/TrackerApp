@@ -62,7 +62,7 @@ internal class NearbyPlaceAdapter(
             scaleType = ImageView.ScaleType.CENTER_CROP
             background = rounded(pale, 8)
             clipToOutline = true
-            contentDescription = "Place photo"
+            contentDescription = appContext.getString(R.string.nearby_place_photo)
             visibility = View.GONE
         }
         val thumbnail = FrameLayout(context).apply {
@@ -85,7 +85,7 @@ internal class NearbyPlaceAdapter(
             background = rounded(pale, 12)
             isClickable = true
             isFocusable = true
-            contentDescription = "Directions"
+            contentDescription = appContext.getString(R.string.nearby_directions)
         }, LinearLayout.LayoutParams(dp(42), dp(42)).apply { marginStart = dp(8) })
         return root
     }
@@ -96,7 +96,7 @@ internal class NearbyPlaceAdapter(
         icon.apply {
             setImageResource(NearbyCategoryCatalog.iconFor(place.kind))
             imageTintList = ColorStateList.valueOf(green)
-            contentDescription = "${place.name} category"
+            contentDescription = appContext.getString(R.string.nearby_category_accessibility, place.name)
         }
         photo.setImageDrawable(null)
         if (place.imageUrl.isNullOrBlank()) {
@@ -127,7 +127,7 @@ internal class NearbyPlaceAdapter(
             setPadding(0, dp(3), 0, 0)
         }
         itemView.findViewById<TextView>(R.id.nearby_place_status).apply {
-            val distance = "${formatDistance(place.distanceMeters)}  ·  ${walkingTime(place.distanceMeters)} min walk"
+            val distance = "${formatDistance(place.distanceMeters)}  ·  ${appContext.getString(R.string.nearby_walking_time, walkingTime(place.distanceMeters))}"
             text = listOfNotNull(place.openingHours, distance).joinToString("  · ")
             textSize = 12f
             setTextColor(if (place.openingHours != null) green else muted)
@@ -137,7 +137,7 @@ internal class NearbyPlaceAdapter(
             setPadding(0, dp(3), 0, 0)
         }
         itemView.findViewById<ImageView>(R.id.nearby_place_direction).apply {
-            contentDescription = "Directions to ${place.name}"
+            contentDescription = appContext.getString(R.string.nearby_directions_to, place.name)
             setOnClickListener { openDirections(place) }
         }
         itemView.setOnClickListener { openDirections(place) }

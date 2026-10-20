@@ -34,7 +34,7 @@ class MyQrActivity : DashboardActivity() {
         val inviteCode = ConnectionInvite.code(this)
         findViewById<View>(R.id.my_qr_back).setOnClickListener { finish() }
         val sharing = getSharedPreferences("tracker_location", MODE_PRIVATE).getBoolean("enabled", false)
-        findViewById<TextView>(R.id.my_qr_status).text = if (sharing) "Live Location Sharing Active" else "Location sharing is off"
+        findViewById<TextView>(R.id.my_qr_status).text = getString(if (sharing) R.string.qr_sharing_active else R.string.connection_sharing_off)
         val render: (String) -> Unit = { code ->
             findViewById<TextView>(R.id.my_qr_code_text).text = code
             findViewById<ImageView>(R.id.my_qr_image).setImageBitmap(ConnectionInvite.qrBitmap(code, 640))
@@ -48,9 +48,9 @@ class MyQrActivity : DashboardActivity() {
     private fun shareInvite(code: String) {
         val send = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, "Connect with me on GPS Tracker. My invite code is $code")
+            putExtra(Intent.EXTRA_TEXT, getString(R.string.connection_invite_share_text, code))
         }
-        startActivity(Intent.createChooser(send, "Share friend invite"))
+        startActivity(Intent.createChooser(send, getString(R.string.connection_share_friend_invite)))
     }
     private fun loadMyQrBanner() {
         val bannerConfig = AdRemoteConfig.banner_all

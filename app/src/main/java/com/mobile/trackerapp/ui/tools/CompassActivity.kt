@@ -116,10 +116,10 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
     private fun renderAccuracy() {
         if (!::accuracyValue.isInitialized) return
         val label = when (sensorAccuracy) {
-            SensorManager.SENSOR_STATUS_ACCURACY_HIGH -> "● High"
-            SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM -> "● Medium"
-            SensorManager.SENSOR_STATUS_ACCURACY_LOW -> "● Low"
-            else -> if (hasHeading) "● Uncalibrated" else "● Waiting for sensor"
+            SensorManager.SENSOR_STATUS_ACCURACY_HIGH -> getString(R.string.compass_high)
+            SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM -> getString(R.string.compass_medium)
+            SensorManager.SENSOR_STATUS_ACCURACY_LOW -> getString(R.string.compass_low)
+            else -> if (hasHeading) getString(R.string.compass_uncalibrated) else getString(R.string.compass_waiting_sensor)
         }
         accuracyValue.text = label
         accuracyValue.setTextColor(if (sensorAccuracy == SensorManager.SENSOR_STATUS_ACCURACY_HIGH) green else muted)
@@ -130,14 +130,14 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
         latestLocation = location ?: latestLocation
         val fix = latestLocation
         if (fix == null) {
-            coordinatesValue.text = if (hasLocationPermission()) "Waiting for location…" else "Allow location access"
+            coordinatesValue.text = getString(if (hasLocationPermission()) R.string.compass_waiting_location else R.string.compass_location_access)
             altitudeValue.text = "—"
             return
         }
         val latitude = "%.4f° %s".format(Locale.getDefault(), abs(fix.latitude), if (fix.latitude >= 0) "N" else "S")
         val longitude = "%.4f° %s".format(Locale.getDefault(), abs(fix.longitude), if (fix.longitude >= 0) "E" else "W")
         coordinatesValue.text = "$latitude, $longitude"
-        altitudeValue.text = if (fix.hasAltitude()) "%.0f m above sea level".format(Locale.getDefault(), fix.altitude) else "Unavailable"
+        altitudeValue.text = if (fix.hasAltitude()) "%.0f m above sea level".format(Locale.getDefault(), fix.altitude) else getString(R.string.compass_unavailable)
     }
 
     private fun hasLocationPermission() = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
@@ -170,9 +170,9 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
 
     private fun showCalibrationHelp() {
         AlertDialog.Builder(this)
-            .setTitle("Calibrate compass")
-            .setMessage("Move your phone in a figure-eight motion a few times. Keep it away from magnets, speakers, and metal objects.")
-            .setPositiveButton("Got it", null)
+            .setTitle(getString(R.string.compass_calibrate_title))
+            .setMessage(getString(R.string.compass_calibrate_message))
+            .setPositiveButton(R.string.compass_got_it, null)
             .show()
     }
 

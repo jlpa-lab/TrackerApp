@@ -81,7 +81,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             ensureLocationSettings()
         } else if (::address.isInitialized) {
             pendingFocus = false
-            address.text = "Location permission is required to show your position"
+            address.setText(R.string.live_location_permission_required)
             showPermissionHelp()
         }
     }
@@ -91,7 +91,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         if (result.resultCode == Activity.RESULT_OK) continueAfterLocationSettings()
         else {
             pendingFocus = false
-            if (::address.isInitialized) address.text = "Turn on device location to show your position"
+            if (::address.isInitialized) address.setText(R.string.live_turn_on_location)
         }
     }
     private val notificationPermissionLauncher = registerForActivityResult(
@@ -184,9 +184,9 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             .addOnFailureListener { error ->
                 if (error is ResolvableApiException) {
                     runCatching { locationSettingsLauncher.launch(IntentSenderRequest.Builder(error.resolution).build()) }
-                        .onFailure { address.text = "Turn on device location to show your position" }
+                        .onFailure { address.setText(R.string.live_turn_on_location) }
                 } else {
-                    address.text = "Turn on device location to show your position"
+                    address.setText(R.string.live_turn_on_location)
                 }
             }
     }
@@ -220,13 +220,13 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 pendingSharing = false
                 getSharedPreferences("tracker_location", MODE_PRIVATE).edit().putBoolean("enabled", false).apply()
                 stopService(Intent(this@LiveLocationActivity, LocationSharingService::class.java))
-                android.widget.Toast.makeText(this@LiveLocationActivity, "Accept a friend request before sharing your location", android.widget.Toast.LENGTH_LONG).show()
+                android.widget.Toast.makeText(this@LiveLocationActivity, R.string.live_accept_friend_before_sharing, android.widget.Toast.LENGTH_LONG).show()
                 return@launch
             }
             pendingSharing = false
             getSharedPreferences("tracker_location", MODE_PRIVATE).edit().putBoolean("enabled", true).apply()
             ContextCompat.startForegroundService(this@LiveLocationActivity, Intent(this@LiveLocationActivity, LocationSharingService::class.java))
-            android.widget.Toast.makeText(this@LiveLocationActivity, "Your location is being shared with your friends", android.widget.Toast.LENGTH_SHORT).show()
+            android.widget.Toast.makeText(this@LiveLocationActivity, R.string.live_sharing_started, android.widget.Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -234,10 +234,10 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         if (backgroundSettingsOpen) return
         backgroundSettingsOpen = true
         AlertDialog.Builder(this)
-            .setTitle("Allow location all the time")
-            .setMessage("Tracker Friends needs background location access so your live location can keep sharing while the app is closed.")
-            .setNegativeButton("Not now") { _, _ -> backgroundSettingsOpen = false; pendingSharing = false }
-            .setPositiveButton("Open settings") { _, _ ->
+            .setTitle(R.string.live_background_title)
+            .setMessage(R.string.live_background_message)
+            .setNegativeButton(R.string.common_not_now) { _, _ -> backgroundSettingsOpen = false; pendingSharing = false }
+            .setPositiveButton(R.string.common_open_settings) { _, _ ->
                 startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
             }
             .show()
@@ -252,10 +252,10 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         val canRetry = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION) ||
             ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)
         AlertDialog.Builder(this)
-            .setTitle("Location access needed")
-            .setMessage("Live Location needs location access and device Location turned on to show and share your position.")
-            .setNegativeButton("Not now", null)
-            .setPositiveButton(if (canRetry) "Allow" else "Open settings") { _, _ ->
+            .setTitle(R.string.traffic_location_access_needed)
+            .setMessage(R.string.live_permission_message)
+            .setNegativeButton(R.string.common_not_now, null)
+            .setPositiveButton(if (canRetry) R.string.common_allow else R.string.common_open_settings) { _, _ ->
                 if (canRetry) requestPermission() else {
                     returningFromAppSettings = true
                     startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
@@ -265,7 +265,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     }
     private fun enableLocation() { if (!::map.isInitialized || !hasPermission()) return; startLocationUpdates() }
     private fun startLocationUpdates() { callback?.let { fused.removeLocationUpdates(it) }; callback = object : LocationCallback() { override fun onLocationResult(r: LocationResult) { r.lastLocation?.let { updateLocation(it) } } }; val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000L).setMinUpdateDistanceMeters(5f).build(); fused.requestLocationUpdates(request, callback!!, Looper.getMainLooper()); fused.lastLocation.addOnSuccessListener { it?.let { updateLocation(it) } } }
-    private fun updateLocation(location: Location) { lastLocation = location; val point = LatLng(location.latitude, location.longitude); if (marker == null) { marker = map.addMarker(MarkerOptions().position(point).title("Me")); map.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 16f)) } else { marker?.position = point; marker?.title = "Me" }; address.text = resolveAddress(location) }
+    private fun updateLocation(location: Location) { lastLocation = location; val point = LatLng(location.latitude, location.longitude); if (marker == null) { marker = map.addMarker(MarkerOptions().position(point).title(getString(R.string.live_me))); map.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 16f)) } else { marker?.position = point; marker?.title = getString(R.string.live_me) }; address.text = resolveAddress(location) }
     private fun focusOnCurrentLocation() {
         if (!::map.isInitialized) return
         val focus: (Location) -> Unit = { location ->
@@ -288,12 +288,12 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                     fused.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
                         .addOnSuccessListener { current ->
                             if (current != null) focus(current)
-                            else address.text = "Could not determine your current location"
+                            else address.setText(R.string.live_location_unavailable)
                         }
-                        .addOnFailureListener { address.text = "Could not determine your current location" }
+                        .addOnFailureListener { address.setText(R.string.live_location_unavailable) }
                 }
             }
-            .addOnFailureListener { address.text = "Could not determine your current location" }
+            .addOnFailureListener { address.setText(R.string.live_location_unavailable) }
     }
     private fun batteryPercentage(): Float = registerReceiver(null, android.content.IntentFilter(android.content.Intent.ACTION_BATTERY_CHANGED))?.let { intent -> val level = intent.getIntExtra("level", 0); val scale = intent.getIntExtra("scale", 100); level * 100f / scale.coerceAtLeast(1) } ?: 0f
     private fun showFriendLocation(payload: JSONObject) {
@@ -350,7 +350,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
         dialog.window?.attributes = dialog.window?.attributes?.apply { y = dp(10) }
-        panel.findViewById<TextView>(R.id.friend_empty_message).text = "Loading accepted friends…"
+        panel.findViewById<TextView>(R.id.friend_empty_message).setText(R.string.live_loading_friends)
         panel.findViewById<TextView>(R.id.friend_empty_message).visibility = View.VISIBLE
         loadAcceptedFriends()
     }
@@ -380,7 +380,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                     val id = friend.optString("friend_id").trim()
                     if (id.isBlank()) continue
                     friends[id] = friend.optString("name").ifBlank { friend.optString("device_model") }.ifBlank { id }
-                    models[id] = friend.optString("device_model").ifBlank { "Android device" }
+                    models[id] = friend.optString("device_model").ifBlank { getString(R.string.live_android_device) }
                     permissions[id] = friend.optBoolean("permission_granted", false)
                     sharing[id] = friend.optBoolean("sharing_enabled", false)
                     requests[id] = friend.optString("location_request_status", "none")
@@ -419,11 +419,11 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         val empty = panel.findViewById<TextView>(R.id.friend_empty_message)
         val count = panel.findViewById<TextView>(R.id.friend_count)
         rows.removeAllViews()
-        count.text = "${acceptedFriends.size} ${if (acceptedFriends.size == 1) "friend" else "friends"}"
+        count.text = if (acceptedFriends.size == 1) getString(R.string.live_friend_count_one) else getString(R.string.live_friend_count, acceptedFriends.size)
         empty.text = when {
-            acceptedFriends.isEmpty() -> "No accepted friends yet. Accept a friend request to see them here."
-            friendMarkers.isEmpty() && acceptedFriends.keys.all { id -> !friendPermissionGranted[id].orFalse() } -> "Request location access from a friend to see them here."
-            friendMarkers.isEmpty() -> "Waiting for your friends to share their live location."
+            acceptedFriends.isEmpty() -> getString(R.string.live_no_accepted_friends)
+            friendMarkers.isEmpty() && acceptedFriends.keys.all { id -> !friendPermissionGranted[id].orFalse() } -> getString(R.string.live_request_friend_location)
+            friendMarkers.isEmpty() -> getString(R.string.live_waiting_friends)
             else -> ""
         }
         empty.visibility = if (acceptedFriends.isEmpty() || friendMarkers.isEmpty()) View.VISIBLE else View.GONE
@@ -445,7 +445,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                     } else {
                         android.widget.Toast.makeText(
                             this@LiveLocationActivity,
-                            if (friendPermissionGranted[id].orFalse()) "Waiting for ${name.trim()} to share a location" else "Request location access from ${name.trim()} first",
+                            if (friendPermissionGranted[id].orFalse()) getString(R.string.live_waiting_for_friend, name.trim()) else getString(R.string.live_request_from_friend, name.trim()),
                             android.widget.Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -470,12 +470,12 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             details.addView(TextView(this@LiveLocationActivity).apply {
                 val lastUpdated = friendLastUpdated[id]
                 val state = when {
-                    lastUpdated != null -> "Updated ${relativeUpdate(lastUpdated)}"
-                    friendSharingEnabled[id].orFalse() -> "Sharing location · waiting for update"
-                    friendPermissionGranted[id].orFalse() -> "Location sharing is off"
-                    else -> "Location access not granted"
+                    lastUpdated != null -> getString(R.string.live_updated, relativeUpdate(lastUpdated))
+                    friendSharingEnabled[id].orFalse() -> getString(R.string.live_sharing_waiting)
+                    friendPermissionGranted[id].orFalse() -> getString(R.string.live_sharing_off)
+                    else -> getString(R.string.live_access_not_granted)
                 }
-                text = "${friendDeviceModels[id].orEmpty().ifBlank { "Android device" }} · $state"
+                text = "${friendDeviceModels[id].orEmpty().ifBlank { getString(R.string.live_android_device) }} · $state"
                 textSize = 12f
                 setTextColor(Color.rgb(117, 126, 143))
             }, LinearLayout.LayoutParams(-1, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = 3 })
@@ -500,7 +500,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             if (!friendPermissionGranted[id].orFalse()) {
                 val pending = friendLocationRequestStatus[id] == "pending"
                 right.addView(TextView(this).apply {
-                    text = if (pending) "Requested" else "Request"
+                    text = if (pending) getString(R.string.live_requested) else getString(R.string.live_request)
                     textSize = 10f
                     setTextColor(if (pending) Color.rgb(117, 126, 143) else Color.rgb(0, 150, 60))
                     gravity = Gravity.CENTER
@@ -521,9 +521,9 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 .onSuccess {
                     friendLocationRequestStatus[friendId] = "pending"
                     renderFriendRows()
-                    android.widget.Toast.makeText(this@LiveLocationActivity, "Location request sent", android.widget.Toast.LENGTH_SHORT).show()
+                    android.widget.Toast.makeText(this@LiveLocationActivity, R.string.live_location_request_sent, android.widget.Toast.LENGTH_SHORT).show()
                 }
-                .onFailure { android.widget.Toast.makeText(this@LiveLocationActivity, it.message ?: "Could not request location", android.widget.Toast.LENGTH_LONG).show() }
+                .onFailure { android.widget.Toast.makeText(this@LiveLocationActivity, it.message ?: getString(R.string.live_location_request_failed), android.widget.Toast.LENGTH_LONG).show() }
         }
     }
     private fun parseTimestamp(raw: String): Long? {
@@ -535,18 +535,18 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun relativeUpdate(timestamp: Long): String {
         val minutes = ((System.currentTimeMillis() - timestamp).coerceAtLeast(0L) / 60_000L)
         return when {
-            minutes < 1 -> "just now"
-            minutes == 1L -> "1 minute ago"
-            minutes < 60 -> "$minutes minutes ago"
-            minutes / 60 == 1L -> "1 hour ago"
-            minutes < 1_440 -> "${minutes / 60} hours ago"
-            minutes / 1_440 == 1L -> "yesterday"
-            else -> "${minutes / 1_440} days ago"
+            minutes < 1 -> getString(R.string.live_just_now)
+            minutes == 1L -> getString(R.string.live_minute_ago)
+            minutes < 60 -> getString(R.string.live_minutes_ago, minutes)
+            minutes / 60 == 1L -> getString(R.string.live_hour_ago)
+            minutes < 1_440 -> getString(R.string.live_hours_ago, minutes / 60)
+            minutes / 1_440 == 1L -> getString(R.string.live_yesterday)
+            else -> getString(R.string.live_days_ago, minutes / 1_440)
         }
     }
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).roundToInt()
-    private fun resolveAddress(l: Location) = try { geocoder.getFromLocation(l.latitude, l.longitude, 1)?.firstOrNull()?.getAddressLine(0) ?: "Location sharing is active" } catch (_: Exception) { "Location sharing is active" }
-    private fun shareLocation() { val l = lastLocation; val text = if (l == null) "My live location is being updated from GPS Tracker." else "My location: https://maps.google.com/?q=" + l.latitude + "," + l.longitude; startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text) }, "Share location")) }
+    private fun resolveAddress(l: Location) = try { geocoder.getFromLocation(l.latitude, l.longitude, 1)?.firstOrNull()?.getAddressLine(0) ?: getString(R.string.live_location_active) } catch (_: Exception) { getString(R.string.live_location_active) }
+    private fun shareLocation() { val l = lastLocation; val text = if (l == null) getString(R.string.live_share_message) else "My location: https://maps.google.com/?q=" + l.latitude + "," + l.longitude; startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text) }, getString(R.string.live_share_location))) }
     override fun onResume() {
         super.onResume()
         if (backgroundSettingsOpen) {

@@ -21,7 +21,7 @@
                 android:id="@+id/friend_back"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:contentDescription="Back"
+                android:contentDescription="@string/common_back"
                 android:src="@drawable/ic_phone_back" />
             <LinearLayout
                 android:layout_width="0dp"
@@ -29,8 +29,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/inter_bold" android:text="Friend Requests" android:textColor="@color/home_phone_locator_text" android:textSize="22sp" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:fontFamily="@font/inter_regular" android:text="See who wants to connect with you" android:textColor="@color/home_text_subtitle" android:textSize="13sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/inter_bold" android:text="@string/friend_requests_title" android:textColor="@color/home_phone_locator_text" android:textSize="22sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:fontFamily="@font/inter_regular" android:text="@string/friend_requests_subtitle" android:textColor="@color/home_text_subtitle" android:textSize="13sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -48,7 +48,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Add Friend"
+                android:text="@string/friend_add"
                 android:textSize="12sp" />
 
             <TextView
@@ -57,7 +57,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Received"
+                android:text="@string/friend_received"
                 android:textSize="12sp" />
 
             <TextView
@@ -66,7 +66,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Sent"
+                android:text="@string/friend_sent"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
@@ -100,7 +100,7 @@
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:clickable="true"
-                    android:contentDescription="Back"
+                    android:contentDescription="@string/common_back"
                     android:focusable="true"
                     android:src="@drawable/ic_phone_back" />
 
@@ -115,7 +115,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/inter_bold"
-                        android:text="Friend Requests"
+                    android:text="@string/friend_requests_title"
                         android:textColor="@color/home_phone_locator_text"
                         android:textSize="22sp" />
 
@@ -124,7 +124,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         android:fontFamily="@font/inter_regular"
-                        android:text="See who wants to connect with you"
+                    android:text="@string/friend_requests_subtitle"
                         android:textColor="@color/home_text_subtitle"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -147,7 +147,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/inter_regular"
                     android:gravity="center"
-                    android:text="Add Friend"
+                    android:text="@string/friend_add"
                     android:textSize="13sp" />
 
                 <TextView
@@ -159,7 +159,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/inter_regular"
                     android:gravity="center"
-                    android:text="Received"
+                    android:text="@string/friend_received"
                     android:textSize="13sp" />
 
                 <TextView
@@ -170,7 +170,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/inter_regular"
                     android:gravity="center"
-                    android:text="Sent"
+                    android:text="@string/friend_sent"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -191,7 +191,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_bold"
-                    android:text="Connect with Friend"
+                    android:text="@string/track_friend_connect_title"
                     android:textColor="@color/home_phone_locator_text"
                     android:textSize="18sp" />
 
@@ -200,7 +200,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:fontFamily="@font/inter_regular"
-                    android:text="Choose a method to connect and track\nlocation"
+                    android:text="@string/track_friend_connect_description"
                     android:textColor="@color/home_text_subtitle"
                     android:textSize="13sp" />
 
@@ -219,7 +219,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="@drawable/bg_friend_qr_icon"
-                        android:contentDescription="Scan QR code"
+                        android:contentDescription="@string/scan_qr_title"
                         android:padding="8dp"
                         android:src="@drawable/ic_qr_code_white" />
 
@@ -234,7 +234,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/inter_bold"
-                            android:text="Scan Friend's QR Code"
+                            android:text="@string/track_friend_scan_qr"
                             android:textColor="@color/home_phone_locator_text"
                             android:textSize="14sp" />
 
@@ -245,7 +245,7 @@
                             android:fontFamily="@font/inter_regular"
                             android:singleLine="true"
                             android:ellipsize="end"
-                            android:text="Point camera at your friend's QR code"
+                            android:text="@string/track_friend_scan_qr_description"
                             android:textColor="@color/home_text_subtitle"
                             android:textSize="11sp" />
                     </LinearLayout>
@@ -253,7 +253,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:contentDescription="Open QR scanner"
+                        android:contentDescription="@string/scan_qr_open_gallery"
                         android:src="@drawable/ic_chevron_right_green" />
                 </LinearLayout>
 
@@ -275,7 +275,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
                         android:fontFamily="@font/inter_regular"
-                        android:text="OR"
+                        android:text="@string/track_friend_or"
                         android:textColor="@color/home_text_subtitle"
                         android:textSize="12sp" />
 
@@ -309,7 +309,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/inter_bold"
-                            android:text="Enter Friend's ID"
+                        android:text="@string/track_friend_enter_id"
                             android:textColor="@color/home_phone_locator_text"
                             android:textSize="16sp" />
 
@@ -318,7 +318,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:fontFamily="@font/inter_regular"
-                            android:text="Type your friend's unique ID to connect"
+                        android:text="@string/track_friend_enter_id_description"
                             android:textColor="@color/home_text_subtitle"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -337,7 +337,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/bg_friend_id_input"
                         android:fontFamily="@font/inter_regular"
-                        android:hint="Enter ID (e.g. #ABC123)"
+                        android:hint="@string/track_friend_id_hint"
                         android:inputType="textCapCharacters"
                         android:paddingStart="12dp"
                         android:paddingEnd="12dp"
@@ -356,7 +356,7 @@
                         android:focusable="true"
                         android:gravity="center"
                         android:minWidth="88dp"
-                        android:text="Connect"
+                        android:text="@string/common_connect"
                         android:textColor="@color/white"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -370,7 +370,7 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:contentDescription="Privacy"
+                        android:contentDescription="@string/friend_privacy"
                         android:src="@drawable/ic_shield_check" />
 
                     <TextView
@@ -380,7 +380,7 @@
                         android:layout_weight="1"
                         android:gravity="left"
                         android:fontFamily="@font/inter_regular"
-                        android:text="Location sharing starts only after a friend request\nis accepted."
+                        android:text="@string/track_friend_location_notice"
                         android:textColor="@color/home_text_subtitle"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -421,7 +421,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/inter_bold"
-                        android:text="Received invitations"
+                        android:text="@string/friend_received_invitations"
                         android:textColor="@color/home_phone_locator_text"
                         android:textSize="18sp" />
 
@@ -430,7 +430,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/inter_bold"
-                        android:text="0 requests"
+                        android:text="@string/friend_request_count_zero"
                         android:textColor="@color/home_green_button_text"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -454,7 +454,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:contentDescription="Privacy"
+                    android:contentDescription="@string/friend_privacy"
                     android:src="@drawable/ic_shield_check" />
 
                 <TextView
@@ -463,7 +463,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/inter_regular"
-                    android:text="Accept people you know. Only friends can share their live location with you."
+                    android:text="@string/friend_accept_description"
                     android:textColor="@color/home_text_subtitle"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -488,7 +488,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/inter_bold"
-                        android:text="Pending invitations"
+                        android:text="@string/friend_pending_invitations"
                         android:textColor="@color/home_phone_locator_text"
                         android:textSize="18sp" />
 
@@ -497,7 +497,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/inter_bold"
-                        android:text="0 requests"
+                        android:text="@string/friend_request_count_zero"
                         android:textColor="@color/home_green_button_text"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -521,7 +521,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:contentDescription="Privacy"
+                    android:contentDescription="@string/friend_privacy"
                     android:src="@drawable/ic_shield_check" />
 
                 <TextView
@@ -530,7 +530,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/inter_regular"
-                    android:text="Your invitation stays pending until accepted. You can cancel it at any time."
+                    android:text="@string/friend_pending_description"
                     android:textColor="@color/home_text_subtitle"
                     android:textSize="12sp" />
             </LinearLayout>

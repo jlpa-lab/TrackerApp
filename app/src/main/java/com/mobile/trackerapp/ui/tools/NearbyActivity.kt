@@ -261,7 +261,7 @@ class NearbyActivity : DashboardActivity() {
         }
         val query = currentQuery
         val version = beginSearch()
-        showState("Finding places nearby…", "Using a recent location to find nearby matches.", showLoading = true)
+        showState(getString(R.string.nearby_finding_places), getString(R.string.nearby_using_recent_location), showLoading = true)
         val started = SystemClock.elapsedRealtime()
         searchJob = lifecycleScope.launch {
             try {
@@ -344,16 +344,16 @@ class NearbyActivity : DashboardActivity() {
     private suspend fun performSearch(query: String, origin: Location, version: Int, started: Long) {
         val textQuery = query.trim().takeIf { it.isNotEmpty() }
         val category = textQuery?.let { null } ?: selectedCategoryDefinition()
-        title.text = if (textQuery == null) "$selectedCategory near you" else "Search results"
+        title.text = if (textQuery == null) getString(R.string.nearby_category_near_you, selectedCategory) else getString(R.string.area_search_results)
         val key = NearbyCacheKey(category?.googleType, textQuery?.lowercase(Locale.ROOT), selectedRadiusKm, NearbyLocationBucket.from(origin))
         val cached = cache.get(key)
         if (cached != null) {
             ensureCurrent(version)
-            val label = if (cached.isFresh) "Cached · refreshing" else "Older cache · refreshing"
+            val label = if (cached.isFresh) getString(R.string.nearby_cached_refreshing) else getString(R.string.nearby_old_cache_refreshing)
             Log.d(TAG, "search=$version stage=cache ageMs=${cached.ageMillis} status=${if (cached.isFresh) "fresh" else "stale"} count=${cached.places.size}")
             showPlaces(cached.places, textQuery.orEmpty(), label)
         } else {
-            showState(if (textQuery == null) "Finding places nearby…" else "Searching nearby…", "", showLoading = true)
+            showState(if (textQuery == null) getString(R.string.nearby_finding_places) else getString(R.string.nearby_searching), "", showLoading = true)
         }
 
         val networkStarted = SystemClock.elapsedRealtime()
@@ -590,7 +590,7 @@ class NearbyActivity : DashboardActivity() {
         loading.visibility = View.GONE
         statePanel.visibility = if (places.isEmpty()) View.VISIBLE else View.GONE
         count.visibility = View.VISIBLE
-        count.text = status ?: if (query.isBlank() && places.isNotEmpty()) "View all (${places.size})" else "${places.size} ${if (places.size == 1) "place" else "places"} nearby"
+        count.text = status ?: if (query.isBlank() && places.isNotEmpty()) getString(R.string.nearby_view_all, places.size) else if (places.size == 1) getString(R.string.nearby_place_count_one) else getString(R.string.nearby_places_count, places.size)
         count.setTextColor(if (places.isEmpty()) muted else green)
         count.isClickable = status == null && query.isBlank() && places.size > INITIAL_RESULT_COUNT
         count.setOnClickListener {
@@ -600,14 +600,14 @@ class NearbyActivity : DashboardActivity() {
                 renderPlaces()
             }
         }
-        title.text = if (query.isBlank()) "$selectedCategory near you" else "Search results"
+        title.text = if (query.isBlank()) getString(R.string.nearby_category_near_you, selectedCategory) else getString(R.string.area_search_results)
         if (places.isEmpty()) {
             stateIcon.setImageResource(R.drawable.ic_area_no_result)
             stateIcon.visibility = View.VISIBLE
-            stateTitle.text = "No places found"
-            stateDescription.text = if (query.isBlank()) "No nearby ${categorySearchName(selectedCategory)} were found. Try another category."
-            else "No nearby matches for “$query”. Try another name or place type."
-            stateAction.text = if (query.isBlank()) "Try another category" else "Clear search"
+            stateTitle.setText(R.string.nearby_no_places_found)
+            stateDescription.text = if (query.isBlank()) getString(R.string.nearby_no_category_matches, categorySearchName(selectedCategory))
+            else getString(R.string.nearby_no_search_matches, query)
+            stateAction.text = if (query.isBlank()) getString(R.string.nearby_try_category) else getString(R.string.nearby_clear_search)
             stateAction.visibility = View.VISIBLE
             stateAction.setOnClickListener {
                 if (query.isBlank()) {
@@ -666,12 +666,12 @@ class NearbyActivity : DashboardActivity() {
         statePanel.visibility = View.VISIBLE
         stateIcon.visibility = View.VISIBLE
         stateIcon.setImageResource(R.drawable.ic_phone_info)
-        stateTitle.text = "Refresh failed"
-        stateDescription.text = "Showing cached results. $message"
-        stateAction.text = "Try again"
+        stateTitle.setText(R.string.nearby_refresh_failed)
+        stateDescription.text = getString(R.string.nearby_cached_results, message)
+        stateAction.setText(R.string.nearby_try_again)
         stateAction.visibility = View.VISIBLE
         stateAction.setOnClickListener { queryCurrentSelection() }
-        count.text = "Cached · refresh failed"
+        count.setText(R.string.nearby_cached_refresh_failed)
         count.setTextColor(muted)
     }
 
@@ -687,18 +687,18 @@ class NearbyActivity : DashboardActivity() {
             if (mapsIntent.resolveActivity(packageManager) != null) startActivity(mapsIntent)
             else startActivity(Intent(Intent.ACTION_VIEW, location))
         } catch (_: Exception) {
-            Toast.makeText(this, "No maps app is available.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.nearby_no_maps, Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun showLocationPermissionState() {
-        title.text = "$selectedCategory near you"
+        title.text = getString(R.string.nearby_category_near_you, selectedCategory)
         count.text = ""
         adapter.submitList(emptyList())
         latestPlaces = emptyList()
-        showState("Location needed", "Allow location while using the app to find and sort places near you.", false)
+        showState(getString(R.string.nearby_location_needed), getString(R.string.nearby_location_message), false)
         stateIcon.setImageResource(R.drawable.ic_location_focus_green)
-        stateAction.text = "Use my location"
+        stateAction.setText(R.string.common_use_my_location)
         stateAction.visibility = View.VISIBLE
         stateAction.setOnClickListener {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_LOCATION)
@@ -711,7 +711,7 @@ class NearbyActivity : DashboardActivity() {
         count.text = ""
         showState(heading, message, false)
         stateIcon.setImageResource(R.drawable.ic_phone_info)
-        stateAction.text = "Try again"
+        stateAction.setText(R.string.nearby_try_again)
         stateAction.visibility = View.VISIBLE
         stateAction.setOnClickListener { if (hasLocationPermission()) queryCurrentSelection() else showLocationPermissionState() }
     }

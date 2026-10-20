@@ -48,7 +48,7 @@ class ZoneGeofenceReceiver : BroadcastReceiver() {
         if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
         if (Build.VERSION.SDK_INT >= 26) {
-            manager.createNotificationChannel(NotificationChannel(CHANNEL_ID, "Zone alerts", NotificationManager.IMPORTANCE_DEFAULT))
+            manager.createNotificationChannel(NotificationChannel(CHANNEL_ID, context.getString(R.string.notification_zone_alerts), NotificationManager.IMPORTANCE_DEFAULT))
         }
         val pendingIntent = PendingIntent.getActivity(
             context,
@@ -56,14 +56,14 @@ class ZoneGeofenceReceiver : BroadcastReceiver() {
             Intent(context, ZoneAlertActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val action = if (entering) "Arrived at" else "Left"
-        val category = if (zone.safe) "safe zone" else "danger zone"
+        val category = context.getString(if (zone.safe) R.string.notification_safe_zone else R.string.notification_danger_zone)
+        val contentText = context.getString(if (entering) R.string.notification_entered_category else R.string.notification_exited_category, category, zone.address.ifBlank { zone.name })
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_location_pin_white)
             .setColor(if (zone.safe) Color.GREEN else Color.RED)
-            .setContentTitle("$action ${zone.name}")
-            .setContentText("${if (entering) "Entered" else "Exited"} $category · ${zone.address.ifBlank { zone.name }}")
-            .setStyle(NotificationCompat.BigTextStyle().bigText("${if (entering) "Entered" else "Exited"} $category · ${zone.address.ifBlank { zone.name }}"))
+            .setContentTitle(context.getString(if (entering) R.string.notification_arrived_at else R.string.notification_left_zone, zone.name))
+            .setContentText(contentText)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(contentText))
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()

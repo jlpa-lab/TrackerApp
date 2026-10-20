@@ -97,8 +97,8 @@ open class FriendRequestsActivity : DashboardActivity() {
         findViewById<TextView>(R.id.my_invite_code)?.text = "------"
         localDb = LocalTrackerDb(this)
         backend = TrackerBackendClient(this)
-        findViewById<TextView>(R.id.friend_received).text = "Received"
-        findViewById<TextView>(R.id.friend_sent).text = "Sent"
+        findViewById<TextView>(R.id.friend_received).setText(R.string.friend_received)
+        findViewById<TextView>(R.id.friend_sent).setText(R.string.friend_sent)
         myInviteCode = localDb.read("invite_code").orEmpty()
         if (myInviteCode.isNotBlank()) findViewById<TextView>(R.id.my_invite_code).text = myInviteCode
         else startCodeWave(findViewById(R.id.my_invite_code))
@@ -114,7 +114,7 @@ open class FriendRequestsActivity : DashboardActivity() {
                 backendReady = true
                 loadReceivedRequests()
                 loadSentRequests()
-            }.onFailure { Toast.makeText(this@FriendRequestsActivity, "Backend unavailable: ${it.message}", Toast.LENGTH_LONG).show() }
+            }.onFailure { Toast.makeText(this@FriendRequestsActivity, getString(R.string.connection_backend_unavailable, it.message.orEmpty()), Toast.LENGTH_LONG).show() }
         }
         findViewById<View>(R.id.friend_back).setOnClickListener { onBackPressed() }
         findViewById<View>(R.id.friend_add).setOnClickListener { showPanel(R.id.friend_add) }
@@ -131,10 +131,10 @@ open class FriendRequestsActivity : DashboardActivity() {
 
     private fun copyConnectionCode(myInviteCode: String) {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("Connection Code", myInviteCode)
+        val clip = ClipData.newPlainText(getString(R.string.friend_connection_code), myInviteCode)
         clipboard.setPrimaryClip(clip)
 
-        Toast.makeText(this, "Code copied to clipboard", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.connection_code_copied, Toast.LENGTH_SHORT).show()
     }
 
     private fun startCodeWave(view: TextView) {
@@ -157,26 +157,26 @@ open class FriendRequestsActivity : DashboardActivity() {
 
     private fun submitInviteCode() {
         if (!backendReady) {
-            Toast.makeText(this, "Connecting securely, please try again in a moment.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.connection_secure_retry, Toast.LENGTH_SHORT).show()
             return
         }
         val entered = findViewById<EditText>(R.id.friend_code_input).text.toString().trim().uppercase()
         if (entered.isBlank()) {
-            findViewById<EditText>(R.id.friend_code_input).error = "Enter a friend's invite code"
+            findViewById<EditText>(R.id.friend_code_input).error = getString(R.string.connection_enter_code)
             return
         }
         if (entered == myInviteCode) {
-            Toast.makeText(this, "That is your own invite code", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.connection_own_code, Toast.LENGTH_SHORT).show()
             return
         }
         CoroutineScope(Dispatchers.Main).launch {
             runCatching { backend.sendFriendRequest(entered) }
                 .onSuccess {
-                    Toast.makeText(this@FriendRequestsActivity, "Friend request sent", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@FriendRequestsActivity, R.string.connection_request_sent, Toast.LENGTH_SHORT).show()
                     showPanel(R.id.friend_sent)
                     loadSentRequests()
                 }
-                .onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: "Request failed", Toast.LENGTH_LONG).show() }
+                .onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: getString(R.string.connection_request_failed), Toast.LENGTH_LONG).show() }
         }
     }
 
@@ -186,7 +186,7 @@ open class FriendRequestsActivity : DashboardActivity() {
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, "Connect with me on GPS Tracker. My invite code is $code")
         }
-        startActivity(Intent.createChooser(send, "Share friend invite"))
+        startActivity(Intent.createChooser(send, getString(R.string.connection_share_invite)))
     }
 
     private fun loadReceivedRequests() {
@@ -198,10 +198,10 @@ open class FriendRequestsActivity : DashboardActivity() {
                 list.removeAllViews()
                 val requests = result.optJSONArray("requests")
                 val requestCount = requests?.length() ?: 0
-                findViewById<TextView>(R.id.friend_received).text = "Received · $requestCount"
-                findViewById<TextView>(R.id.received_request_count).text = "$requestCount requests"
+                findViewById<TextView>(R.id.friend_received).text = getString(R.string.connection_received_count, requestCount)
+                findViewById<TextView>(R.id.received_request_count).text = getString(R.string.connection_request_count, requestCount)
                 if (requests == null || requests.length() == 0) {
-                    list.addView(emptyRequestMessage("No pending invitations yet."))
+                    list.addView(emptyRequestMessage(getString(R.string.connection_pending_invitations_empty)))
                     return@onSuccess
                 }
                 for (i in 0 until requests.length()) {
@@ -219,7 +219,7 @@ open class FriendRequestsActivity : DashboardActivity() {
                         status = status
                     ), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(if (i == 0) 12 else 10) })
                 }
-            }.onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: "Could not load requests", Toast.LENGTH_LONG).show() }
+            }.onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: getString(R.string.connection_requests_load_failed), Toast.LENGTH_LONG).show() }
         }
     }
 
@@ -227,10 +227,10 @@ open class FriendRequestsActivity : DashboardActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             runCatching { backend.decideRequest(id, action) }
                 .onSuccess {
-                    Toast.makeText(this@FriendRequestsActivity, if (action == "accept") "Friend request accepted" else "Friend request rejected", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@FriendRequestsActivity, if (action == "accept") R.string.connection_request_accepted else R.string.connection_request_rejected, Toast.LENGTH_SHORT).show()
                     loadReceivedRequests()
                 }
-                .onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: "Request update failed", Toast.LENGTH_LONG).show() }
+                .onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: getString(R.string.connection_request_update_failed), Toast.LENGTH_LONG).show() }
         }
     }
 
@@ -241,12 +241,12 @@ open class FriendRequestsActivity : DashboardActivity() {
                 val panel = findViewById<LinearLayout>(R.id.sent_panel)
                 val requests = result.optJSONArray("requests")
                 val requestCount = requests?.length() ?: 0
-                findViewById<TextView>(R.id.friend_sent).text = "Sent · $requestCount"
-                findViewById<TextView>(R.id.sent_request_count).text = "$requestCount requests"
+                findViewById<TextView>(R.id.friend_sent).text = getString(R.string.connection_sent_count, requestCount)
+                findViewById<TextView>(R.id.sent_request_count).text = getString(R.string.connection_request_count, requestCount)
                 val list = findViewById<LinearLayout>(R.id.sent_request_list)
                 list.removeAllViews()
                 if (requests == null || requests.length() == 0) {
-                    list.addView(emptyRequestMessage("You haven’t sent any invitations yet."))
+                    list.addView(emptyRequestMessage(getString(R.string.connection_sent_invitations_empty)))
                 } else for (i in 0 until requests.length()) {
                     val request = requests.getJSONObject(i)
                     val name = request.optString("to_name", request.optString("to_id"))
@@ -260,7 +260,7 @@ open class FriendRequestsActivity : DashboardActivity() {
                         status = request.optString("status", "pending")
                     ), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = if (i == 0) dp(12) else dp(10) })
                 }
-            }.onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: "Could not load sent requests", Toast.LENGTH_LONG).show() }
+            }.onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: getString(R.string.connection_requests_load_failed), Toast.LENGTH_LONG).show() }
         }
     }
 
@@ -275,10 +275,10 @@ open class FriendRequestsActivity : DashboardActivity() {
             if (status == "pending") {
                 val actions = LinearLayout(this@FriendRequestsActivity).apply { orientation = LinearLayout.HORIZONTAL }
                 actions.addView(
-                    actionButton("Accept", true) { decideRequest(requestId, "accept") },
+                    actionButton(getString(R.string.connection_accept), true) { decideRequest(requestId, "accept") },
                     LinearLayout.LayoutParams(0, dp(32), 1f)
                 )
-                actions.addView(actionButton("Decline", false) {
+                actions.addView(actionButton(getString(R.string.connection_decline), false) {
                     decideRequest(
                         requestId,
                         "reject"
@@ -309,13 +309,13 @@ open class FriendRequestsActivity : DashboardActivity() {
 
             val bottom = LinearLayout(this@FriendRequestsActivity).apply { gravity = Gravity.CENTER_VERTICAL }
             bottom.addView(TextView(this@FriendRequestsActivity).apply {
-                text = if (status == "pending") "Sent $time" else status.replaceFirstChar { it.uppercase() }
+                text = if (status == "pending") getString(R.string.connection_status_sent, time) else status.replaceFirstChar { it.uppercase() }
                 textSize = 13f
                 setTextColor(Color.parseColor("#787E8D"))
                 typeface = ResourcesCompat.getFont(this@FriendRequestsActivity, R.font.inter_regular)
             }, LinearLayout.LayoutParams(0, wrap(), 1f))
             if (status == "pending") {
-                bottom.addView(actionButton("Cancel Request", false) { cancelRequest(requestId) }.apply {
+                bottom.addView(actionButton(getString(R.string.connection_cancel_request), false) { cancelRequest(requestId) }.apply {
                     textSize = 12f
                     setTextColor(Color.parseColor("#787E8D"))
                 }, LinearLayout.LayoutParams(dp(116), dp(32)))
@@ -390,10 +390,10 @@ open class FriendRequestsActivity : DashboardActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             runCatching { backend.cancelFriendRequest(id) }
                 .onSuccess {
-                    Toast.makeText(this@FriendRequestsActivity, "Friend request cancelled", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@FriendRequestsActivity, R.string.connection_request_cancelled, Toast.LENGTH_SHORT).show()
                     loadSentRequests()
                 }
-                .onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: "Could not cancel request", Toast.LENGTH_LONG).show() }
+                .onFailure { Toast.makeText(this@FriendRequestsActivity, it.message ?: getString(R.string.connection_cancel_failed), Toast.LENGTH_LONG).show() }
         }
     }
 
@@ -413,14 +413,14 @@ open class FriendRequestsActivity : DashboardActivity() {
             ).firstNotNullOfOrNull { pattern ->
                 runCatching { SimpleDateFormat(pattern, Locale.US).parse(value)?.time }.getOrNull()
             }
-        if (timestamp == null) return "Recently"
+        if (timestamp == null) return getString(R.string.connection_recently)
         val seconds = abs(System.currentTimeMillis() - timestamp) / 1000L
         return when {
-            seconds < 60 -> "Just now"
-            seconds < 3600 -> "${seconds / 60} minutes ago"
-            seconds < 86_400 -> "${seconds / 3600} hours ago"
-            seconds < 172_800 -> "Yesterday"
-            else -> "${seconds / 86_400} days ago"
+            seconds < 60 -> getString(R.string.connection_just_now)
+            seconds < 3600 -> getString(R.string.connection_minutes_ago, seconds / 60)
+            seconds < 86_400 -> getString(R.string.connection_hours_ago, seconds / 3600)
+            seconds < 172_800 -> getString(R.string.connection_yesterday)
+            else -> getString(R.string.connection_days_ago, seconds / 86_400)
         }
     }
 

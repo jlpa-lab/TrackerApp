@@ -136,15 +136,15 @@ class AreaCodesActivity : DashboardActivity() {
         if (!::resultHost.isInitialized || !::queryInput.isInitialized || !::sectionTitle.isInitialized) return
         resultHost.removeAllViews()
         val query = queryInput.text?.toString()?.trim().orEmpty()
-        sectionTitle.text = if (query.isBlank()) "Popular area codes" else "Search results"
+        sectionTitle.text = if (query.isBlank()) getString(R.string.area_popular) else getString(R.string.area_search_results)
         val matchingEntries = if (query.isBlank()) allEntries.take(4) else allEntries.filter {
             it.code.contains(query, ignoreCase = true) || it.city.contains(query, ignoreCase = true) || it.detail.contains(query, ignoreCase = true)
         }
         val visibleEntries = matchingEntries.take(MAX_RENDERED_RESULTS)
-        countLabel.text = if (query.isBlank()) "${matchingEntries.size} regions" else when {
-            matchingEntries.size > MAX_RENDERED_RESULTS -> "$MAX_RENDERED_RESULTS+ results"
-            matchingEntries.size == 1 -> "1 result"
-            else -> "${matchingEntries.size} results"
+        countLabel.text = if (query.isBlank()) getString(R.string.area_regions_count, matchingEntries.size) else when {
+            matchingEntries.size > MAX_RENDERED_RESULTS -> getString(R.string.area_results_more, MAX_RENDERED_RESULTS)
+            matchingEntries.size == 1 -> getString(R.string.area_result_one)
+            else -> getString(R.string.area_results_count, matchingEntries.size)
         }
         if (loading) {
             val progress = ProgressBar(this)
@@ -180,8 +180,8 @@ class AreaCodesActivity : DashboardActivity() {
             isClickable = true; isFocusable = true
             setOnClickListener {
                 val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                clipboard.setPrimaryClip(ClipData.newPlainText("Area code", entry.code))
-                Toast.makeText(this@AreaCodesActivity, "Area code ${entry.code} copied", Toast.LENGTH_SHORT).show()
+                clipboard.setPrimaryClip(ClipData.newPlainText(getString(R.string.area_code_clipboard_label), entry.code))
+                Toast.makeText(this@AreaCodesActivity, getString(R.string.area_code_copied, entry.code), Toast.LENGTH_SHORT).show()
             }
         }
         row.addView(TextView(this).apply {
@@ -199,7 +199,7 @@ class AreaCodesActivity : DashboardActivity() {
         row.addView(ImageView(this).apply {
             setImageResource(R.drawable.ic_chevron)
             imageAlpha = 150
-            contentDescription = "Open area code details"
+            contentDescription = getString(R.string.area_open_details)
         }, LinearLayout.LayoutParams(dp(16), dp(16)).apply { marginStart = dp(8) })
         return row
     }
@@ -213,16 +213,16 @@ class AreaCodesActivity : DashboardActivity() {
         }
         card.addView(ImageView(this).apply {
             setImageResource(R.drawable.ic_area_no_result)
-            contentDescription = "No area codes found"
+            contentDescription = getString(R.string.area_no_codes)
             scaleType = ImageView.ScaleType.CENTER_INSIDE
         }, LinearLayout.LayoutParams(dp(64), dp(64)))
-        val emptyTitle = if (query.isBlank()) "No regional codes for ${selectedCountry.name}" else "No area codes found"
-        val emptyMessage = if (query.isBlank()) "Regional landline codes aren't available for this country." else "No results for “$query”. Try another city or area code."
+        val emptyTitle = if (query.isBlank()) getString(R.string.area_no_regional_codes, selectedCountry.name) else getString(R.string.area_no_codes)
+        val emptyMessage = if (query.isBlank()) getString(R.string.area_codes_unavailable) else getString(R.string.area_no_results_for, query)
         card.addView(label(emptyTitle, 14f, dark, true).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
         card.addView(label(emptyMessage, 11f, muted).apply {
             gravity = Gravity.CENTER; textAlignment = View.TEXT_ALIGNMENT_CENTER
         }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
-        val clear = label("Clear search", 12f, android.graphics.Color.WHITE, true).apply {
+        val clear = label(getString(R.string.nearby_clear_search), 12f, android.graphics.Color.WHITE, true).apply {
             gravity = Gravity.CENTER
             setPadding(dp(30), dp(14), dp(30), dp(14))
             background = rounded(green, dp(100).toFloat())
@@ -327,7 +327,7 @@ class AreaCodesActivity : DashboardActivity() {
 
     private fun updateHintText(country: AreaCountry) {
         if (::hintText.isInitialized) {
-            hintText.text = "Dial ${country.dialCode}, followed by the area code and the 7 digit local number for local calls."
+            hintText.text = getString(R.string.area_hint, country.dialCode)
         }
     }
 
@@ -336,9 +336,9 @@ class AreaCodesActivity : DashboardActivity() {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(16), dp(14), dp(16), dp(12))
         }
-        outer.addView(label("Choose a country or region", 17f, dark, true), LinearLayout.LayoutParams(-1, wrap()).apply { bottomMargin = dp(10) })
+        outer.addView(label(getString(R.string.area_choose_country), 17f, dark, true), LinearLayout.LayoutParams(-1, wrap()).apply { bottomMargin = dp(10) })
         val search = EditText(this).apply {
-            hint = "Search country"
+            hint = getString(R.string.area_search_country)
             textSize = 14f
             setSingleLine(true)
             inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
@@ -400,16 +400,16 @@ class AreaCodesActivity : DashboardActivity() {
                 .firstOrNull { locationManager.isProviderEnabled(it) }
         }.getOrNull()
         if (provider == null) {
-            Toast.makeText(this, "Turn on location and try again", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.area_turn_on_location, Toast.LENGTH_SHORT).show()
             return
         }
-        locationButton.text = "Finding your region…"
+        locationButton.setText(R.string.area_finding_region)
         locationButton.setTextColor(muted)
         val listener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
                 locationManager.removeUpdates(this)
                 locationListener = null
-                locationButton.text = "Use my location"
+                locationButton.setText(R.string.common_use_my_location)
                 locationButton.setTextColor(green)
                 resolveCountry(location)
             }
@@ -422,16 +422,16 @@ class AreaCodesActivity : DashboardActivity() {
             locationHandler.postDelayed({
                 locationListener?.let { locationManager.removeUpdates(it) }
                 locationListener = null
-                if (locationButton.text.toString().contains("Finding")) {
-                    locationButton.text = "Use my location"
+                if (locationButton.text.toString() == getString(R.string.area_finding_region)) {
+                    locationButton.setText(R.string.common_use_my_location)
                     locationButton.setTextColor(green)
-                    Toast.makeText(this, "Couldn't get your location. Try again.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.area_location_retry, Toast.LENGTH_SHORT).show()
                 }
             }, LOCATION_TIMEOUT_MS)
         } catch (_: SecurityException) {
-            locationButton.text = "Use my location"
+            locationButton.setText(R.string.common_use_my_location)
             locationButton.setTextColor(green)
-            Toast.makeText(this, "Location permission is required", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.area_location_permission_required, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -446,9 +446,9 @@ class AreaCodesActivity : DashboardActivity() {
                 val match = countries.firstOrNull { it.iso == iso }
                 if (match != null) {
                     chooseCountry(match)
-                    Toast.makeText(this, "Showing area codes for ${match.name}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.area_showing_codes_for, match.name), Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this, "Couldn't identify the region at your location", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.area_region_not_identified, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -461,7 +461,7 @@ class AreaCodesActivity : DashboardActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_REQUEST && grantResults.any { it == PackageManager.PERMISSION_GRANTED }) useMyLocation()
-        else if (requestCode == LOCATION_REQUEST) Toast.makeText(this, "Location permission is needed for this feature", Toast.LENGTH_SHORT).show()
+        else if (requestCode == LOCATION_REQUEST) Toast.makeText(this, R.string.area_location_feature_permission, Toast.LENGTH_SHORT).show()
     }
 
     private fun detectDefaultCountry(): AreaCountry {

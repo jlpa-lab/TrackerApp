@@ -24,7 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_bold"
-                android:text="Connection"
+                android:text="@string/common_connection"
                 android:textColor="@color/home_phone_locator_text"
                 android:textSize="22sp" />
 
@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/inter_regular"
-                android:text="Stay connected with your people"
+                android:text="@string/connection_subtitle"
                 android:textColor="@color/home_text_subtitle"
                 android:textSize="12sp" />
 
@@ -68,7 +68,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/inter_medium"
-                            android:text="Location sharing is on"
+                            android:text="@string/connection_sharing_on"
                             android:textColor="@color/home_phone_locator_text"
                             android:textSize="14sp" />
 
@@ -78,7 +78,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:fontFamily="@font/inter_regular"
-                            android:text="2 active connections"
+                            android:text="@string/connection_active_count"
                             android:textColor="@color/home_text_subtitle"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -87,13 +87,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
-                        <androidx.appcompat.widget.SwitchCompat
+                        <com.mobile.trackerapp.ui.connection.LocationSharingToggleView
                             android:id="@+id/connection_location_switch"
                             android:layout_width="36dp"
-                            android:layout_height="22dp"
-                            android:contentDescription="Location sharing"
-                            app:thumbTint="@color/switch_thumb_selector"
-                            app:trackTint="@color/switch_track_selector"/>
+                            android:layout_height="24dp"
+                            android:contentDescription="@string/connection_sharing_on" />
 
                     </LinearLayout>
 
@@ -106,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:fontFamily="@font/inter_regular"
-                    android:text="Your connections can see your live location."
+                    android:text="@string/connection_sharing_description"
                     android:textColor="@color/home_text_subtitle"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -137,6 +135,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:layout_marginStart="4dp"
                         android:orientation="vertical">
 
                         <TextView
@@ -145,7 +144,7 @@
                             android:layout_marginStart="6dp"
                             android:layout_weight="1"
                             android:fontFamily="@font/inter_medium"
-                            android:text="Add connection"
+                            android:text="@string/connection_add"
                             android:textColor="@color/home_phone_locator_text"
                             android:textSize="14sp" />
 
@@ -154,7 +153,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:fontFamily="@font/inter_regular"
-                            android:text="Connect by code or QR scan"
+                            android:text="@string/connection_add_description"
                             android:textColor="@color/home_text_subtitle"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -186,6 +185,7 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
                         android:layout_weight="1"
                         android:orientation="vertical">
 
@@ -195,7 +195,7 @@
                             android:layout_marginStart="6dp"
                             android:layout_weight="1"
                             android:fontFamily="@font/inter_medium"
-                            android:text="My QR code"
+                            android:text="@string/connection_my_qr"
                             android:textColor="@color/home_phone_locator_text"
                             android:textSize="14sp" />
 
@@ -204,7 +204,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:fontFamily="@font/inter_regular"
-                            android:text="Let others connect with you"
+                            android:text="@string/connection_my_qr_description"
                             android:textColor="@color/home_text_subtitle"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -239,7 +239,7 @@
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/inter_medium"
-                        android:text="Connection requests"
+                        android:text="@string/connection_requests"
                         android:textColor="@color/home_phone_locator_text"
                         android:textSize="14sp" />
 

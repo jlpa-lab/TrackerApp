@@ -35,7 +35,7 @@ class ScanQrActivity : DashboardActivity() {
         if (result.resultCode == RESULT_OK) {
             result.data?.data?.let { uri ->
                 val value = decodeQr(uri)
-                if (value == null) Toast.makeText(this, "No readable QR code found in that image", Toast.LENGTH_LONG).show()
+                if (value == null) Toast.makeText(this, R.string.scan_qr_not_readable, Toast.LENGTH_LONG).show()
                 else returnCode(value)
             }
         }
@@ -61,7 +61,7 @@ class ScanQrActivity : DashboardActivity() {
         findViewById<View>(R.id.scan_flash).setOnClickListener {
             flashlightOn = !flashlightOn
             if (flashlightOn) barcodeView.setTorchOn() else barcodeView.setTorchOff()
-            findViewById<TextView>(R.id.scan_flash_label).text = if (flashlightOn) "Flashlight on" else "Flashlight off"
+            findViewById<TextView>(R.id.scan_flash_label).text = getString(if (flashlightOn) R.string.scan_qr_flashlight_on else R.string.scan_qr_flashlight_off)
             findViewById<View>(R.id.scan_flash).setBackgroundResource(if (flashlightOn) R.drawable.bg_flash_on else R.drawable.bg_flash_button)
             findViewById<ImageView>(R.id.scan_flash_icon).setColorFilter(if (flashlightOn) android.graphics.Color.rgb(10, 48, 29) else android.graphics.Color.WHITE)
         }
@@ -72,7 +72,7 @@ class ScanQrActivity : DashboardActivity() {
 
     override fun onResume() { super.onResume(); if (::barcodeView.isInitialized && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) barcodeView.resume() }
     override fun onPause() { if (::barcodeView.isInitialized) barcodeView.pause(); super.onPause() }
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) { super.onRequestPermissionsResult(requestCode, permissions, grantResults); if (requestCode == CAMERA_REQUEST && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) barcodeView.resume() else Toast.makeText(this, "Camera permission is needed to scan QR codes", Toast.LENGTH_LONG).show() }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) { super.onRequestPermissionsResult(requestCode, permissions, grantResults); if (requestCode == CAMERA_REQUEST && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) barcodeView.resume() else Toast.makeText(this, R.string.scan_qr_camera_permission, Toast.LENGTH_LONG).show() }
 
     private fun decodeQr(uri: Uri): String? {
         return try {

@@ -24,7 +24,6 @@ import com.ads.module.funtion.AdCallback
 import com.mobile.trackerapp.pref.AppSharedPref
 import com.mobile.trackerapp.app.AppConstants
 import com.mobile.trackerapp.pref.AppSharedPreferencesApp
-import java.util.Locale
 import javax.inject.Inject
 
 abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity() {
@@ -47,8 +46,6 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity() {
         if (!::appSharedPref.isInitialized) {
             appSharedPref = AppSharedPreferencesApp(applicationContext)
         }
-        setLocal()
-
         requestWindow()
         val layoutView = getLayoutActivity()
         mBinding = DataBindingUtil.setContentView(this, layoutView)
@@ -76,15 +73,6 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity() {
     open fun onClickViews() {}
 
     open fun observerData() {}
-
-    private fun setLocal() {
-        val languageCode = appSharedPref.languageCode
-        val locale = Locale(languageCode)
-        Locale.setDefault(locale)
-        val config = Configuration()
-        config.locale = locale
-        resources.updateConfiguration(config, resources.displayMetrics)
-    }
 
     override fun onResume() {
         super.onResume()

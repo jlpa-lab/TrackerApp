@@ -1,5 +1,6 @@
 package com.mobile.trackerapp.ui.rating
 
+import android.content.res.ColorStateList
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -58,7 +59,13 @@ class RateAppActivity : AppCompatActivity() {
     private fun showStart() {
         configure(R.drawable.rate_initial, "Enjoying the app?", "Your feedback helps us improve.")
         renderStars();
-        action.text = "Rate us"; action.isEnabled = rating > 0
+        action.text = "Rate us";
+        action.isEnabled = rating > 0
+        action.backgroundTintList = ColorStateList.valueOf(
+            Color.parseColor(
+                if (rating > 0) "#00A548" else "#BBBBBB"
+            )
+        )
         action.setOnClickListener { if (rating > 0) showResult() }
         later.visibility = View.VISIBLE
         later.setTextColor(Color.rgb(190, 190, 190))
@@ -70,8 +77,14 @@ class RateAppActivity : AppCompatActivity() {
             if (rating <= 2) "Sorry to hear that! 😔" else if (rating == 3) "Thanks for your feedback!" else "Glad you're enjoying it! 🎉",
             if (rating <= 2) "What can we improve?" else if (rating == 3) "What could make it better?" else "Would you like to rate us on Google Play?"
         )
-        renderStars(); action.text =
-            if (rating >= 4) "Rate on Google Play" else "Give feedback"; action.isEnabled = true
+        renderStars();
+        action.text = if (rating >= 4) "Rate on Google Play" else "Give feedback"; action.isEnabled = true
+        action.isEnabled = rating > 0
+        action.backgroundTintList = ColorStateList.valueOf(
+            Color.parseColor(
+                if (rating > 0) "#00A548" else "#BBBBBB"
+            )
+        )
         action.setOnClickListener { if (rating >= 4) openPlay() else showFeedback() }
         later.visibility = View.VISIBLE
         later.setTextColor(Color.rgb(0, 164, 76))
@@ -80,23 +93,23 @@ class RateAppActivity : AppCompatActivity() {
     private fun showFeedback() {
         configure(
             R.drawable.rate_feedback,
-            "Share your feedback",
-            "Let us know how we can improve."
+            getString(R.string.rate_share_feedback),
+            getString(R.string.rate_feedback_detail)
         )
         rate_feedback_container.visibility = View.VISIBLE;
         stars.visibility = View.GONE;
         later.visibility = View.GONE
         feedback.visibility = View.VISIBLE
         count.visibility = View.VISIBLE;
-        count.text = "${feedback.length()}/500"
-        action.text = "Submit";
+        count.text = getString(R.string.rate_character_count, feedback.length())
+        action.setText(R.string.rate_submit)
         action.setOnClickListener { submitFeedback() }
         feedback.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) =
                 Unit
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                this@RateAppActivity.count.text = "${s?.length ?: 0}/500"
+                this@RateAppActivity.count.text = getString(R.string.rate_character_count, s?.length ?: 0)
             }
 
             override fun afterTextChanged(s: android.text.Editable?) = Unit
@@ -106,10 +119,10 @@ class RateAppActivity : AppCompatActivity() {
     private fun submitFeedback() {
         val text = feedback.text.toString().trim()
         if (text.isEmpty()) {
-            feedback.error = "Please enter feedback"; return
+            feedback.error = getString(R.string.rate_feedback_required); return
         }
         if (submitting) return
-        submitting = true; action.isEnabled = false; action.text = "Saving…"
+        submitting = true; action.isEnabled = false; action.setText(R.string.rate_saving)
         CoroutineScope(Dispatchers.Main).launch {
             runCatching {
                 TrackerBackendClient(this@RateAppActivity).register(); TrackerBackendClient(
@@ -117,14 +130,14 @@ class RateAppActivity : AppCompatActivity() {
             ).submitFeedback(rating, text) }
                 .onSuccess {
                     RateAppManager.onUserRated(this@RateAppActivity)
-                    Toast.makeText(this@RateAppActivity, "Thanks for your feedback!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@RateAppActivity, R.string.rate_feedback_thanks, Toast.LENGTH_SHORT).show()
                     finish()
                 }
                 .onFailure {
                     submitting = false; action.isEnabled = true; action.text =
-                    "Submit"; Toast.makeText(
+                    getString(R.string.rate_submit); Toast.makeText(
                     this@RateAppActivity,
-                    "Could not save feedback. Try again.",
+                    getString(R.string.rate_save_failed),
                     Toast.LENGTH_LONG
                 ).show()
                 }

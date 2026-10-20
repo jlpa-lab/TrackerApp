@@ -117,24 +117,24 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         zoneList.removeAllViews()
         if (zones.isEmpty()) manageMode = false
         zoneCount.text = when {
-            zones.isEmpty() -> "0 zones"
-            manageMode -> "Done"
-            else -> "Manage"
+            zones.isEmpty() -> getString(R.string.zone_count_zero)
+            manageMode -> getString(R.string.zone_done)
+            else -> getString(R.string.zone_manage)
         }
         zoneCount.setTextColor(if (zones.isEmpty()) muted else green)
-        zoneAdd.text = if (zones.isEmpty()) "＋  Create your first zone" else "＋  Add a new zone"
+        zoneAdd.setText(if (zones.isEmpty()) R.string.zone_create_first else R.string.zone_add_new)
         val enabledCount = zones.count { it.enabled }
         statusTitle.text = when {
-            zones.isEmpty() -> "Set up your safe zones"
-            enabledCount == 0 -> "Your zones are paused"
-            else -> "Your safe zones are active"
+            zones.isEmpty() -> getString(R.string.zone_setup_title)
+            enabledCount == 0 -> getString(R.string.zone_paused_title)
+            else -> getString(R.string.zone_active_title)
         }
         statusSubtitle.text = when {
-            zones.isEmpty() -> "0 zones · Ready when you are"
-            enabledCount == 0 -> "${zones.size} saved · Turn on a zone to get alerts"
-            !hasForegroundLocation() -> "Location access is needed for arrival and exit alerts"
-            !hasBackgroundLocation() -> "$enabledCount zones · Allow location all the time to enable alerts"
-            else -> "$enabledCount zones · Watching over your family"
+            zones.isEmpty() -> getString(R.string.zone_ready_subtitle)
+            enabledCount == 0 -> getString(R.string.zone_saved_subtitle, zones.size)
+            !hasForegroundLocation() -> getString(R.string.zone_location_needed)
+            !hasBackgroundLocation() -> getString(R.string.zone_background_needed, enabledCount)
+            else -> getString(R.string.zone_watching_family, enabledCount)
         }
         statusSubtitle.setTextColor(if (zones.isNotEmpty() && !hasBackgroundLocation()) danger else green)
 
@@ -148,10 +148,10 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
             }
             empty.addView(ImageView(this).apply {
                 setImageResource(R.drawable.ic_zone_pin)
-                contentDescription = "No zones"
+                contentDescription = getString(R.string.zone_no_zones)
             }, LinearLayout.LayoutParams(dp(48), dp(48)))
-            empty.addView(text("No zones yet", 16f, ink, true).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(10) })
-            empty.addView(text("Add Home, School, or another place to get alerts\nwhen loved ones arrive or leave.", 12f, muted).apply {
+            empty.addView(text(getString(R.string.zone_no_zones_yet), 16f, ink, true).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(10) })
+            empty.addView(text(getString(R.string.zone_empty_message), 12f, muted).apply {
                 gravity = Gravity.CENTER
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
             }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(8) })
@@ -190,7 +190,7 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         top.addView(names, LinearLayout.LayoutParams(0, wrap(), 1f))
         val activeSwitch = ZoneToggleView(this@ZoneAlertActivity).apply {
             isChecked = zone.enabled
-            contentDescription = "Enable alerts for ${zone.name}"
+            contentDescription = getString(R.string.zone_enable_alerts, zone.name)
             setOnCheckedChangeListener { _, enabled ->
                 store.setEnabled(zone.id, enabled)
                 renderZones(store.all())
@@ -203,14 +203,19 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         val metadata = LinearLayout(this@ZoneAlertActivity).apply { gravity = Gravity.CENTER_VERTICAL }
         val color = if (zone.safe) green else danger
         metadata.addView(text("${zone.radiusMeters} m radius · $friendMemberLabel", 11f, color, true), LinearLayout.LayoutParams(0, wrap(), 1f))
-        metadata.addView(text("${if (zone.alertOnEnter) "Enter" else ""}${if (zone.alertOnEnter && zone.alertOnExit) " & " else ""}${if (zone.alertOnExit) "Exit" else ""} alerts", 11f, muted))
+        val alertTypes = buildString {
+            if (zone.alertOnEnter) append(getString(R.string.zone_enter))
+            if (zone.alertOnEnter && zone.alertOnExit) append(getString(R.string.zone_both_separator))
+            if (zone.alertOnExit) append(getString(R.string.zone_exit))
+        }
+        metadata.addView(text(getString(R.string.zone_enter_exit_alerts, alertTypes), 11f, muted))
         addView(metadata, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(9) })
 
         if (manageMode) {
             val actions = LinearLayout(this@ZoneAlertActivity).apply { gravity = Gravity.END }
-            val edit = text("Edit", 12f, green, true).apply { isClickable = true; isFocusable = true }
+            val edit = text(getString(R.string.zone_edit), 12f, green, true).apply { isClickable = true; isFocusable = true }
             edit.setOnClickListener { startActivity(Intent(this@ZoneAlertActivity, CreateZoneActivity::class.java).putExtra(CreateZoneActivity.EXTRA_ZONE_ID, zone.id)) }
-            val delete = text("Delete", 12f, danger, true).apply { setPadding(dp(18), 0, 0, 0); isClickable = true; isFocusable = true }
+            val delete = text(getString(R.string.common_delete), 12f, danger, true).apply { setPadding(dp(18), 0, 0, 0); isClickable = true; isFocusable = true }
             delete.setOnClickListener { confirmDelete(zone) }
             actions.addView(edit); actions.addView(delete)
             addView(actions, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(5) })
@@ -220,10 +225,10 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
 
     private fun confirmDelete(zone: ZoneRecord) {
         AlertDialog.Builder(this)
-            .setTitle("Delete ${zone.name}?")
-            .setMessage("This zone and its entry/exit alerts will be removed.")
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton("Delete") { _, _ ->
+            .setTitle(getString(R.string.zone_delete_title, zone.name))
+            .setMessage(getString(R.string.zone_delete_message))
+            .setNegativeButton(R.string.common_cancel, null)
+            .setPositiveButton(R.string.common_delete) { _, _ ->
                 store.delete(zone.id)
                 renderZones(store.all())
             }
@@ -325,10 +330,10 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !hasBackgroundLocation()) {
             didPromptBackground = true
             AlertDialog.Builder(this)
-                .setTitle("Enable arrival and exit alerts")
-                .setMessage("Android needs location access set to “Allow all the time” to detect when you enter or leave a zone while the app is closed. You can still save zones without enabling this.")
-                .setNegativeButton("Not now", null)
-                .setPositiveButton("Open settings") { _, _ ->
+                .setTitle(getString(R.string.zone_background_title))
+                .setMessage(getString(R.string.zone_background_message))
+                .setNegativeButton(R.string.common_not_now, null)
+                .setPositiveButton(R.string.common_open_settings) { _, _ ->
                     startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
                 }
                 .show()
@@ -411,7 +416,7 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
                     if (event != null) {
                         runOnUiThread {
                             showLatestFriendAlert()
-                            Toast.makeText(this@ZoneAlertActivity, event.title, Toast.LENGTH_LONG).show()
+                            Toast.makeText(this@ZoneAlertActivity, event.title(this@ZoneAlertActivity), Toast.LENGTH_LONG).show()
                         }
                     } else {
                         runOnUiThread { showLatestFriendAlert() }
@@ -494,7 +499,7 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
             }
             REQUEST_NOTIFICATIONS -> {
                 if (!hasNotificationPermission()) {
-                    Toast.makeText(this, "Zone alerts need notification permission to show arrival and exit messages.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.zone_notification_permission), Toast.LENGTH_LONG).show()
                 }
                 maybeExplainBackgroundAccess()
                 lastGeofenceSignature = null

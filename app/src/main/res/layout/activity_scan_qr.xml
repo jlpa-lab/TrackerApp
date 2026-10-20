@@ -33,7 +33,7 @@
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:clickable="true"
-                android:contentDescription="Back"
+                android:contentDescription="@string/common_back"
                 android:focusable="true"
                 android:src="@drawable/ic_phone_back" />
 
@@ -48,7 +48,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_bold"
-                    android:text="Scan QR Code"
+                    android:text="@string/scan_qr_title"
                     android:textColor="@color/home_phone_locator_text"
                     android:textSize="22sp" />
 
@@ -57,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
                     android:fontFamily="@font/inter_regular"
-                    android:text="Connect with a friend"
+                    android:text="@string/scan_qr_subtitle"
                     android:textColor="@color/home_text_subtitle"
                     android:textSize="13sp" />
             </LinearLayout>
@@ -106,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="7dp"
                     android:fontFamily="@font/inter_regular"
-                    android:text="Ready to scan"
+                    android:text="@string/scan_qr_ready"
                     android:textColor="@color/white"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -131,7 +131,7 @@
                     android:id="@+id/scan_flash_icon"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
-                    android:contentDescription="Flashlight"
+                    android:contentDescription="@string/scan_qr_flashlight"
                     android:src="@drawable/ic_flashlight" />
 
                 <TextView
@@ -140,7 +140,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="9dp"
                     android:fontFamily="@font/inter_regular"
-                    android:text="Flashlight off"
+                    android:text="@string/scan_qr_flashlight_off"
                     android:textColor="@color/white"
                     android:textSize="13sp" />
             </LinearLayout>
@@ -152,7 +152,7 @@
             android:layout_marginTop="20dp"
             android:fontFamily="@font/inter_bold"
             android:gravity="center"
-            android:text="Scan your friend's QR code"
+            android:text="@string/scan_qr_instruction"
             android:textColor="@color/home_phone_locator_text"
             android:textSize="20sp" />
 
@@ -162,7 +162,7 @@
             android:layout_marginTop="8dp"
             android:fontFamily="@font/inter_regular"
             android:gravity="center"
-            android:text="Place the QR code inside the frame.\nIt will scan automatically."
+            android:text="@string/scan_qr_frame_hint"
             android:textColor="@color/home_text_subtitle"
             android:textSize="14sp" />
 
@@ -182,7 +182,7 @@
             <ImageView
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:contentDescription="Gallery"
+                android:contentDescription="@string/scan_qr_gallery"
                 android:src="@drawable/ic_gallery_icon_container" />
 
             <TextView
@@ -191,14 +191,14 @@
                 android:layout_marginStart="12dp"
                 android:layout_weight="1"
                 android:fontFamily="@font/inter_bold"
-                android:text="Choose from gallery"
+                android:text="@string/scan_qr_choose_gallery"
                 android:textColor="@color/home_green_title"
                 android:textSize="16sp" />
 
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:contentDescription="Open gallery"
+                android:contentDescription="@string/scan_qr_open_gallery"
                 android:src="@drawable/ic_chevron"
                 android:tint="@color/app_color" />
         </LinearLayout>
@@ -213,7 +213,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:contentDescription="Privacy"
+                android:contentDescription="@string/friend_privacy"
                 android:src="@drawable/ic_privacy_shield" />
 
             <TextView
@@ -222,7 +222,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:fontFamily="@font/inter_regular"
-                android:text="Location sharing starts only after a friend request is accepted."
+                android:text="@string/qr_acceptance_message"
                 android:textColor="@color/home_text_subtitle"
                 android:textSize="13sp" />
         </LinearLayout>

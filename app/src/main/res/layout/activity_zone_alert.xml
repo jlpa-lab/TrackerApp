@@ -32,7 +32,7 @@
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:clickable="true"
-                    android:contentDescription="Back"
+                    android:contentDescription="@string/common_back"
                     android:focusable="true"
                     android:src="@drawable/ic_phone_back" />
 
@@ -40,7 +40,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_bold"
-                    android:text="Zone Alert"
+                    android:text="@string/zone_title"
                     android:textColor="@color/home_phone_locator_text"
                     android:textSize="22sp" />
             </LinearLayout>
@@ -52,7 +52,7 @@
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="-1dp"
                 android:fontFamily="@font/inter_regular"
-                android:text="Know when loved ones arrive or leave"
+                android:text="@string/zone_subtitle"
                 android:textColor="@color/home_text_subtitle"
                 android:textSize="13sp" />
 
@@ -77,7 +77,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/inter_bold"
-                        android:text="Set up your safe zones"
+                        android:text="@string/zone_setup_title"
                         android:textColor="@color/home_phone_locator_text"
                         android:textSize="17sp" />
 
@@ -87,7 +87,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:fontFamily="@font/inter_regular"
-                        android:text="0 zones · Ready when you are"
+                        android:text="@string/zone_ready_subtitle"
                         android:textColor="@color/home_green_background"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -96,7 +96,7 @@
                     android:id="@+id/zone_status_icon"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:contentDescription="Zone status"
+                    android:contentDescription="@string/zone_status"
                     android:scaleType="centerInside"
                     android:src="@drawable/home_zone_alert" />
             </LinearLayout>
@@ -124,7 +124,7 @@
                     android:paddingTop="7dp"
                     android:paddingEnd="10dp"
                     android:paddingBottom="7dp"
-                    android:text="Enable location to see zones near you"
+                android:text="@string/zone_enable_location_nearby"
                     android:textColor="@color/home_text_subtitle"
                     android:textSize="10sp" />
 
@@ -136,7 +136,7 @@
                     android:layout_margin="12dp"
                     android:background="@drawable/bg_map_control"
                     android:clickable="true"
-                    android:contentDescription="Center on my location"
+                    android:contentDescription="@string/zone_center_on_location"
                     android:focusable="true"
                     android:padding="7dp"
                     android:src="@drawable/ic_locate_fixed" />
@@ -168,7 +168,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/inter_bold"
-                    android:text="My zones"
+                android:text="@string/zone_my_zones"
                     android:textColor="@color/home_phone_locator_text"
                     android:textSize="16sp" />
 
@@ -177,7 +177,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_regular"
-                    android:text="0 zones"
+                android:text="@string/zone_count_zero_short"
                     android:textColor="@color/home_text_subtitle"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -199,7 +199,7 @@
                 android:focusable="true"
                 android:fontFamily="@font/inter_semibold"
                 android:gravity="center"
-                android:text="＋  Create your first zone"
+                android:text="@string/zone_create_first"
                 android:textColor="@color/white"
                 android:textSize="14sp" />
         </LinearLayout>

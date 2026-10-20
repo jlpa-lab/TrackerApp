@@ -22,7 +22,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Home"
+            android:text="@string/common_home"
             android:textColor="@color/app_color"
             android:fontFamily="@font/inter_medium"
             android:textSize="12sp" />
@@ -44,7 +44,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tools"
+            android:text="@string/common_tools"
             android:textColor="@color/home_nav_inactive"
             android:fontFamily="@font/inter_regular"
             android:textSize="12sp"/>
@@ -66,7 +66,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Connection"
+            android:text="@string/common_connection"
             android:textColor="@color/home_nav_inactive"
             android:fontFamily="@font/inter_regular"
             android:textSize="12sp" />
@@ -88,7 +88,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Setting"
+            android:text="@string/common_settings"
             android:textColor="@color/home_nav_inactive"
             android:fontFamily="@font/inter_regular"
             android:textSize="12sp" />

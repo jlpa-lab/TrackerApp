@@ -35,7 +35,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Select country/region"
+                android:text="@string/country_picker_title"
                 android:textColor="@color/home_phone_locator_text"
                 android:textSize="17sp"
                 android:fontFamily="@font/inter_bold" />
@@ -43,7 +43,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Choose a calling code"
+                android:text="@string/country_picker_subtitle"
                 android:layout_marginTop="2dp"
                 android:textColor="@color/home_text_subtitle"
                 android:fontFamily="@font/inter_regular"
@@ -55,7 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
-            android:contentDescription="Close"
+            android:contentDescription="@string/common_close"
             android:focusable="true"
             android:padding="12dp"
             android:src="@drawable/ic_phone_clear" />
@@ -89,7 +89,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/inter_regular"
             android:background="@android:color/transparent"
-            android:hint="Search country or code..."
+            android:hint="@string/country_picker_search_hint"
             android:inputType="text"
             android:maxLines="1"
             android:paddingTop="8dp"
@@ -122,7 +122,7 @@
         android:gravity="center"
         android:paddingTop="14dp"
         android:paddingBottom="14dp"
-        android:text="Done"
+        android:text="@string/common_done"
         android:fontFamily="@font/inter_bold"
         android:textColor="@color/white"
         android:textSize="15sp" />

@@ -198,9 +198,9 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
 
     private fun updateTripLabels() {
         tripState.text = when (trip) {
-            TripState.NOT_STARTED -> "Trip not started"
-            TripState.RUNNING -> "Trip in progress"
-            TripState.PAUSED -> "Trip paused"
+            TripState.NOT_STARTED -> getString(R.string.speed_trip_not_started)
+            TripState.RUNNING -> getString(R.string.speed_trip_in_progress)
+            TripState.PAUSED -> getString(R.string.speed_trip_paused)
         }
         val totalSeconds = elapsedMillis() / 1000L
         timer.text = String.format(
@@ -217,15 +217,15 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
             else android.graphics.Color.rgb(185, 192, 201)
         )
         startButton.text = when (trip) {
-            TripState.RUNNING -> "Ⅱ  Pause"
-            TripState.PAUSED -> "▷  Resume"
-            TripState.NOT_STARTED -> "▷  Start"
+            TripState.RUNNING -> getString(R.string.speed_pause)
+            TripState.PAUSED -> getString(R.string.speed_resume)
+            TripState.NOT_STARTED -> getString(R.string.speed_start)
         }
     }
 
     private fun updateStats() {
         val factor = if (mph) 0.621371f else 1f
-        unit.text = if (mph) "mph" else "km/h"
+        unit.text = getString(if (mph) R.string.speed_unit_mph else R.string.speed_unit_kmh)
         average.text = if (speedSamples == 0) "—" else String.format(
             Locale.getDefault(),
             "%.0f",
@@ -274,7 +274,7 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST && grantResults.any { it == PackageManager.PERMISSION_GRANTED }) startGpsUpdates()
-        else status.text = "Location permission needed"
+        else status.setText(R.string.speed_location_permission_needed)
     }
 
     override fun onResume() {
@@ -297,15 +297,15 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
                 else -> null
             }
             if (provider == null) {
-            status.text = "●  Turn on location to connect GPS"
+            status.setText(R.string.speed_turn_on_location)
                 return
             }
             locationManager.requestLocationUpdates(provider, 500L, 0f, this, Looper.getMainLooper())
             locationUpdatesStarted = true
-            status.text = "GPS connected"
+            status.setText(R.string.speed_gps_connected)
             locationManager.getLastKnownLocation(provider)?.let(::onLocationChanged)
         } catch (_: SecurityException) {
-            status.text = "●  Location permission needed"
+            status.setText(R.string.speed_location_permission_needed)
         }
     }
 
@@ -327,18 +327,18 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
             }
             previousTripLocation = Location(location)
         }
-        status.text = "●  GPS connected"
+        status.setText(R.string.speed_gps_connected)
         updateStats()
     }
 
     @Deprecated("Deprecated in Android")
     override fun onStatusChanged(provider: String?, statusValue: Int, extras: Bundle?) = Unit
     override fun onProviderEnabled(provider: String) {
-        status.text = "●  GPS connected"
+        status.setText(R.string.speed_gps_connected)
     }
 
     override fun onProviderDisabled(provider: String) {
-        status.text = "●  Turn on location to connect GPS"
+        status.setText(R.string.speed_turn_on_location)
     }
 
     override fun onPause() {

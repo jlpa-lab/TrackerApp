@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_weight="1"
-        android:text="Rate the app"
+        android:text="@string/settings_rate_app"
         android:fontFamily="@font/inter_medium"
         android:textColor="@color/home_phone_locator_text"
         android:textSize="14sp" />

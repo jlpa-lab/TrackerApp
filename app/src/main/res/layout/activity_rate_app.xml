@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:contentDescription="Close"
+            android:contentDescription="@string/common_close"
             android:src="@drawable/ic_close" />
 
         <ImageView
@@ -76,7 +76,7 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/bg_track_friend"
                 android:gravity="top"
-                android:hint="Write your feedback here..."
+                android:hint="@string/rate_feedback_hint"
                 android:inputType="textMultiLine"
                 android:maxLength="500"
                 android:minLines="5"
@@ -94,7 +94,7 @@
                 android:layout_marginBottom="8dp"
                 android:fontFamily="@font/poppins_regular"
                 android:gravity="end"
-                android:text="0/500"
+            android:text="@string/rate_character_count"
                 android:textColor="#7885A0"
                 android:textSize="10sp" />
 
@@ -108,7 +108,7 @@
             android:background="@drawable/bg_live_share"
             android:fontFamily="@font/poppins_semibold"
             android:gravity="center"
-            android:text="submit"
+            android:text="@string/rate_submit"
             android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -122,7 +122,7 @@
             android:focusable="true"
             android:fontFamily="@font/poppins_semibold"
             android:padding="4dp"
-            android:text="Maybe later"
+            android:text="@string/rate_maybe_later"
             android:textColor="@color/home_green_button_text"
             android:textSize="12sp" />
 

@@ -37,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:contentDescription="Back"
+                android:contentDescription="@string/common_back"
                 android:focusable="true"
                 android:paddingEnd="8dp"
                 android:src="@drawable/ic_phone_back" />
@@ -53,7 +53,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_bold"
-                    android:text="My QR"
+                    android:text="@string/qr_my_qr"
                     android:textColor="@color/home_phone_locator_text"
                     android:textSize="22sp" />
 
@@ -62,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp"
                     android:fontFamily="@font/inter_regular"
-                    android:text="Your people, connected safely"
+                    android:text="@string/qr_subtitle"
                     android:textColor="@color/home_text_subtitle"
                     android:textSize="13sp" />
             </LinearLayout>
@@ -82,7 +82,7 @@
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/inter_bold"
                 android:gravity="center"
-                android:text="Your QR Code"
+                android:text="@string/qr_title"
                 android:textColor="@color/home_phone_locator_text"
                 android:textSize="16sp" />
 
@@ -93,7 +93,7 @@
                 android:layout_marginTop="12dp"
                 android:fontFamily="@font/inter_regular"
                 android:gravity="center"
-                android:text="Let your friend scan this to track you in real - time."
+                android:text="@string/qr_scan_message"
                 android:textColor="@color/home_text_subtitle"
                 android:textSize="12sp" />
 
@@ -102,7 +102,7 @@
                 android:layout_width="240dp"
                 android:layout_height="240dp"
                 android:layout_marginTop="16dp"
-                android:contentDescription="Your invite QR code"
+                android:contentDescription="@string/qr_invite_description"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -138,7 +138,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="7dp"
                 android:fontFamily="@font/inter_regular"
-                android:text="Live Location Sharing Active"
+                android:text="@string/qr_sharing_active"
                 android:textColor="@color/app_color"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -163,7 +163,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:fontFamily="@font/inter_bold"
-                android:text="Share QR Code"
+                android:text="@string/qr_share_code"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -188,7 +188,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:fontFamily="@font/inter_regular"
-                android:text="Location sharing starts only after a friend request is accepted."
+                android:text="@string/qr_acceptance_message"
                 android:textColor="@color/home_text_subtitle"
                 android:textSize="10sp" />
         </LinearLayout>

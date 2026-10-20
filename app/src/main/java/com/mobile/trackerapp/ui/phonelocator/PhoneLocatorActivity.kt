@@ -99,7 +99,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
         findViewById<View>(R.id.phone_result).visibility = View.GONE
         findViewById<View>(R.id.phone_details).visibility = View.GONE
         findViewById<View>(R.id.phone_form).visibility = View.VISIBLE
-        findViewById<TextView>(R.id.phone_title).text = "Phone Locator"
+        findViewById<TextView>(R.id.phone_title).setText(R.string.phone_locator_title)
         findViewById<View>(R.id.phone_subtitle).visibility = View.VISIBLE
     }
 
@@ -107,7 +107,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
         findViewById<View>(R.id.phone_form).visibility = View.GONE
         findViewById<View>(R.id.phone_result).visibility = View.GONE
         findViewById<View>(R.id.phone_details).visibility = View.VISIBLE
-        findViewById<TextView>(R.id.phone_title).text = "Details"
+        findViewById<TextView>(R.id.phone_title).setText(R.string.phone_details_title)
         findViewById<View>(R.id.phone_subtitle).visibility = View.GONE
     }
 
@@ -274,12 +274,12 @@ class PhoneLocatorActivity : AppCompatActivity() {
         hideKeyboard()
         val raw = findViewById<EditText>(R.id.phone_input).text.toString().trim()
         if (raw.isEmpty()) {
-            Toast.makeText(this, "Please enter a phone number to search", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.phone_enter_number_to_search, Toast.LENGTH_SHORT).show()
             return
         }
         val digitCount = raw.count(Char::isDigit)
         if (digitCount !in 4..15) {
-            showNoResult()
+            Toast.makeText(this, R.string.phone_invalid_number, Toast.LENGTH_SHORT).show()
             return
         }
         val phoneUtil = PhoneNumberUtil.getInstance()
@@ -349,7 +349,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
         val nameView = findViewById<TextView>(R.id.details_name)
         val locationView = findViewById<View>(R.id.details_location)
         if (contactName.isNullOrBlank()) {
-            nameView.text = "Unknown"
+            nameView.setText(R.string.phone_unknown)
             locationView.setBackgroundResource(R.drawable.bg_phone_pill_unknown)
         } else {
             nameView.text = contactName
@@ -381,8 +381,8 @@ class PhoneLocatorActivity : AppCompatActivity() {
         val value = findViewById<EditText>(R.id.phone_input).text.toString().trim()
         val displayedNumber = if (value.isEmpty()) selectedDialCode else "$selectedDialCode $value"
 
-        findViewById<TextView>(R.id.result_title).text = "No results found"
-        findViewById<TextView>(R.id.result_message).text = "$displayedNumber couldn't be located.\nCheck the number and try again."
+        findViewById<TextView>(R.id.result_title).setText(R.string.phone_no_results)
+        findViewById<TextView>(R.id.result_message).text = getString(R.string.phone_result_message, displayedNumber)
         findViewById<TextView>(R.id.result_flag).text = regionToFlag(selectedIso)
         findViewById<TextView>(R.id.result_code).text = selectedDialCode
         findViewById<TextView>(R.id.result_number).text = value

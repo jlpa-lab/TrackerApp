@@ -55,7 +55,7 @@
 
                         <ImageView android:layout_width="match_parent" android:layout_height="60dp" android:src="@drawable/home_track_friend" />
 
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Track Friend" android:textColor="@color/home_phone_locator_text" android:textSize="14sp" android:fontFamily="@font/inter_bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_track_friend" android:textColor="@color/home_phone_locator_text" android:textSize="14sp" android:fontFamily="@font/inter_bold" />
                     </LinearLayout>
 
                     <Space android:layout_width="match_parent" android:layout_height="8dp" />
@@ -64,16 +64,16 @@
 
                         <ImageView android:layout_width="match_parent" android:layout_height="60dp" android:src="@drawable/home_shared_connection" />
 
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Shared Connection" android:textColor="@color/home_phone_locator_text" android:textSize="14sp" android:fontFamily="@font/inter_bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_shared_connection" android:textColor="@color/home_phone_locator_text" android:textSize="14sp" android:fontFamily="@font/inter_bold" />
                     </LinearLayout>
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp">
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Explore tools" android:textColor="@color/home_phone_locator_text" android:textSize="16sp" android:fontFamily="@font/inter_bold" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_explore_tools" android:textColor="@color/home_phone_locator_text" android:textSize="16sp" android:fontFamily="@font/inter_bold" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView android:id="@+id/view_all_tools" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:text="View All" android:textSize="12sp" android:textColor="@color/home_see_all" android:fontFamily="@font/inter_bold" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
+                <TextView android:id="@+id/view_all_tools" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:text="@string/home_view_all" android:textSize="12sp" android:textColor="@color/home_see_all" android:fontFamily="@font/inter_bold" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:columnCount="2" android:rowCount="2">

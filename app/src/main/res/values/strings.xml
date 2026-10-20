@@ -1,4 +1,6 @@
 <resources>
+    <string name="ad_badge">Ad</string>
+    <string name="phone_invalid_number">Invalid phone number. Please enter 4–15 digits.</string>
     <string name="app_name">Location &amp; Phone Tracker</string>
     <string name="tracker_marker">Current tracked person</string>
     <string name="location_shared">●  Location shared</string>
@@ -63,7 +65,7 @@
     <!-- CHANGE: use the intended final onboarding title. -->
     <string name="onboarding_title_4">Explore Around You</string>
     <string name="onboarding_des_4">Find nearby places and use helpful GPS tools wherever you go</string>
-    //home screen
+    <!-- Home screen -->
     <string name="home_gps_title">GPS</string>
     <string name="home_tracker_title">Tracker</string>
     <string name="home_location_subtitle">Your location dashboard</string>
@@ -72,6 +74,200 @@
     <string name="home_open_live_map">Open live map</string>
     <string name="home_phone_locator">Phone Locator</string>
     <string name="home_phone_locator_description">Track number easily&#10;with real-time</string>
+
+    <!-- Common actions and navigation -->
+    <string name="common_back">Back</string>
+    <string name="common_search">Search</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_done">Done</string>
+    <string name="common_close">Close</string>
+    <string name="common_clear">Clear</string>
+    <string name="common_retry">Try again</string>
+    <string name="common_open_settings">Open settings</string>
+    <string name="common_not_now">Not now</string>
+    <string name="common_allow">Allow</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_connect">Connect</string>
+    <string name="common_start">Start</string>
+    <string name="common_pause">Pause</string>
+    <string name="common_resume">Resume</string>
+    <string name="common_reset">Reset</string>
+    <string name="common_lap">Lap</string>
+    <string name="common_share">Share</string>
+    <string name="common_call">Call</string>
+    <string name="common_more">More</string>
+    <string name="common_unknown">Unknown</string>
+    <string name="common_use_my_location">Use my location</string>
+    <string name="common_focus_on_map">Focus on map</string>
+    <string name="common_focus_on_my_location">Focus on my location</string>
+    <string name="common_home">Home</string>
+    <string name="common_tools">Tools</string>
+    <string name="common_connection">Connection</string>
+    <string name="common_settings">Setting</string>
+
+    <!-- Home -->
+    <string name="home_track_friend">Track Friend</string>
+    <string name="home_shared_connection">Shared Connection</string>
+    <string name="home_explore_tools">Explore tools</string>
+    <string name="home_view_all">View All</string>
+    <string name="home_gps_tools">GPS Tools</string>
+    <string name="home_nearby">Nearby</string>
+    <string name="home_traffic_alert">Traffic Alert</string>
+    <string name="home_zone_alert">Zone Alert</string>
+
+    <!-- Settings -->
+    <string name="settings_app_information_support">App information &amp; support</string>
+    <string name="settings_version">GPS Tracker · Version %1$s</string>
+    <string name="settings_privacy_policy">Privacy Policy</string>
+    <string name="settings_rate_app">Rate the app</string>
+    <string name="settings_terms_of_use">Terms of Use</string>
+    <string name="settings_title">Settings</string><string name="settings_companion">Your everyday location companion</string><string name="settings_rating_thanks">Thanks for rating the app!</string><string name="settings_version_fixed">GPS Tracker · Version 1.0.0</string>
+
+    <!-- GPS tools -->
+    <!-- Rating -->
+    <string name="rate_enjoying">Enjoying the app?</string><string name="rate_feedback_help">Your feedback helps us improve.</string><string name="rate_us">Rate us</string><string name="rate_sorry">Sorry to hear that! 😔</string><string name="rate_feedback_thanks">Thanks for your feedback!</string><string name="rate_glad">Glad you’re enjoying it! 🎉</string><string name="rate_improve">What can we improve?</string><string name="rate_make_better">What could make it better?</string><string name="rate_google_prompt">Would you like to rate us on Google Play?</string><string name="rate_google_play">Rate on Google Play</string><string name="rate_give_feedback">Give feedback</string><string name="rate_share_feedback">Share your feedback</string><string name="rate_feedback_detail">Let us know how we can improve.</string><string name="rate_submit">Submit</string><string name="rate_saving">Saving…</string><string name="rate_feedback_hint">Write your feedback here...</string><string name="rate_maybe_later">Maybe later</string><string name="rate_feedback_required">Please enter feedback</string><string name="rate_save_failed">Could not save feedback. Try again.</string><string name="rate_character_count">%1$d/500</string>
+    <string name="gps_tools_title">GPS tools</string>
+    <string name="gps_tools_subtitle">Useful tools for every journey</string>
+    <string name="gps_compass">Compass</string>
+    <string name="gps_compass_description">Find your heading and orientation</string>
+    <string name="gps_speedometer">Speedometer</string>
+    <string name="gps_speedometer_description">Track your current speed</string>
+    <string name="gps_level_meter">Level Meter</string>
+    <string name="gps_level_meter_description">Check if a surface is flat or level</string>
+    <string name="gps_area_codes">Area Codes</string>
+    <string name="gps_area_codes_description">Look up phone area codes by location</string>
+    <string name="gps_stopwatch">Stopwatch</string>
+    <string name="gps_stopwatch_description">Track time accurately</string>
+    <string name="gps_nearby">Nearby</string>
+    <string name="gps_nearby_description">Explore places around you</string>
+    <string name="gps_traffic_alert">Traffic Alert</string>
+    <string name="gps_traffic_alert_description">Stay informed on the road</string>
+    <string name="gps_zone_alert">Zone Alert</string>
+    <string name="gps_zone_alert_description">Get notified when a zone is crossed</string>
+    <string name="home_location_alerts">Location &amp; alerts</string>
+
+    <!-- Accessibility -->
+    <string name="accessibility_search">Search</string>
+    <string name="accessibility_search_location">Search location</string>
+    <string name="accessibility_use_current_location">Use current location</string>
+
+    <!-- Traffic alerts -->
+    <string name="traffic_location_access_needed">Location access needed</string>
+    <string name="traffic_permission_message">Traffic Alert needs location access and device Location turned on to show live traffic around you.</string>
+    <string name="traffic_location_needed">Location is needed for live traffic</string>
+    <string name="traffic_waiting">Waiting for live traffic</string>
+    <string name="traffic_allow_location">Allow location access to see conditions near you</string>
+    <string name="traffic_centering">Centering traffic around your location</string>
+    <string name="traffic_location_pending">Traffic location pending</string>
+    <string name="traffic_available">Live traffic is available</string>
+    <string name="traffic_conditions_within">Live conditions within %1$d km of you</string>
+    <string name="traffic_live_radius">Live traffic · %1$d km</string>
+
+    <!-- Zone alerts -->
+    <string name="zone_count_zero">0 zones</string>
+    <string name="zone_manage">Manage</string>
+    <string name="zone_done">Done</string>
+    <string name="zone_create_first">＋  Create your first zone</string>
+    <string name="zone_add_new">＋  Add a new zone</string>
+    <string name="zone_setup_title">Set up your safe zones</string>
+    <string name="zone_paused_title">Your zones are paused</string>
+    <string name="zone_active_title">Your safe zones are active</string>
+    <string name="zone_ready_subtitle">0 zones · Ready when you are</string>
+    <string name="zone_saved_subtitle">%1$d saved · Turn on a zone to get alerts</string>
+    <string name="zone_location_needed">Location access is needed for arrival and exit alerts</string>
+    <string name="zone_background_needed">%1$d zones · Allow location all the time to enable alerts</string>
+    <string name="zone_watching_family">%1$d zones · Watching over your family</string>
+    <string name="zone_no_zones">No zones</string>
+    <string name="zone_no_zones_yet">No zones yet</string>
+    <string name="zone_empty_message">Add Home, School, or another place to get alerts&#10;when loved ones arrive or leave.</string>
+    <string name="zone_enable_alerts">Enable alerts for %1$s</string>
+    <string name="zone_enter_exit_alerts">%1$s alerts</string>
+    <string name="zone_enter">Enter</string>
+    <string name="zone_exit">Exit</string>
+    <string name="zone_both_separator"> &amp; </string>
+    <string name="zone_radius_members">%1$d m radius · %2$s</string>
+    <string name="zone_edit">Edit</string>
+    <string name="zone_delete_title">Delete %1$s?</string>
+    <string name="zone_delete_message">This zone and its entry/exit alerts will be removed.</string>
+    <string name="zone_background_title">Enable arrival and exit alerts</string>
+    <string name="zone_background_message">Android needs location access set to “Allow all the time” to detect when you enter or leave a zone while the app is closed. You can still save zones without enabling this.</string>
+    <string name="zone_notification_permission">Zone alerts need notification permission to show arrival and exit messages.</string>
+
+    <!-- Speedometer -->
+    <string name="speed_trip_not_started">Trip not started</string>
+    <string name="speed_trip_in_progress">Trip in progress</string>
+    <string name="speed_trip_paused">Trip paused</string>
+    <string name="speed_pause">Ⅱ  Pause</string>
+    <string name="speed_resume">▷  Resume</string>
+    <string name="speed_start">▷  Start</string>
+    <string name="speed_unit_mph">mph</string>
+    <string name="speed_unit_kmh">km/h</string>
+    <string name="speed_location_permission_needed">Location permission needed</string>
+    <string name="speed_turn_on_location">●  Turn on location to connect GPS</string>
+    <string name="speed_gps_connected">●  GPS connected</string>
+
+    <!-- Stopwatch -->
+    <string name="stopwatch_running">● Running</string>
+    <string name="stopwatch_pause">Ⅱ  Pause</string>
+    <string name="stopwatch_lap">⚑  Lap</string>
+    <string name="stopwatch_ready">Ready to start</string>
+    <string name="stopwatch_paused">Paused</string>
+    <string name="stopwatch_start">▶  Start</string>
+    <string name="stopwatch_resume">▶  Resume</string>
+    <string name="stopwatch_reset">↻  Reset</string>
+    <string name="stopwatch_running_status">Timer is running</string>
+    <string name="stopwatch_nothing_to_reset">Nothing to reset</string>
+    <string name="stopwatch_paused_status">Timer is paused</string>
+    <string name="stopwatch_completed">%1$d completed</string>
+    <string name="stopwatch_current_lap">Current lap · %1$s</string>
+    <string name="stopwatch_no_laps">No laps yet</string>
+    <string name="stopwatch_empty_message">Tap Start to begin timing, then tap Lap to record your first split.</string>
+    <string name="stopwatch_lap_header">LAP</string>
+    <string name="stopwatch_lap_time_header">LAP TIME</string>
+    <string name="stopwatch_total_header">TOTAL</string>
+    <string name="stopwatch_lap_number">Lap %1$s</string>
+    <string name="stopwatch_fastest">Fastest</string>
+    <string name="stopwatch_slowest">Slowest</string>
+
+    <!-- Compass -->
+    <string name="compass_title">Compass</string><string name="compass_description">Find your way with confidence</string><string name="compass_subtitle">Your real-time direction finder</string><string name="compass_magnetic_north">Magnetic north</string><string name="compass_coordinates">Coordinates</string><string name="compass_altitude">Altitude</string><string name="compass_sensor_accuracy">Sensor accuracy</string><string name="compass_high">● High</string><string name="compass_medium">● Medium</string><string name="compass_low">● Low</string><string name="compass_uncalibrated">● Uncalibrated</string><string name="compass_waiting_sensor">● Waiting for sensor</string><string name="compass_calibrate">Calibrate Compass</string><string name="compass_calibrate_description">Move your phone in a figure eight to calibrate. Keep away from magnets and metal.</string><string name="compass_waiting_location">Waiting for location…</string><string name="compass_location_access">Allow location access</string><string name="compass_unavailable">Unavailable</string><string name="compass_calibrate_title">Calibrate compass</string><string name="compass_calibrate_message">Move your phone in a figure-eight motion a few times. Keep it away from magnets, speakers, and metal objects.</string><string name="compass_got_it">Got it</string>
+    <!-- Area codes -->
+    <string name="area_codes_title">Area Codes</string><string name="area_codes_description">Know where a number is from</string><string name="area_codes_subtitle">Look up phone area codes by region</string><string name="area_code_map">Area code map</string><string name="area_search">Search city or area code</string><string name="area_popular">Popular area codes</string><string name="area_regions_zero">0 regions</string><string name="area_hint">Dial %1$s, followed by the area code and the 7 digit local number for local calls.</string>
+    <!-- Level meter -->
+    <string name="level_title">Level Meter</string><string name="level_description">Find the perfect balance</string><string name="level_subtitle">Measure the angle of any surface</string><string name="level_surface">Surface</string><string name="level_horizontal">Horizontal</string><string name="level_vertical">Vertical</string><string name="level_pitch">Pitch · X axis</string><string name="level_roll">Roll · Y axis</string><string name="level_accuracy">Accuracy tolerance</string><string name="level_hold">Hold reading</string><string name="level_calibrate">Calibrate</string><string name="level_information">Level meter information</string><string name="level_tip">Place your phone flat on a surface. Calibrate on a known level surface before measuring.</string><string name="level_calibrated">Calibrated to current position</string><string name="level_resume_reading">Resume reading</string><string name="level_needs_adjustment">%1$s needs adjustment</string>
+    <!-- Live location and QR -->
+    <string name="live_location_title">Live Location</string><string name="live_location_subtitle">Stay close, wherever you are</string><string name="live_map_layers">Map layers</string><string name="live_normal">Normal</string><string name="live_satellite">Satellite</string><string name="live_terrain">Terrain</string><string name="live_hybrid">Hybrid</string><string name="live_friend_requests">Friend requests</string><string name="live_waiting_location">Waiting for your location…</string><string name="live_share_address">Share Location Address</string><string name="qr_my_qr">My QR</string><string name="qr_title">Your QR Code</string><string name="qr_subtitle">Your people, connected safely</string><string name="qr_scan_message">Let your friend scan this to track you in real - time.</string><string name="qr_invite_description">Your invite QR code</string><string name="qr_sharing_active">Live Location Sharing Active</string><string name="qr_share_code">Share QR Code</string><string name="qr_acceptance_message">Location sharing starts only after a friend request is accepted.</string>
+    <!-- Connection -->
+    <string name="connection_subtitle">Stay connected with your people</string><string name="connection_sharing_on">Location sharing is on</string><string name="connection_active_count">2 active connections</string><string name="connection_sharing_description">Your connections can see your live location.</string><string name="connection_add">Add connection</string><string name="connection_add_description">Connect by code or QR scan</string><string name="connection_my_qr">My QR code</string><string name="connection_my_qr_description">Let others connect with you</string><string name="connection_requests">Connection requests</string>
+    <!-- Phone locator -->
+    <string name="phone_locator_title">Phone Locator</string><string name="phone_locator_subtitle">Find a phone with permission</string><string name="phone_details_title">Details</string><string name="phone_enter_number_title">Enter a phone number</string><string name="phone_number_label">Phone number</string><string name="phone_number_hint">Enter phone number here</string><string name="phone_contacts">Contacts</string><string name="phone_full_number_hint">Enter the full number including country code to find a device.</string><string name="phone_no_results">No results found</string><string name="phone_number_check_hint">Make sure you’ve entered the correct country code and full number.</string><string name="phone_enter_number_to_search">Please enter a phone number to search</string><string name="phone_unknown">Unknown</string><string name="phone_result_message">%1$s couldn’t be located.\nCheck the number and try again.</string><string name="phone_avatar">Avatar</string><string name="phone_actions">Actions</string><string name="phone_sms">SMS</string><string name="phone_navigate">Navigate</string>
+    <!-- Friend connections -->
+    <string name="friend_requests_title">Friend Requests</string><string name="friend_requests_subtitle">See who wants to connect with you</string><string name="friend_add">Add Friend</string><string name="friend_received">Received</string><string name="friend_sent">Sent</string><string name="friend_make_connection">Make a connection</string><string name="friend_invite_description">Share an invite. Stay close.\nYou’re always in control.</string><string name="friend_connection_code">Your connection code</string><string name="friend_private_invitation">Private invitation · Expires in 24 hours</string><string name="friend_share_invitation">Share invitation</string><string name="friend_share_qr">Share QR</string><string name="friend_have_code">Have a friend’s code?</string><string name="friend_code_hint">Enter connection code</string><string name="friend_received_invitations">Received invitations</string><string name="friend_request_count_zero">0 requests</string><string name="friend_privacy">Privacy</string><string name="friend_accept_description">Accept people you know. Only friends can share their live location with you.</string><string name="friend_pending_invitations">Pending invitations</string><string name="friend_pending_description">Your invitation stays pending until accepted. You can cancel it at any time.</string>
+    <string name="track_friend_title">Track Friend</string><string name="track_friend_subtitle">Your people, connected safely</string><string name="track_friend_empty_title">No friends sharing location</string><string name="track_friend_empty_description">When a friend accepts your request and chooses to share their location, they will appear here. This screen will not show your own location as a friend’s.</string><string name="track_friend_connect">Connect with a friend</string><string name="track_friend_view_locations">View friend locations</string><string name="track_friend_view_requests">View friend requests</string><string name="track_friend_inactive_notice">Live friend tracking is not active until the secure connection service is configured. No location is being sent from this screen.</string><string name="track_friend_map_layers">Map layers</string><string name="track_friend_friends">Friends</string><string name="track_friend_count_zero">0 friends</string><string name="track_friend_no_accepted">No accepted friends yet.</string><string name="track_friend_add">Add friend</string><string name="track_friend_received_requests">View received requests</string><string name="track_friend_sent_requests">View sent requests</string><string name="track_friend_connect_title">Connect with Friend</string><string name="track_friend_connect_description">Choose a method to connect and track\nlocation</string><string name="track_friend_scan_qr">Scan Friend’s QR Code</string><string name="track_friend_scan_qr_description">Point camera at your friend’s QR code</string><string name="track_friend_or">OR</string><string name="track_friend_enter_id">Enter Friend’s ID</string><string name="track_friend_enter_id_description">Type your friend’s unique ID to connect</string><string name="track_friend_id_hint">Enter ID (e.g. #ABC123)</string><string name="track_friend_location_notice">Location sharing starts only after a friend request\nis accepted.</string>
+    <!-- Share and scan connection -->
+    <string name="connection_notifications_needed">Enable notifications to see sharing status in the notification bar.</string><string name="connection_background_needed">Allow location all the time to continue sharing.</string><string name="connection_background_access_required">Allow location access all the time to use friend location sharing</string><string name="connection_location_shared_summary">Your location is being shared with your approved friends.</string><string name="connection_sharing_off">Location sharing is off</string><string name="connection_code_copied">Code copied to clipboard</string><string name="connection_secure_retry">Connecting securely, please try again in a moment.</string><string name="connection_own_code">That is your own invite code</string><string name="connection_request_sent">Friend request sent</string><string name="connection_request_failed">Request failed</string><string name="connection_requests_load_failed">Could not load requests</string><string name="connection_request_accepted">Friend request accepted</string><string name="connection_request_rejected">Friend request rejected</string><string name="connection_request_update_failed">Request update failed</string><string name="connection_request_cancelled">Friend request cancelled</string><string name="connection_cancel_failed">Could not cancel request</string><string name="connection_sharing_requests">Location sharing requests</string><string name="connection_location_requests_sent">Location requests sent</string><string name="connection_sharing_enabled">Location sharing enabled</string><string name="connection_location_cancelled">Location request cancelled</string><string name="connection_location_update_failed">Location request update failed</string><string name="connection_backend_unavailable">Backend unavailable: %1$s</string><string name="connection_sent_at">Sent %1$s</string>
+    <string name="connection_enter_code">Enter a friend’s invite code</string><string name="connection_share_invite">Share friend invite</string><string name="connection_pending_invitations_empty">No pending invitations yet.</string><string name="connection_sent_invitations_empty">You haven’t sent any invitations yet.</string><string name="connection_received_count">Received · %1$d</string><string name="connection_sent_count">Sent · %1$d</string><string name="connection_request_count">%1$d requests</string><string name="connection_accept">Accept</string><string name="connection_decline">Decline</string><string name="connection_cancel_request">Cancel Request</string><string name="connection_status_sent">Sent %1$s</string><string name="connection_recently">Recently</string><string name="connection_just_now">Just now</string><string name="connection_minutes_ago">%1$d minutes ago</string><string name="connection_hours_ago">%1$d hours ago</string><string name="connection_yesterday">Yesterday</string><string name="connection_days_ago">%1$d days ago</string>
+    <string name="share_connection_title">Share Connection</string><string name="share_connection_subtitle">Connect with someone you trust</string><string name="share_connection_make">Make a connection</string><string name="share_connection_description">Share your code or scan a friend’s code.</string><string name="share_connection_code">Your connection code</string><string name="share_connection_invitation">Share invitation</string><string name="share_connection_scan_qr">▦  Scan friend’s QR code</string><string name="share_connection_code_hint">Enter connection code</string><string name="qr_connect_description">Let your friend scan this to connect with you.</string><string name="qr_connection_code">Your connection QR code</string><string name="qr_share_button">♧  Share QR Code</string>
+    <!-- QR scanner -->
+    <string name="scan_qr_title">Scan QR Code</string><string name="scan_qr_subtitle">Connect with a friend</string><string name="scan_qr_ready">Ready to scan</string><string name="scan_qr_flashlight">Flashlight</string><string name="scan_qr_flashlight_on">Flashlight on</string><string name="scan_qr_flashlight_off">Flashlight off</string><string name="scan_qr_instruction">Scan your friend’s QR code</string><string name="scan_qr_frame_hint">Place the QR code inside the frame.\nIt will scan automatically.</string><string name="scan_qr_gallery">Gallery</string><string name="scan_qr_choose_gallery">Choose from gallery</string><string name="scan_qr_open_gallery">Open gallery</string><string name="scan_qr_not_readable">No readable QR code found in that image</string><string name="scan_qr_camera_permission">Camera permission is needed to scan QR codes</string><string name="connection_invite_share_text">Connect with me on GPS Tracker. My invite code is %1$s</string><string name="connection_share_friend_invite">Share friend invite</string>
+    <!-- Country picker -->
+    <string name="country_picker_title">Select country/region</string><string name="country_picker_subtitle">Choose a calling code</string><string name="country_picker_search_hint">Search country or code...</string>
+    <!-- Nearby -->
+    <string name="nearby_title">Nearby</string><string name="nearby_subtitle">Find the places you need, close by</string><string name="nearby_search">Search places or an address</string><string name="nearby_distances">Distances are measured from your location.</string><string name="nearby_clear_search">Clear search</string><string name="nearby_no_places">No places</string><string name="nearby_more">More</string><string name="nearby_category_coffee">Coffee</string><string name="nearby_category_food">Food</string><string name="nearby_category_gas">Gas</string><string name="nearby_coffee_near_you">Coffee near you</string><string name="nearby_category_near_you">%1$s near you</string><string name="nearby_category_accessibility">%1$s category</string><string name="nearby_walking_time">%1$d min walk</string>
+    <string name="area_search_results">Search results</string><string name="area_regions_count">%1$d regions</string><string name="area_results_count">%1$d results</string><string name="area_results_more">%1$d+ results</string><string name="area_result_one">1 result</string><string name="area_code_clipboard_label">Area code</string><string name="area_code_copied">Area code %1$s copied</string><string name="area_open_details">Open area code details</string><string name="area_no_codes">No area codes found</string><string name="area_no_regional_codes">No regional codes for %1$s</string><string name="area_codes_unavailable">Regional landline codes aren’t available for this country.</string><string name="area_no_results_for">No results for “%1$s”. Try another city or area code.</string><string name="area_choose_country">Choose a country or region</string><string name="area_search_country">Search country</string><string name="area_turn_on_location">Turn on location and try again</string><string name="area_finding_region">Finding your region…</string><string name="area_location_retry">Couldn’t get your location. Try again.</string><string name="area_location_permission_required">Location permission is required</string><string name="area_showing_codes_for">Showing area codes for %1$s</string><string name="area_region_not_identified">Couldn’t identify the region at your location</string><string name="area_location_feature_permission">Location permission is needed for this feature</string>
+    <!-- Nearby runtime states -->
+    <string name="nearby_using_recent_location">Using a recent location to find nearby matches.</string>
+    <string name="nearby_cached_refreshing">Cached · refreshing</string><string name="nearby_old_cache_refreshing">Older cache · refreshing</string><string name="nearby_finding_places">Finding places nearby…</string><string name="nearby_searching">Searching nearby…</string><string name="nearby_places_count">%1$d places nearby</string><string name="nearby_place_count_one">1 place nearby</string><string name="nearby_view_all">View all (%1$d)</string><string name="nearby_no_places_found">No places found</string><string name="nearby_no_category_matches">No nearby %1$s were found. Try another category.</string><string name="nearby_no_search_matches">No nearby matches for “%1$s”. Try another name or place type.</string><string name="nearby_try_category">Try another category</string><string name="nearby_refresh_failed">Refresh failed</string><string name="nearby_cached_results">Showing cached results. %1$s</string><string name="nearby_cached_refresh_failed">Cached · refresh failed</string><string name="nearby_no_maps">No maps app is available.</string><string name="nearby_location_needed">Location needed</string><string name="nearby_location_message">Allow location while using the app to find and sort places near you.</string><string name="nearby_try_again">Try again</string><string name="nearby_place_photo">Place photo</string><string name="nearby_directions">Directions</string><string name="nearby_directions_to">Directions to %1$s</string>
+    <!-- Zone screen -->
+    <string name="zone_title">Zone Alert</string><string name="zone_subtitle">Know when loved ones arrive or leave</string><string name="zone_status">Zone status</string><string name="zone_enable_location_nearby">Enable location to see zones near you</string><string name="zone_center_on_location">Center on my location</string><string name="zone_my_zones">My zones</string><string name="zone_count_zero_short">0 zones</string><string name="zone_place_address_error">Enter a place or address</string><string name="zone_name_error">Enter a zone name</string><string name="zone_location_not_found">Location not found. Try another search.</string><string name="zone_search_failed">Could not search this location. Check your connection and try again.</string><string name="zone_select_alert_type">Select Alert on Enter or Alert on Exit</string><string name="zone_choose_map_location">Choose a location on the map first.</string><string name="zone_saved">Zone saved</string><string name="zone_map_permission_message">Location permission is needed to center the map. You can also search for a place.</string><string name="zone_toggle_accessibility">Toggle zone alerts</string>
+    <!-- Traffic screen -->
+    <string name="traffic_title">Traffic Alert</string><string name="traffic_subtitle">Stay one step ahead on the road</string><string name="traffic_busy">Traffic is a little busy</string><string name="traffic_live_label">Live traffic · — km</string><string name="traffic_alert">Traffic alert</string><string name="traffic_center_map">Enable location to center the traffic map</string><string name="traffic_moderate">Moderate</string><string name="traffic_heavy">Heavy</string>
+    <string name="connection_background_sharing_message">Tracker Friends needs background location access so your approved friend can receive your live location while the app is closed.</string>
+    <!-- Notifications -->
+    <string name="notification_zone_alerts">Zone alerts</string><string name="notification_location_sharing">Location sharing</string><string name="notification_location_shared_title">Your location is being shared</string><string name="notification_zones_active">Zone alerts active</string><string name="notification_location_shared_text">Your live location is being shared with your accepted friends</string><string name="notification_watching_zones">Watching for friend arrivals and departures</string><string name="notification_arrived_at">Arrived at %1$s</string><string name="notification_left_zone">Left %1$s</string><string name="notification_entered_category">Entered %1$s · %2$s</string><string name="notification_exited_category">Exited %1$s · %2$s</string><string name="notification_safe_zone">safe zone</string><string name="notification_danger_zone">danger zone</string><string name="notification_friend_entered">%1$s entered %2$s</string><string name="notification_friend_left">%1$s left %2$s</string><string name="notification_entry_alert">%1$s · Entry alert</string><string name="notification_exit_alert">%1$s · Exit alert</string><string name="notification_your_friend">Your friend</string>
+    <!-- Live location runtime messages -->
+    <string name="live_friend_count_one">1 friend</string><string name="live_friend_count">%1$d friends</string>
+    <string name="live_location_permission_required">Location permission is required to show your position</string><string name="live_turn_on_location">Turn on device location to show your position</string><string name="live_accept_friend_before_sharing">Accept a friend request before sharing your location</string><string name="live_sharing_started">Your location is being shared with your friends</string><string name="live_background_title">Allow location all the time</string><string name="live_background_message">Tracker Friends needs background location access so your live location can keep sharing while the app is closed.</string><string name="live_permission_message">Live Location needs location access and device Location turned on to show and share your position.</string><string name="live_me">Me</string><string name="live_location_unavailable">Could not determine your current location</string><string name="live_loading_friends">Loading accepted friends…</string><string name="live_no_accepted_friends">No accepted friends yet. Accept a friend request to see them here.</string><string name="live_request_friend_location">Request location access from a friend to see them here.</string><string name="live_waiting_friends">Waiting for your friends to share their live location.</string><string name="live_waiting_for_friend">Waiting for %1$s to share a location</string><string name="live_request_from_friend">Request location access from %1$s first</string><string name="live_updated">Updated %1$s</string><string name="live_sharing_waiting">Sharing location · waiting for update</string><string name="live_sharing_off">Location sharing is off</string><string name="live_access_not_granted">Location access not granted</string><string name="live_android_device">Android device</string><string name="live_requested">Requested</string><string name="live_request">Request</string><string name="live_location_request_sent">Location request sent</string><string name="live_location_request_failed">Could not request location</string><string name="live_location_active">Location sharing is active</string><string name="live_share_message">My live location is being updated from GPS Tracker.</string><string name="live_share_location">Share location</string><string name="live_just_now">just now</string><string name="live_minute_ago">1 minute ago</string><string name="live_minutes_ago">%1$d minutes ago</string><string name="live_hour_ago">1 hour ago</string><string name="live_hours_ago">%1$d hours ago</string><string name="live_yesterday">yesterday</string><string name="live_days_ago">%1$d days ago</string>
 </resources>
 
 

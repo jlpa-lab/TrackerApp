@@ -31,6 +31,7 @@ import com.mobile.trackerapp.databinding.ActivityLanguageBinding
 import com.mobile.trackerapp.ui.onboarding.OnBoardingActivity
 import com.mobile.trackerapp.pref.AppSharedPreferencesApp
 import com.mobile.trackerapp.ui.BaseActivity
+import com.mobile.trackerapp.localization.LocaleManager
 import com.mobile.trackerapp.utils.Routes
 
 /** Handles language selection and the initial notification permission request. */
@@ -39,11 +40,19 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
     private lateinit var confirmButton: ImageView
     private var selectedRow: View? = null
     private var selectedRadio: RadioButton? = null
+    private var pendingLocale: String? = null
     private val fromSetting
         get() = intent.getBooleanExtra(AppConstants.KEY_SETTING, false)
     private val revealConfirmation = Runnable { confirmButton.visibility = View.VISIBLE }
 
     override fun getLayoutActivity(): Int = R.layout.activity_language
+
+    override fun requestWindow() {
+        // Keep the window preview the same color as the language screen while
+        // AppCompat recreates the activity for the committed locale change.
+        window.setBackgroundDrawableResource(R.color.screen_background)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // CHANGE: BaseActivity already inflated and attached this layout as mBinding.
@@ -56,6 +65,10 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
 
         confirmButton.setOnClickListener {
           //  FirebaseAnalytics.getInstance(this).logEvent("LanguageActivity_confirm", null)
+            val localeToApply = pendingLocale ?: LocaleManager.currentLanguage(this)
+            if (localeToApply != LocaleManager.currentLanguage(this)) {
+                LocaleManager.apply(this, localeToApply)
+            }
             if (fromSetting) {
                 Routes.startMainActivity(this)
             } else {
@@ -85,12 +98,22 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
         val languageList = findViewById<LinearLayout>(R.id.language_list)
         val inflater = LayoutInflater.from(this)
 
+        val currentLanguage = LocaleManager.currentLanguage(this)
+        pendingLocale = currentLanguage
         languages.forEach { language ->
             val row = inflater.inflate(R.layout.item_language_option, languageList, false)
             val labels = getString(language.labelRes).split("\n", limit = 2)
             row.findViewById<TextView>(R.id.language_native_name).text = labels.first()
             row.findViewById<TextView>(R.id.language_english_name).text = labels.getOrElse(1) { labels.first() }
             val radio = row.findViewById<RadioButton>(R.id.language_radio)
+
+            if (language.locale == currentLanguage) {
+                row.isSelected = true
+                radio.isChecked = true
+                selectedRow = row
+                selectedRadio = radio
+                confirmButton.visibility = View.VISIBLE
+            }
 
             row.setOnClickListener {
                 // Switch to the click-stage ad only during onboarding, never from Settings.
@@ -105,10 +128,10 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
                 handler.removeCallbacks(revealConfirmation)
                 confirmButton.visibility = View.INVISIBLE
                 // The confirmation tick follows the design's 1.5-second delay.
-                getSharedPreferences("app_preferences", MODE_PRIVATE).edit()
-                    .putString("selected_language", language.tag)
-                    .apply()
-                appSharedPref.languageCode = language.locale
+                // Do not apply the locale here. Applying it immediately causes
+                // AppCompat to recreate this activity and produces a visible
+                // flash before the user confirms with the Done button.
+                pendingLocale = language.locale
 //                FirebaseAnalytics.getInstance(this)
 //                    .logEvent("LanguageActivity_select_${language.tag}", null)
                 handler.postDelayed(revealConfirmation, CONFIRMATION_DELAY_MS)

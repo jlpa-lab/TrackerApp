@@ -205,34 +205,34 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
 
     private fun searchLocation() {
         val query = searchInput.text?.toString()?.trim().orEmpty()
-        if (query.isEmpty()) { searchInput.error = "Enter a place or address"; return }
+        if (query.isEmpty()) { searchInput.error = getString(R.string.zone_place_address_error); return }
         hideKeyboard()
         worker.execute {
             try {
                 @Suppress("DEPRECATION")
                 val result = Geocoder(this, Locale.getDefault()).getFromLocationName(query, 1)?.firstOrNull()
                 runOnUiThread {
-                    if (result == null) Toast.makeText(this, "Location not found. Try another search.", Toast.LENGTH_SHORT).show()
+                    if (result == null) Toast.makeText(this, R.string.zone_location_not_found, Toast.LENGTH_SHORT).show()
                     else {
                         val prettyAddress = result.getAddressLine(0) ?: query
                         setSelectedLocation(LatLng(result.latitude, result.longitude), prettyAddress)
                     }
                 }
             } catch (_: Exception) {
-                runOnUiThread { Toast.makeText(this, "Could not search this location. Check your connection and try again.", Toast.LENGTH_SHORT).show() }
+                runOnUiThread { Toast.makeText(this, R.string.zone_search_failed, Toast.LENGTH_SHORT).show() }
             }
         }
     }
 
     private fun saveZone() {
         val name = zoneName.text?.toString()?.trim().orEmpty()
-        if (name.isBlank()) { zoneName.error = "Enter a zone name"; return }
+        if (name.isBlank()) { zoneName.error = getString(R.string.zone_name_error); return }
         if (!enterCheck.isChecked && !exitCheck.isChecked) {
-            Toast.makeText(this, "Select Alert on Enter or Alert on Exit", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.zone_select_alert_type, Toast.LENGTH_SHORT).show()
             return
         }
         val point = selectedLocation
-        if (point == null) { Toast.makeText(this, "Choose a location on the map first.", Toast.LENGTH_SHORT).show(); return }
+        if (point == null) { Toast.makeText(this, R.string.zone_choose_map_location, Toast.LENGTH_SHORT).show(); return }
         val old = if (zoneId == NO_ZONE) null else ZoneStore.get(this).get(zoneId)
         val zone = ZoneRecord(
             id = old?.id ?: 0L,
@@ -250,7 +250,7 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
         worker.execute {
             ZoneStore.get(this).save(zone)
             runOnUiThread {
-                Toast.makeText(this, "Zone saved", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.zone_saved, Toast.LENGTH_SHORT).show()
                 RateAppManager.markZoneCreated()
                 setResult(Activity.RESULT_OK)
                 finish()
@@ -289,7 +289,7 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_LOCATION) {
             if (hasForegroundLocation()) { locationHint.visibility = android.view.View.GONE; moveToCurrentLocation() }
-            else { locationHint.visibility = android.view.View.VISIBLE; Toast.makeText(this, "Location permission is needed to center the map. You can also search for a place.", Toast.LENGTH_LONG).show() }
+            else { locationHint.visibility = android.view.View.VISIBLE; Toast.makeText(this, R.string.zone_map_permission_message, Toast.LENGTH_LONG).show() }
         }
     }
 

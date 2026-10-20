@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import com.mobile.trackerapp.R
 
 /** Compact wrap-content zone toggle matching the app's green pill control. */
 class ZoneToggleView @JvmOverloads constructor(
@@ -28,7 +29,7 @@ class ZoneToggleView @JvmOverloads constructor(
     init {
         isClickable = true
         isFocusable = true
-        contentDescription = "Toggle zone alerts"
+        contentDescription = context.getString(R.string.zone_toggle_accessibility)
         setOnClickListener {
             isChecked = !isChecked
             listener?.invoke(this, isChecked)

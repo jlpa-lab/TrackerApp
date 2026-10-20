@@ -21,12 +21,12 @@ class SettingsActivity : DashboardActivity() {
         }
         root.findViewById<android.view.View>(R.id.settings_rate).setOnClickListener {
             if (AppSharedPreferencesApp(this).isRate) {
-                android.widget.Toast.makeText(this, "Thanks for rating the app!", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(this, getString(R.string.settings_rating_thanks), android.widget.Toast.LENGTH_SHORT).show()
             } else {
                 startActivity(Intent(this, RateAppActivity::class.java))
             }
         }
-        root.addView(nav("Setting"), LinearLayout.LayoutParams(-1, wrap()))
+        root.addView(nav(getString(R.string.common_settings)), LinearLayout.LayoutParams(-1, wrap()))
         setContentView(root)
         AdsManager.showNativeAllAndPreload(this, R.layout.layout_native_ad_small)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))

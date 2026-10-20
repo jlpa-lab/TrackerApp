@@ -107,7 +107,7 @@
         android:gravity="center"
         android:includeFontPadding="false"
         android:padding="0dp"
-        android:text="Ad"
+        android:text="@string/ad_badge"
         android:textColor="#65717D"
         android:textSize="11dp" />
 </com.google.android.gms.ads.nativead.NativeAdView>

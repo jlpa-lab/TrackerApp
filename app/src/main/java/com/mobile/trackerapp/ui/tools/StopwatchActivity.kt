@@ -79,36 +79,36 @@ class StopwatchActivity : DashboardActivity() {
         if (!::elapsedText.isInitialized) return
         val elapsed = timer.elapsedMillis()
         elapsedText.text = formatTime(elapsed)
-        currentLapRowLabel.text = if (elapsed == 0L && timer.laps.isEmpty()) "Current lap · --" else "Current lap · ${String.format(Locale.ROOT, "%02d", timer.laps.size + 1)}"
+        currentLapRowLabel.text = getString(R.string.stopwatch_current_lap, if (elapsed == 0L && timer.laps.isEmpty()) "--" else String.format(Locale.ROOT, "%02d", timer.laps.size + 1))
         totalTimeText.text = formatTime(timer.currentLapMillis())
         val status = findViewWithTag<TextView>("status-label")
         val enabled = timer.isRunning || elapsed > 0L || timer.laps.isNotEmpty()
         if (timer.isRunning) {
-            stateText.text = "● Running"
+            stateText.setText(R.string.stopwatch_running)
             stateText.setTextColor(GREEN)
-            mainButton.text = "Ⅱ  Pause"
-            leftButton.text = "⚑  Lap"
+            mainButton.setText(R.string.stopwatch_pause)
+            leftButton.setText(R.string.stopwatch_lap)
             leftButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
             setButtonStyle(leftButton, true, false)
-            status?.text = "Timer is running"
+            status?.setText(R.string.stopwatch_running_status)
         } else {
-            stateText.text = if (elapsed == 0L) "Ready to start" else "Paused"
+            stateText.setText(if (elapsed == 0L) R.string.stopwatch_ready else R.string.stopwatch_paused)
             stateText.setTextColor(if (elapsed == 0L) MUTED else GREEN)
-            mainButton.text = if (elapsed == 0L) "▶  Start" else "▶  Resume"
+            mainButton.setText(if (elapsed == 0L) R.string.stopwatch_start else R.string.stopwatch_resume)
             if (enabled) {
-                leftButton.text = "↻  Reset"
+                leftButton.setText(R.string.stopwatch_reset)
                 leftButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
                 leftButton.gravity = android.view.Gravity.CENTER
                 leftButton.textAlignment = View.TEXT_ALIGNMENT_CENTER
             } else {
-                leftButton.text = "⚑  Lap"
+                leftButton.setText(R.string.stopwatch_lap)
                 leftButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
                 leftButton.textAlignment = View.TEXT_ALIGNMENT_CENTER
             }
             setButtonStyle(leftButton, enabled, false)
-            status?.text = if (elapsed == 0L) "Nothing to reset" else "Timer is paused"
+            status?.setText(if (elapsed == 0L) R.string.stopwatch_nothing_to_reset else R.string.stopwatch_paused_status)
         }
-        lapCountText.text = "${timer.laps.size} completed"
+        lapCountText.text = getString(R.string.stopwatch_completed, timer.laps.size)
     }
 
     private fun setButtonStyle(button: TextView, enabled: Boolean, primary: Boolean) {
@@ -132,8 +132,8 @@ class StopwatchActivity : DashboardActivity() {
                 setTextColor(GREEN)
                 background = rounded(Color.rgb(238, 250, 245), dp(56))
             }, LinearLayout.LayoutParams(dp(56), dp(56)))
-            lapList.addView(label("No laps yet", 13f, INK, true).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
-            lapList.addView(label("Tap Start to begin timing, then tap Lap to record your first split.", 11f, MUTED).apply {
+            lapList.addView(label(getString(R.string.stopwatch_no_laps), 13f, INK, true).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
+            lapList.addView(label(getString(R.string.stopwatch_empty_message), 11f, MUTED).apply {
                 gravity = Gravity.CENTER
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
             }, LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(12) })
@@ -142,9 +142,9 @@ class StopwatchActivity : DashboardActivity() {
         lapList.setPadding(dp(14), dp(14), dp(14), dp(14))
         lapList.gravity = Gravity.NO_GRAVITY
         val tableHeader = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        tableHeader.addView(label("LAP", 9f, MUTED, true), LinearLayout.LayoutParams(0, wrap(), 1f))
-        tableHeader.addView(label("LAP TIME", 9f, MUTED, true).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(0, wrap(), 1f))
-        tableHeader.addView(label("TOTAL", 9f, MUTED, true).apply { gravity = Gravity.END }, LinearLayout.LayoutParams(0, wrap(), 1f))
+        tableHeader.addView(label(getString(R.string.stopwatch_lap_header), 9f, MUTED, true), LinearLayout.LayoutParams(0, wrap(), 1f))
+        tableHeader.addView(label(getString(R.string.stopwatch_lap_time_header), 9f, MUTED, true).apply { gravity = Gravity.CENTER }, LinearLayout.LayoutParams(0, wrap(), 1f))
+        tableHeader.addView(label(getString(R.string.stopwatch_total_header), 9f, MUTED, true).apply { gravity = Gravity.END }, LinearLayout.LayoutParams(0, wrap(), 1f))
         lapList.addView(tableHeader, LinearLayout.LayoutParams(-1, wrap()).apply { bottomMargin = dp(8) })
         lapList.addView(View(this).apply { setBackgroundColor(Color.rgb(225, 233, 229)) }, LinearLayout.LayoutParams(-1, dp(1)))
         val fastest = timer.laps.minOf { it.splitMillis }
@@ -160,9 +160,9 @@ class StopwatchActivity : DashboardActivity() {
                 else -> INK
             }
             val lapLabel = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-            lapLabel.addView(label("Lap ${String.format(Locale.ROOT, "%02d", lap.number)}", 12f, INK, true))
-            if (lap.splitMillis == fastest) lapLabel.addView(label("Fastest", 10f, GREEN))
-            else if (lap.splitMillis == slowest && fastest != slowest) lapLabel.addView(label("Slowest", 10f, Color.rgb(210, 142, 15)))
+            lapLabel.addView(label(getString(R.string.stopwatch_lap_number, String.format(Locale.ROOT, "%02d", lap.number)), 12f, INK, true))
+            if (lap.splitMillis == fastest) lapLabel.addView(label(getString(R.string.stopwatch_fastest), 10f, GREEN))
+            else if (lap.splitMillis == slowest && fastest != slowest) lapLabel.addView(label(getString(R.string.stopwatch_slowest), 10f, Color.rgb(210, 142, 15)))
             row.addView(lapLabel, LinearLayout.LayoutParams(0, wrap(), 1f))
             row.addView(label(formatTime(lap.splitMillis), 11f, splitColor, true).apply { gravity = Gravity.CENTER; typeface = Typeface.MONOSPACE }, LinearLayout.LayoutParams(0, wrap(), 1f))
             row.addView(label(formatTime(lap.totalMillis), 10f, MUTED).apply { gravity = Gravity.END; typeface = Typeface.MONOSPACE }, LinearLayout.LayoutParams(0, wrap(), 1f))
@@ -179,7 +179,7 @@ class StopwatchActivity : DashboardActivity() {
     private fun updateClock() {
         if (!::timer.isInitialized || !::elapsedText.isInitialized) return
         elapsedText.text = formatTime(timer.elapsedMillis())
-        currentLapRowLabel.text = if (timer.elapsedMillis() == 0L && timer.laps.isEmpty()) "Current lap · --" else "Current lap · ${String.format(Locale.ROOT, "%02d", timer.laps.size + 1)}"
+        currentLapRowLabel.text = getString(R.string.stopwatch_current_lap, if (timer.elapsedMillis() == 0L && timer.laps.isEmpty()) "--" else String.format(Locale.ROOT, "%02d", timer.laps.size + 1))
         totalTimeText.text = formatTime(timer.currentLapMillis())
     }
 

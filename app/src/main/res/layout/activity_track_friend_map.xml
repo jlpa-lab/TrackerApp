@@ -29,7 +29,7 @@
                 android:id="@+id/live_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Track Friend"
+                android:text="@string/track_friend_title"
                 android:textColor="@color/home_text_dark"
                 android:textSize="22sp"
                 android:fontFamily="@font/inter_bold" />
@@ -38,7 +38,7 @@
                 android:id="@+id/live_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Your people, connected safely"
+                android:text="@string/track_friend_subtitle"
                 android:textColor="@color/home_text_subtitle"
                 android:fontFamily="@font/inter_regular"
                 android:textSize="13sp" />
@@ -76,7 +76,7 @@
                 android:id="@+id/map_layers_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="Map layers"
+                android:contentDescription="@string/track_friend_map_layers"
                 android:src="@drawable/ic_map_layer2" />
 
             <LinearLayout
@@ -95,7 +95,7 @@
                     android:paddingVertical="5dp"
                     android:paddingHorizontal="10dp"
                     android:gravity="center"
-                    android:text="Normal"
+                    android:text="@string/live_normal"
                     android:textSize="12sp"
                     android:textColor="@color/home_phone_locator_text"
                     android:fontFamily="@font/inter_bold" />
@@ -109,7 +109,7 @@
                     android:paddingVertical="5dp"
                     android:paddingHorizontal="10dp"
                     android:gravity="center"
-                    android:text="Satellite"
+                    android:text="@string/live_satellite"
                     android:textSize="12sp"
                     android:textColor="@color/home_phone_locator_text"
                     android:fontFamily="@font/inter_bold" />
@@ -123,7 +123,7 @@
                     android:paddingVertical="5dp"
                     android:paddingHorizontal="10dp"
                     android:gravity="center"
-                    android:text="Terrain"
+                    android:text="@string/live_terrain"
                     android:textSize="12sp"
                     android:textColor="@color/home_phone_locator_text"
                     android:fontFamily="@font/inter_bold"/>
@@ -137,7 +137,7 @@
                     android:gravity="center"
                     android:paddingVertical="5dp"
                     android:paddingHorizontal="10dp"
-                    android:text="Hybrid"
+                    android:text="@string/live_hybrid"
                     android:textSize="12sp"
                     android:textColor="@color/home_phone_locator_text"
                     android:fontFamily="@font/inter_bold"/>
@@ -169,14 +169,14 @@
                 android:id="@+id/map_focus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="Focus on map"
+                android:contentDescription="@string/common_focus_on_map"
                 android:src="@drawable/ic_location_focus_green" />
 
             <ImageView
                 android:id="@+id/friend_people_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="Friends"
+                android:contentDescription="@string/track_friend_friends"
                 android:gravity="center"
                 android:src="@drawable/ic_nav_connection" />
         </LinearLayout>
@@ -204,7 +204,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Friends"
+                    android:text="@string/track_friend_friends"
                     android:textColor="@color/home_phone_locator_text"
                     android:textSize="16sp"
                     android:fontFamily="@font/inter_bold" />
@@ -213,7 +213,7 @@
                     android:id="@+id/friend_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0 friends"
+                    android:text="@string/track_friend_count_zero"
                     android:textColor="@color/home_green_background"
                     android:textSize="12sp"
                     android:fontFamily="@font/inter_bold" />
@@ -230,7 +230,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="No accepted friends yet."
+                android:text="@string/track_friend_no_accepted"
                 android:textColor="@color/home_text_subtitle"
                 android:textSize="12sp" />
 
@@ -259,7 +259,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/inter_bold"
-                    android:text="Add friend"
+                    android:text="@string/track_friend_add"
                     android:textColor="@color/home_phone_locator_text"
                     android:textSize="13sp" />
 
@@ -296,7 +296,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/inter_bold"
-                    android:text="View received requests"
+                    android:text="@string/track_friend_received_requests"
                     android:textColor="@color/home_phone_locator_text"
                     android:textSize="13sp" />
 
@@ -333,7 +333,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/inter_bold"
-                    android:text="View sent requests"
+                    android:text="@string/track_friend_sent_requests"
                     android:textColor="@color/home_phone_locator_text"
                     android:textSize="13sp" />
 

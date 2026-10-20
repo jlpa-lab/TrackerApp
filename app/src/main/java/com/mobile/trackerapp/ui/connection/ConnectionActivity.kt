@@ -36,10 +36,10 @@ class ConnectionActivity : DashboardActivity() {
         when (requestCode) {
             LOCATION_PERMISSION_REQUEST -> {
                 if (results.any { it == PackageManager.PERMISSION_GRANTED }) attemptEnableSharing()
-                else disableSharing("Location permission is required for background sharing")
+                else disableSharing(getString(R.string.live_location_permission_required))
             }
             NOTIFICATION_PERMISSION_REQUEST -> {
-                if (!hasNotificationPermission()) Toast.makeText(this, "Enable notifications to see sharing status in the notification bar.", Toast.LENGTH_LONG).show()
+                if (!hasNotificationPermission()) Toast.makeText(this, R.string.connection_notifications_needed, Toast.LENGTH_LONG).show()
                 attemptEnableSharing()
             }
         }
@@ -52,7 +52,7 @@ class ConnectionActivity : DashboardActivity() {
         val contentBanner = binding.frBanner
         (content as? LinearLayout)?.removeView(contentBanner)
         root.addView(content, LinearLayout.LayoutParams(-1, 0, 1f))
-        root.addView(nav("Connection"), LinearLayout.LayoutParams(-1, wrap()))
+        root.addView(nav(getString(R.string.common_connection)), LinearLayout.LayoutParams(-1, wrap()))
         contentBanner?.let { root.addView(it, LinearLayout.LayoutParams(-1, wrap())) }
         setContentView(root)
         loadConnectionBanner()
@@ -66,7 +66,7 @@ class ConnectionActivity : DashboardActivity() {
         if (sharing.isChecked && !hasBackgroundLocation()) {
             prefs.edit().putBoolean("enabled", false).apply()
             sharing.isChecked = false
-            Toast.makeText(this, "Allow location all the time to continue sharing.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.connection_background_needed, Toast.LENGTH_LONG).show()
         }
         updateSharingSummary(sharing.isChecked)
         sharing.setOnCheckedChangeListener { _, enabled ->
@@ -88,7 +88,7 @@ class ConnectionActivity : DashboardActivity() {
         if (backgroundSettingsOpen) {
             backgroundSettingsOpen = false
             if (pendingSharingEnable && hasBackgroundLocation()) attemptEnableSharing()
-            else if (pendingSharingEnable) disableSharing("Allow location access all the time to use friend location sharing")
+            else if (pendingSharingEnable) disableSharing(getString(R.string.connection_background_access_required))
         }
         if (::backend.isInitialized) loadPendingCount()
     }
@@ -118,14 +118,14 @@ class ConnectionActivity : DashboardActivity() {
                 stopService(Intent(this@ConnectionActivity, LocationSharingService::class.java))
                 setSharingChecked(false)
                 updateSharingSummary(false)
-                Toast.makeText(this@ConnectionActivity, "Accept a friend request before sharing your location", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@ConnectionActivity, R.string.live_accept_friend_before_sharing, Toast.LENGTH_LONG).show()
                 return@launch
             }
             pendingSharingEnable = false
             getSharedPreferences("tracker_location", MODE_PRIVATE).edit().putBoolean("enabled", true).apply()
             setSharingChecked(true)
             updateSharingSummary(true)
-            Toast.makeText(this@ConnectionActivity, "Your location is being shared with your friends", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@ConnectionActivity, R.string.live_sharing_started, Toast.LENGTH_SHORT).show()
             RateAppManager.markConnectionAdded()
             ContextCompat.startForegroundService(this@ConnectionActivity, Intent(this@ConnectionActivity, LocationSharingService::class.java))
         }
@@ -148,16 +148,16 @@ class ConnectionActivity : DashboardActivity() {
         if (backgroundSettingsOpen) return
         backgroundSettingsOpen = true
         AlertDialog.Builder(this)
-            .setTitle("Allow location all the time")
-            .setMessage("Tracker Friends needs background location access so your approved friend can receive your live location while the app is closed.")
-            .setNegativeButton("Not now") { _, _ -> backgroundSettingsOpen = false; pendingSharingEnable = false }
-            .setPositiveButton("Open settings") { _, _ ->
+            .setTitle(R.string.live_background_title)
+            .setMessage(R.string.connection_background_sharing_message)
+            .setNegativeButton(R.string.common_not_now) { _, _ -> backgroundSettingsOpen = false; pendingSharingEnable = false }
+            .setPositiveButton(R.string.common_open_settings) { _, _ ->
                 startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
             }
             .show()
     }
 
-    private fun updateSharingSummary(enabled: Boolean) { binding.connectionLocationSummary.text = if (enabled) "Your location is being shared with your approved friends." else "Location sharing is off" }
+    private fun updateSharingSummary(enabled: Boolean) { binding.connectionLocationSummary.text = getString(if (enabled) R.string.connection_location_shared_summary else R.string.connection_sharing_off) }
 
     private fun setSharingChecked(checked: Boolean) {
         suppressSharingChange = true

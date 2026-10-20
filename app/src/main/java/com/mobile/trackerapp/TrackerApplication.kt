@@ -5,6 +5,7 @@ import com.mobile.trackerapp.ui.welcome.WelcomeActivity
 import com.mobile.trackerapp.ui.language.LanguageActivity
 import com.mobile.trackerapp.ui.uninstall.ConfirmUninstallActivity
 import com.mobile.trackerapp.ui.uninstall.ReasonActivity
+import com.mobile.trackerapp.localization.LocaleManager
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -44,6 +45,7 @@ class TrackerApplication : AdsMultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        LocaleManager.initialize(this)
         ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycleObserver())
         registerActivityLifecycleCallbacks(AppActivityLifecycleCallbacks())
         //FirebaseApp.initializeApp(this)

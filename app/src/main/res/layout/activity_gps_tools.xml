@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
-            android:contentDescription="Back"
+            android:contentDescription="@string/common_back"
             android:focusable="true"
             android:paddingEnd="8dp"
             android:src="@drawable/ic_back_chevron" />
@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_bold"
-                android:text="GPS Tools"
+                android:text="@string/gps_tools_title"
                 android:textColor="@color/home_phone_locator_text"
                 android:textSize="22sp" />
 
@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_regular"
-                android:text="Your everyday navigation toolkit"
+                android:text="@string/gps_tools_subtitle"
                 android:textColor="@color/home_text_subtitle"
                 android:textSize="13sp" />
         </LinearLayout>

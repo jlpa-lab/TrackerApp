@@ -34,7 +34,7 @@
                 android:id="@+id/live_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Live Location"
+                android:text="@string/live_location_title"
                 android:textColor="@color/home_text_dark"
                 android:textSize="22sp"
                 android:fontFamily="@font/inter_bold" />
@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Stay close, wherever you are"
+                android:text="@string/live_location_subtitle"
                 android:textColor="@color/home_text_subtitle"
                 android:fontFamily="@font/inter_regular"
                 android:textSize="13sp" />
@@ -73,7 +73,7 @@
                 android:id="@+id/map_layers_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="Map layers"
+            android:contentDescription="@string/live_map_layers"
                 android:src="@drawable/ic_map_layer2" />
 
             <LinearLayout
@@ -91,7 +91,7 @@
                     android:background="@drawable/bg_map_pill"
                     android:paddingVertical="5dp"
                     android:paddingHorizontal="10dp"
-                    android:text="Normal"
+                    android:text="@string/live_normal"
                     android:textSize="12sp"
                     android:textColor="@color/home_phone_locator_text"
                     android:fontFamily="@font/inter_bold" />
@@ -104,7 +104,7 @@
                     android:background="@drawable/bg_map_pill"
                     android:paddingVertical="5dp"
                     android:paddingHorizontal="10dp"
-                    android:text="Satellite"
+                    android:text="@string/live_satellite"
                     android:textSize="12sp"
                     android:textColor="@color/home_phone_locator_text"
                     android:fontFamily="@font/inter_bold" />
@@ -117,7 +117,7 @@
                     android:background="@drawable/bg_map_pill"
                     android:paddingVertical="5dp"
                     android:paddingHorizontal="10dp"
-                    android:text="Terrain"
+                    android:text="@string/live_terrain"
                     android:textSize="12sp"
                     android:textColor="@color/home_phone_locator_text"
                     android:fontFamily="@font/inter_bold" />
@@ -130,7 +130,7 @@
                     android:background="@drawable/bg_map_pill"
                     android:paddingVertical="5dp"
                     android:paddingHorizontal="10dp"
-                    android:text="Hybrid"
+                    android:text="@string/live_hybrid"
                     android:textSize="12sp"
                     android:textColor="@color/home_phone_locator_text"
                     android:fontFamily="@font/inter_bold" />
@@ -149,7 +149,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|bottom"
-                android:contentDescription="Friend requests"
+                android:contentDescription="@string/live_friend_requests"
                 android:src="@drawable/ic_nav_connection"
                 android:visibility="gone" />
 
@@ -172,7 +172,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:contentDescription="Focus on my location"
+                android:contentDescription="@string/common_focus_on_my_location"
                 android:src="@drawable/ic_location_focus_green" />
 
         </LinearLayout>
@@ -193,7 +193,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="8dp"
-            android:text="Waiting for your location…"
+            android:text="@string/live_waiting_location"
             android:textColor="@color/home_text_subtitle"
             android:textSize="12sp" />
 
@@ -216,7 +216,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:fontFamily="@font/inter_bold"
-                android:text="Share Location Address"
+            android:text="@string/live_share_address"
                 android:textColor="@color/white"
                 android:textSize="15sp" />
         </LinearLayout>

@@ -127,7 +127,7 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
         setHoldAppearance()
         currentReading = Reading(0f, 0f)
         renderReading(currentReading)
-        android.widget.Toast.makeText(this, "Calibrated to current position", android.widget.Toast.LENGTH_SHORT).show()
+        android.widget.Toast.makeText(this, getString(R.string.level_calibrated), android.widget.Toast.LENGTH_SHORT).show()
     }
 
     override fun onResume() {
@@ -164,14 +164,14 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
         rollValue.text = String.format(Locale.getDefault(), "%.1f°", reading.y)
         instrument.reading = reading
         instrument.isLevel = abs(reading.x) < LEVEL_THRESHOLD && abs(reading.y) < LEVEL_THRESHOLD
-        modeTitle.text = if (instrument.isLevel) mode.instruction else "${mode.title} needs adjustment"
+        modeTitle.text = if (instrument.isLevel) mode.instruction else getString(R.string.level_needs_adjustment, mode.title)
         instrument.mode = mode
         instrument.invalidate()
     }
 
     private fun setHoldAppearance() {
         val isHeld = heldReading != null
-        holdButtonLabel.text = if (isHeld) "Resume reading" else "Hold reading"
+        holdButtonLabel.setText(if (isHeld) R.string.level_resume_reading else R.string.level_hold)
         holdButtonIcon.setImageResource(if (isHeld) R.drawable.ic_level_resume else R.drawable.ic_level_lock)
     }
 

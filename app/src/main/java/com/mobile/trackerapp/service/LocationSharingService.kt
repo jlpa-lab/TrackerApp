@@ -34,11 +34,11 @@ class LocationSharingService : Service() {
         if (sharingEnabled) startSharingUpdates()
     }
     private fun batteryPercentage(): Float = registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))?.let { it.getIntExtra("level", 0) * 100f / it.getIntExtra("scale", 100).coerceAtLeast(1) } ?: 0f
-    private fun createChannel() { getSystemService(NotificationManager::class.java).createNotificationChannel(NotificationChannel(CHANNEL, "Location sharing", NotificationManager.IMPORTANCE_LOW)) }
+    private fun createChannel() { getSystemService(NotificationManager::class.java).createNotificationChannel(NotificationChannel(CHANNEL, getString(R.string.notification_location_sharing), NotificationManager.IMPORTANCE_LOW)) }
     private fun notification(sharing: Boolean): Notification = NotificationCompat.Builder(this, CHANNEL)
         .setSmallIcon(R.mipmap.ic_launcher)
-        .setContentTitle(if (sharing) "Your location is being shared" else "Zone alerts active")
-        .setContentText(if (sharing) "Your live location is being shared with your accepted friends" else "Watching for friend arrivals and departures")
+        .setContentTitle(getString(if (sharing) R.string.notification_location_shared_title else R.string.notification_zones_active))
+        .setContentText(getString(if (sharing) R.string.notification_location_shared_text else R.string.notification_watching_zones))
         .setOngoing(true)
         .build()
     private fun startSharingUpdates() {

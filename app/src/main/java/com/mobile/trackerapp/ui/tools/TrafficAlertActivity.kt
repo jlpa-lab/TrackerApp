@@ -234,10 +234,10 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
         AlertDialog.Builder(this)
-            .setTitle("Location access needed")
-            .setMessage("Traffic Alert needs location access and device Location turned on to show live traffic around you.")
-            .setNegativeButton("Not now", null)
-            .setPositiveButton(if (canRetry) "Allow" else "Open settings") { _, _ ->
+            .setTitle(getString(R.string.traffic_location_access_needed))
+            .setMessage(getString(R.string.traffic_permission_message))
+            .setNegativeButton(R.string.common_not_now, null)
+            .setPositiveButton(if (canRetry) R.string.common_allow else R.string.common_open_settings) { _, _ ->
                 if (canRetry) {
                     requestLocationAccess()
                 } else {
@@ -264,15 +264,15 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
         val currentMap = map
         val locationReady = currentMap != null && lastLocation != null && locationUpdatesActive
         if (!locationReady) {
-            statusTitle.text = if (!hasLocationPermission()) "Location is needed for live traffic" else "Waiting for live traffic"
-            statusDetail.text = if (!hasLocationPermission()) "Allow location access to see conditions near you" else "Centering traffic around your location"
-            liveTrafficLabel.text = "Traffic location pending"
+            statusTitle.setText(if (!hasLocationPermission()) R.string.traffic_location_needed else R.string.traffic_waiting)
+            statusDetail.setText(if (!hasLocationPermission()) R.string.traffic_allow_location else R.string.traffic_centering)
+            liveTrafficLabel.setText(R.string.traffic_location_pending)
             return
         }
         val radiusKm = visibleTrafficRadiusKm(currentMap!!)
-        statusTitle.text = "Live traffic is available"
-        statusDetail.text = "Live conditions within $radiusKm km of you"
-        liveTrafficLabel.text = "Live traffic · $radiusKm km"
+        statusTitle.setText(R.string.traffic_available)
+        statusDetail.text = getString(R.string.traffic_conditions_within, radiusKm)
+        liveTrafficLabel.text = getString(R.string.traffic_live_radius, radiusKm)
     }
 
     private fun visibleTrafficRadiusKm(currentMap: GoogleMap): Int {

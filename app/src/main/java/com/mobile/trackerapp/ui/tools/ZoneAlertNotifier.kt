@@ -22,8 +22,8 @@ object ZoneAlertNotifier {
         val zone: ZoneRecord,
         val entering: Boolean
     ) {
-        val title: String get() = if (entering) "$friendName entered ${zone.name}" else "$friendName left ${zone.name}"
-        val message: String get() = if (entering) "${zone.name} · Entry alert" else "${zone.name} · Exit alert"
+        fun title(context: Context): String = context.getString(if (entering) R.string.notification_friend_entered else R.string.notification_friend_left, friendName, zone.name)
+        fun message(context: Context): String = context.getString(if (entering) R.string.notification_entry_alert else R.string.notification_exit_alert, zone.name)
     }
 
     fun processFriendLocation(context: Context, payload: JSONObject): Event? {
@@ -35,7 +35,7 @@ object ZoneAlertNotifier {
         val prefs = context.applicationContext.getSharedPreferences(PRESENCE_PREFS, Context.MODE_PRIVATE)
         val friendName = payload.optString("device_model").trim()
             .ifBlank { payload.optString("name").trim() }
-            .ifBlank { "Your friend" }
+            .ifBlank { context.getString(R.string.notification_your_friend) }
         for (zone in ZoneStore.get(context).all()) {
             if (!zone.enabled || (!zone.alertOnEnter && !zone.alertOnExit)) continue
             val distance = FloatArray(1)
@@ -52,7 +52,7 @@ object ZoneAlertNotifier {
             val event = Event(friendName, zone, inside)
             if ((inside && zone.alertOnEnter) || (!inside && zone.alertOnExit)) {
                 prefs.edit()
-                    .putString(LAST_EVENT_TEXT, "${event.title} · ${event.message}")
+                    .putString(LAST_EVENT_TEXT, "${event.title(context)} · ${event.message(context)}")
                     .putLong(LAST_EVENT_TIME, System.currentTimeMillis())
                     .apply()
                 postNotification(context, event, friendId)
@@ -66,7 +66,7 @@ object ZoneAlertNotifier {
         if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
         if (Build.VERSION.SDK_INT >= 26) {
-            manager.createNotificationChannel(NotificationChannel(CHANNEL_ID, "Zone alerts", NotificationManager.IMPORTANCE_DEFAULT))
+            manager.createNotificationChannel(NotificationChannel(CHANNEL_ID, context.getString(R.string.notification_zone_alerts), NotificationManager.IMPORTANCE_DEFAULT))
         }
         val notificationId = (event.zone.id xor friendId.hashCode().toLong()).toInt()
         val pendingIntent = PendingIntent.getActivity(
@@ -77,8 +77,8 @@ object ZoneAlertNotifier {
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_location_pin_white)
             .setColor(if (event.zone.safe) Color.rgb(0, 164, 76) else Color.rgb(229, 74, 70))
-            .setContentTitle(event.title)
-            .setContentText(event.message)
+            .setContentTitle(event.title(context))
+            .setContentText(event.message(context))
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()

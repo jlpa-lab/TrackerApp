@@ -91,8 +91,8 @@ class TrackFriendRequestsActivity : DashboardActivity() {
         findViewById<TextView>(R.id.my_invite_code)?.text = "------"
         localDb = LocalTrackerDb(this)
         backend = TrackerBackendClient(this)
-        findViewById<TextView>(R.id.friend_received).text = "Received"
-        findViewById<TextView>(R.id.friend_sent).text = "Sent"
+        findViewById<TextView>(R.id.friend_received).setText(R.string.friend_received)
+        findViewById<TextView>(R.id.friend_sent).setText(R.string.friend_sent)
         myInviteCode = localDb.read("invite_code").orEmpty()
         if (myInviteCode.isNotBlank()) findViewById<TextView>(R.id.my_invite_code).text = myInviteCode
         else startCodeWave(findViewById(R.id.my_invite_code))
@@ -108,7 +108,7 @@ class TrackFriendRequestsActivity : DashboardActivity() {
                 backendReady = true
                 loadReceivedRequests()
                 loadSentRequests()
-            }.onFailure { Toast.makeText(this@TrackFriendRequestsActivity, "Backend unavailable: ${it.message}", Toast.LENGTH_LONG).show() }
+            }.onFailure { Toast.makeText(this@TrackFriendRequestsActivity, getString(R.string.connection_backend_unavailable, it.message.orEmpty()), Toast.LENGTH_LONG).show() }
         }
         findViewById<View>(R.id.friend_back).setOnClickListener { finish() }
         findViewById<View>(R.id.friend_add).setOnClickListener { showPanel(R.id.friend_add) }
@@ -149,7 +149,7 @@ class TrackFriendRequestsActivity : DashboardActivity() {
 
     private fun submitInviteCode() {
         if (!backendReady) {
-            Toast.makeText(this, "Connecting securely, please try again in a moment.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.connection_secure_retry, Toast.LENGTH_SHORT).show()
             return
         }
         val entered = findViewById<EditText>(R.id.friend_code_input).text.toString().trim().uppercase()
@@ -158,17 +158,17 @@ class TrackFriendRequestsActivity : DashboardActivity() {
             return
         }
         if (entered == myInviteCode) {
-            Toast.makeText(this, "That is your own invite code", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.connection_own_code, Toast.LENGTH_SHORT).show()
             return
         }
         CoroutineScope(Dispatchers.Main).launch {
             runCatching { backend.sendFriendRequest(entered) }
                 .onSuccess {
-                    Toast.makeText(this@TrackFriendRequestsActivity, "Friend request sent", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@TrackFriendRequestsActivity, R.string.connection_request_sent, Toast.LENGTH_SHORT).show()
                     showPanel(R.id.friend_sent)
                     loadSentRequests()
                 }
-                .onFailure { Toast.makeText(this@TrackFriendRequestsActivity, it.message ?: "Request failed", Toast.LENGTH_LONG).show() }
+                .onFailure { Toast.makeText(this@TrackFriendRequestsActivity, it.message ?: getString(R.string.connection_request_failed), Toast.LENGTH_LONG).show() }
         }
     }
 
@@ -200,8 +200,8 @@ class TrackFriendRequestsActivity : DashboardActivity() {
                     }
                 }
                 val requestCount = pendingRequests.size
-                findViewById<TextView>(R.id.friend_received).text = "Received · $requestCount"
-                findViewById<TextView>(R.id.received_request_count).text = "$requestCount requests"
+                findViewById<TextView>(R.id.friend_received).text = getString(R.string.connection_received_count, requestCount)
+                findViewById<TextView>(R.id.received_request_count).text = getString(R.string.connection_request_count, requestCount)
                 if (pendingRequests.isEmpty()) {
                     list.addView(emptyRequestMessage("No pending invitations yet."))
                 } else for ((i, request) in pendingRequests.withIndex()) {
@@ -219,7 +219,7 @@ class TrackFriendRequestsActivity : DashboardActivity() {
                     ), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = dp(if (i == 0) 12 else 10) })
                 }
                 appendLocationRequests(list, incoming = true)
-            }.onFailure { Toast.makeText(this@TrackFriendRequestsActivity, it.message ?: "Could not load requests", Toast.LENGTH_LONG).show() }
+            }.onFailure { Toast.makeText(this@TrackFriendRequestsActivity, it.message ?: getString(R.string.connection_requests_load_failed), Toast.LENGTH_LONG).show() }
         }
     }
 
@@ -227,10 +227,10 @@ class TrackFriendRequestsActivity : DashboardActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             runCatching { backend.decideRequest(id, action) }
                 .onSuccess {
-                    Toast.makeText(this@TrackFriendRequestsActivity, if (action == "accept") "Friend request accepted" else "Friend request rejected", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@TrackFriendRequestsActivity, if (action == "accept") R.string.connection_request_accepted else R.string.connection_request_rejected, Toast.LENGTH_SHORT).show()
                     loadReceivedRequests()
                 }
-                .onFailure { Toast.makeText(this@TrackFriendRequestsActivity, it.message ?: "Request update failed", Toast.LENGTH_LONG).show() }
+                .onFailure { Toast.makeText(this@TrackFriendRequestsActivity, it.message ?: getString(R.string.connection_request_update_failed), Toast.LENGTH_LONG).show() }
         }
     }
 
@@ -251,8 +251,8 @@ class TrackFriendRequestsActivity : DashboardActivity() {
                     }
                 }
                 val requestCount = pendingRequests.size
-                findViewById<TextView>(R.id.friend_sent).text = "Sent · $requestCount"
-                findViewById<TextView>(R.id.sent_request_count).text = "$requestCount requests"
+                findViewById<TextView>(R.id.friend_sent).text = getString(R.string.connection_sent_count, requestCount)
+                findViewById<TextView>(R.id.sent_request_count).text = getString(R.string.connection_request_count, requestCount)
                 val list = findViewById<LinearLayout>(R.id.sent_request_list)
                 list.removeAllViews()
                 if (pendingRequests.isEmpty()) {
@@ -271,7 +271,7 @@ class TrackFriendRequestsActivity : DashboardActivity() {
                     ), LinearLayout.LayoutParams(-1, wrap()).apply { topMargin = if (i == 0) dp(12) else dp(10) })
                 }
                 appendLocationRequests(list, incoming = false)
-            }.onFailure { Toast.makeText(this@TrackFriendRequestsActivity, it.message ?: "Could not load sent requests", Toast.LENGTH_LONG).show() }
+            }.onFailure { Toast.makeText(this@TrackFriendRequestsActivity, it.message ?: getString(R.string.connection_requests_load_failed), Toast.LENGTH_LONG).show() }
         }
     }
 
@@ -288,10 +288,10 @@ class TrackFriendRequestsActivity : DashboardActivity() {
                     orientation = LinearLayout.HORIZONTAL
                 }
                 actions.addView(
-                    actionButton("Accept", true) { decideRequest(requestId, "accept") },
+                    actionButton(getString(R.string.connection_accept), true) { decideRequest(requestId, "accept") },
                     LinearLayout.LayoutParams(0, dp(32), 1f)
                 )
-                actions.addView(actionButton("Decline", false) {
+                actions.addView(actionButton(getString(R.string.connection_decline), false) {
                     decideRequest(
                         requestId,
                         "reject"
@@ -331,7 +331,7 @@ class TrackFriendRequestsActivity : DashboardActivity() {
             }, LinearLayout.LayoutParams(0, wrap(), 1f))
             if (status == "pending") {
                 bottom.addView(
-                    actionButton("Cancel Request", false) {
+                    actionButton(getString(R.string.connection_cancel_request), false) {
                         cancelRequest(requestId)
                     }.apply {
                         textSize = 12f
@@ -413,10 +413,10 @@ class TrackFriendRequestsActivity : DashboardActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             runCatching { backend.cancelFriendRequest(id) }
                 .onSuccess {
-                    Toast.makeText(this@TrackFriendRequestsActivity, "Friend request cancelled", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@TrackFriendRequestsActivity, R.string.connection_request_cancelled, Toast.LENGTH_SHORT).show()
                     loadSentRequests()
                 }
-                .onFailure { Toast.makeText(this@TrackFriendRequestsActivity, it.message ?: "Could not cancel request", Toast.LENGTH_LONG).show() }
+                .onFailure { Toast.makeText(this@TrackFriendRequestsActivity, it.message ?: getString(R.string.connection_cancel_failed), Toast.LENGTH_LONG).show() }
         }
     }
 
@@ -453,15 +453,15 @@ class TrackFriendRequestsActivity : DashboardActivity() {
             background = getDrawable(R.drawable.bg_friend_request_item)
             val displayName = friendName.ifBlank { friendId }
             addView(identityRow(displayName, fallbackHandle(displayName), relativeTime(request.opt("created_at"))))
-            addView(actionButton(if (incoming) "Share location" else "Cancel request", incoming) {
+            addView(actionButton(if (incoming) getString(R.string.common_share) else getString(R.string.connection_cancel_request), incoming) {
                 CoroutineScope(Dispatchers.Main).launch {
                     runCatching {
                         backend.decideLocationRequest(request.optString("id"), if (incoming) "accept" else "cancel")
                     }.onSuccess {
-                        Toast.makeText(this@TrackFriendRequestsActivity, if (incoming) "Location sharing enabled" else "Location request cancelled", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@TrackFriendRequestsActivity, if (incoming) R.string.connection_sharing_enabled else R.string.connection_location_cancelled, Toast.LENGTH_SHORT).show()
                         if (incoming) loadReceivedRequests() else loadSentRequests()
                     }.onFailure {
-                        Toast.makeText(this@TrackFriendRequestsActivity, it.message ?: "Location request update failed", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@TrackFriendRequestsActivity, it.message ?: getString(R.string.connection_location_update_failed), Toast.LENGTH_LONG).show()
                     }
                 }
             }, LinearLayout.LayoutParams(-1, dp(44)).apply { topMargin = dp(10) })

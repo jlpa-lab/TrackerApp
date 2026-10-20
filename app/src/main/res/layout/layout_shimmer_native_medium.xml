@@ -46,7 +46,7 @@
             android:background="@drawable/bg_ad_icon"
             android:paddingHorizontal="5dp"
             android:paddingVertical="2dp"
-            android:text="Ad"
+            android:text="@string/ad_badge"
             android:textColor="#ffffff"
             android:textSize="11dp"
             app:layout_constraintStart_toEndOf="@id/ad_app_icon"

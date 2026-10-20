@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Traffic Alert"
+        android:text="@string/home_traffic_alert"
         android:textColor="@color/home_phone_locator_text"
         android:fontFamily="@font/inter_medium"
         android:textSize="12sp" />
