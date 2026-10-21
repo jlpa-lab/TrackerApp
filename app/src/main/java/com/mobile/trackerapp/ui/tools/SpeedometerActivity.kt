@@ -21,7 +21,6 @@ import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.ScrollView
 import android.widget.TextView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.AdRemoteConfig
@@ -30,6 +29,7 @@ import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityScanQrBinding
 import com.mobile.trackerapp.databinding.ActivitySpeedometerBinding
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.permission.LocationPermissionFlow
 import com.mobile.trackerapp.ui.rating.RateAppManager
 import java.util.Locale
 import kotlin.math.cos
@@ -72,8 +72,16 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
         }
     }
     private lateinit var binding: ActivitySpeedometerBinding
+    private val locationPermissionFlow by lazy {
+        LocationPermissionFlow(
+            activity = this,
+            onGranted = { startGpsUpdates() },
+            onDenied = { if (::status.isInitialized) status.setText(R.string.speed_location_permission_needed) }
+        )
+    }
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        locationPermissionFlow
         window.statusBarColor = android.graphics.Color.rgb(246, 251, 248)
         window.navigationBarColor = android.graphics.Color.rgb(246, 251, 248)
         @Suppress("DEPRECATION")
@@ -116,7 +124,7 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
         unit.setOnClickListener { showUnitMenu(unit) }; resetButton.setOnClickListener { resetTrip() }; startButton.setOnClickListener { toggleTrip() }
         updateTripLabels()
         updateStats()
-        if (!hasLocationPermission()) requestLocationPermission()
+        if (!hasLocationPermission()) locationPermissionFlow.request()
     }
 
     private fun statColumn(parent: LinearLayout, title: String): TextView {
@@ -258,29 +266,9 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
 
-    private fun requestLocationPermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ),
-            LOCATION_PERMISSION_REQUEST
-        )
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST && grantResults.any { it == PackageManager.PERMISSION_GRANTED }) startGpsUpdates()
-        else status.setText(R.string.speed_location_permission_needed)
-    }
-
     override fun onResume() {
         super.onResume()
+        locationPermissionFlow.onHostResume()
         if (hasLocationPermission()) startGpsUpdates()
     }
 
@@ -487,6 +475,5 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
     }
 
     companion object {
-        private const val LOCATION_PERMISSION_REQUEST = 61
     }
 }

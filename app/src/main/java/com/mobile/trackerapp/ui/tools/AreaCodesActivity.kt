@@ -31,7 +31,6 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -45,6 +44,7 @@ import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityAreaCodesBinding
 import com.mobile.trackerapp.databinding.ActivityLevelMeterBinding
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.permission.LocationPermissionFlow
 import com.mobile.trackerapp.ui.rating.RateAppManager
 import java.io.File
 import java.io.FileOutputStream
@@ -80,6 +80,18 @@ class AreaCodesActivity : DashboardActivity() {
     private var loading = true
     private var locationListener: LocationListener? = null
     private var countryDialog: AlertDialog? = null
+    private val locationPermissionFlow by lazy {
+        LocationPermissionFlow(
+            activity = this,
+            onGranted = { useMyLocation() },
+            onDenied = {
+                if (::locationButton.isInitialized) {
+                    locationButton.setText(R.string.common_use_my_location)
+                    locationButton.setTextColor(green)
+                }
+            }
+        )
+    }
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -93,6 +105,7 @@ class AreaCodesActivity : DashboardActivity() {
         selectedCountry = detectDefaultCountry()
         binding = ActivityAreaCodesBinding.inflate(layoutInflater)
         setContentView(binding.root); binding.areaBack.setOnClickListener { finish() }
+        locationPermissionFlow
         loadAreaCodeBanner()
         queryInput = binding.areaQuery; resultHost = binding.areaResults; countLabel = binding.areaCount
         sectionTitle = binding.areaSectionTitle; locationButton = binding.areaLocation; locationButtonContainer = binding.areaLocationContainer
@@ -388,7 +401,7 @@ class AreaCodesActivity : DashboardActivity() {
 
     private fun useMyLocation() {
         if (!hasLocationPermission()) {
-            ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS, LOCATION_REQUEST)
+            locationPermissionFlow.request()
             return
         }
         val last = runCatching {
@@ -463,10 +476,9 @@ class AreaCodesActivity : DashboardActivity() {
         ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_REQUEST && grantResults.any { it == PackageManager.PERMISSION_GRANTED }) useMyLocation()
-        else if (requestCode == LOCATION_REQUEST) Toast.makeText(this, R.string.area_location_feature_permission, Toast.LENGTH_SHORT).show()
+    override fun onResume() {
+        super.onResume()
+        locationPermissionFlow.onHostResume()
     }
 
     private fun detectDefaultCountry(): AreaCountry {
@@ -523,7 +535,6 @@ class AreaCodesActivity : DashboardActivity() {
     private data class AreaCodeEntry(val code: String, val city: String, val detail: String)
 
     companion object {
-        private const val LOCATION_REQUEST = 82
         private const val LOCATION_TIMEOUT_MS = 12_000L
         private const val SEARCH_DEBOUNCE_MS = 120L
         private const val MAX_RENDERED_RESULTS = 40

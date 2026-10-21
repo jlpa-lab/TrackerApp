@@ -3,7 +3,7 @@ package com.mobile.trackerapp.network
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
-import com.mobile.trackerapp.BuildConfig
+import com.mobile.trackerapp.ads.RemoteConfigUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -22,7 +22,7 @@ class TrackerBackendClient(context: Context) {
     private val appId = "phone-tracker-0012"
     private suspend fun call(path: String, method: String, body: JSONObject? = null, retryAuth: Boolean = true): JSONObject {
         val response = withContext(Dispatchers.IO) {
-            val connection = (URL(BuildConfig.TRACKER_BACKEND_URL.trimEnd('/') + path).openConnection() as HttpURLConnection).apply {
+            val connection = (URL(RemoteConfigUtils.getBackendBaseUrl().trimEnd('/') + path).openConnection() as HttpURLConnection).apply {
                 requestMethod = method; connectTimeout = 10_000; readTimeout = 10_000
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("X-Device-ID", deviceId); setRequestProperty("X-App-ID", appId)

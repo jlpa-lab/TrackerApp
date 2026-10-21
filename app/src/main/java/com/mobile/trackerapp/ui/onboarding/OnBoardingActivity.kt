@@ -59,9 +59,14 @@ class OnBoardingActivity : BaseActivity<ActivityOnboardingBinding>() {
 
     private fun registerShortcutsAfterOnboarding() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return
-        // Remote Config is intentionally bypassed for now. Register all three
-        // shortcuts immediately after onboarding, matching the reference timing.
-        ShortcutManager.initShortCut(this@OnBoardingActivity)
+        // Keep shortcut availability behind the same UA/Remote Config gate as
+        // the reference ad flow.
+        if (ERainAd.getInstance().getShouldDisplayWidgetUninstall(
+                RemoteConfigUtils.getOnEnableUninstallWidget()
+            )
+        ) {
+            ShortcutManager.initShortCut(this@OnBoardingActivity)
+        }
     }
 
     override fun observerData() {

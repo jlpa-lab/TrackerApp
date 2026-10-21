@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.bindNativeAllAd
 import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.RemoteConfigUtils
 import com.mobile.trackerapp.ui.DashboardActivity
 import com.mobile.trackerapp.ui.language.LanguageActivity
 import com.mobile.trackerapp.ui.rating.RateAppActivity
@@ -32,10 +33,10 @@ class SettingsActivity : DashboardActivity() {
             }
         }
         root.findViewById<android.view.View>(R.id.settings_privacy).setOnClickListener {
-            openLegalPage(AppConstants.LINK_PRIVACY_POLICY)
+            openLegalPage(RemoteConfigUtils.getPrivacyPolicyUrl())
         }
         root.findViewById<android.view.View>(R.id.settings_terms).setOnClickListener {
-            openLegalPage(AppConstants.LINK_TERMS_AND_CONDITIONS)
+            openLegalPage(RemoteConfigUtils.getTermsAndConditionsUrl())
         }
         root.addView(nav(getString(R.string.common_settings)), LinearLayout.LayoutParams(-1, wrap()))
         setContentView(root)

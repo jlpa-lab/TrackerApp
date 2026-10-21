@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:paddingStart="24dp"
+    android:paddingTop="28dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="24dp"
+    android:background="@drawable/bg_permission_dialog">
+
+    <ImageView
+        android:id="@+id/permission_icon"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:contentDescription="@string/location_permission_icon_description"
+        android:padding="14dp"
+        android:background="@drawable/bg_permission_icon"
+        android:src="@drawable/ic_permission_location" />
+
+    <TextView
+        android:id="@+id/permission_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:fontFamily="@font/inter_bold"
+        android:textColor="@color/text_primary"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/permission_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:fontFamily="@font/inter_regular"
+        android:lineSpacingExtra="3dp"
+        android:textColor="@color/text_secondary"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/permission_primary"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/inter_bold"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:background="@drawable/bg_permission_primary" />
+
+    <TextView
+        android:id="@+id/permission_secondary"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/inter_bold"
+        android:textColor="@color/app_color"
+        android:textSize="16sp"
+        android:background="@drawable/bg_permission_secondary" />
+</LinearLayout>

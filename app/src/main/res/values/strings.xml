@@ -86,6 +86,13 @@
     <string name="common_no_browser">No browser is available</string>
     <string name="common_not_now">Not now</string>
     <string name="common_allow">Allow</string>
+    <string name="location_permission_title">Allow Location Access</string>
+    <string name="location_permission_message">We need access to your location so you can use location-based features on your device.</string>
+    <string name="location_permission_allow_access">Allow Access</string>
+    <string name="location_permission_not_granted_title">Location Permission Not Granted</string>
+    <string name="location_permission_not_granted_message">Location permission is required. Please allow location access in Settings to continue using all features.</string>
+    <string name="location_permission_open_settings">Open Settings</string>
+    <string name="location_permission_icon_description">Location permission</string>
     <string name="common_delete">Delete</string>
     <string name="common_connect">Connect</string>
     <string name="common_start">Start</string>

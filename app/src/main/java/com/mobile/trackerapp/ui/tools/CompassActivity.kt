@@ -21,7 +21,6 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.AdRemoteConfig
@@ -30,6 +29,7 @@ import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityCompassBinding
 import com.mobile.trackerapp.databinding.ActivityStopwatchBinding
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.permission.LocationPermissionFlow
 import com.mobile.trackerapp.ui.rating.RateAppManager
 import java.util.Locale
 import kotlin.math.abs
@@ -62,9 +62,17 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
     private lateinit var coordinatesValue: TextView
     private lateinit var altitudeValue: TextView
     private lateinit var accuracyValue: TextView
+    private val locationPermissionFlow by lazy {
+        LocationPermissionFlow(
+            activity = this,
+            onGranted = { startLocationUpdates() },
+            onDenied = { renderLocation(null) }
+        )
+    }
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        locationPermissionFlow
         window.statusBarColor = android.graphics.Color.rgb(246, 251, 248)
         window.navigationBarColor = android.graphics.Color.rgb(246, 251, 248)
         @Suppress("DEPRECATION")
@@ -85,7 +93,7 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
         renderHeading()
         renderLocation(null)
         renderAccuracy()
-        if (!hasLocationPermission()) requestLocationPermission()
+        if (!hasLocationPermission()) locationPermissionFlow.request()
     }
     private fun loadCompassBanner() {
         val bannerConfig = AdRemoteConfig.banner_all
@@ -145,10 +153,6 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
     private fun hasLocationPermission() = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
         ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
-    private fun requestLocationPermission() {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST)
-    }
-
     private fun startLocationUpdates() {
         if (!hasLocationPermission()) return
         try {
@@ -180,6 +184,7 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
 
     override fun onResume() {
         super.onResume()
+        locationPermissionFlow.onHostResume()
         rotationSensor?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI) }
             ?: run {
                 accelerometer?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI) }
@@ -239,14 +244,6 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         sensorAccuracy = accuracy
         renderAccuracy()
-    }
-
-    @Deprecated("Deprecated in Android")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST) {
-            if (hasLocationPermission()) startLocationUpdates() else renderLocation(null)
-        }
     }
 
     override fun onLocationChanged(location: Location) = renderLocation(location)
@@ -367,7 +364,6 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
     }
 
     companion object {
-        private const val LOCATION_PERMISSION_REQUEST = 8701
         private const val LOCATION_INTERVAL_MS = 5_000L
         private const val LOCATION_DISTANCE_M = 5f
         private const val HEADING_SMOOTHING = 0.22f

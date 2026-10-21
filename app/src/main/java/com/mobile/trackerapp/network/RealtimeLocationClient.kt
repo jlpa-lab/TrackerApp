@@ -1,7 +1,7 @@
 package com.mobile.trackerapp.network
 
 import android.content.Context
-import com.mobile.trackerapp.BuildConfig
+import com.mobile.trackerapp.ads.RemoteConfigUtils
 import io.socket.client.IO
 import io.socket.client.Socket
 import org.json.JSONObject
@@ -21,7 +21,12 @@ class RealtimeLocationClient(
     private val appContext = context.applicationContext
     private val prefs = appContext.getSharedPreferences("tracker_backend", Context.MODE_PRIVATE)
     private val deviceId = android.provider.Settings.Secure.getString(appContext.contentResolver, android.provider.Settings.Secure.ANDROID_ID)
-    private val socket: Socket = IO.socket(BuildConfig.TRACKER_BACKEND_URL.trimEnd('/'), IO.Options().apply { transports = arrayOf("websocket"); reconnection = true })
+    private val socket: Socket by lazy {
+        IO.socket(
+            RemoteConfigUtils.getBackendBaseUrl().trimEnd('/'),
+            IO.Options().apply { transports = arrayOf("websocket"); reconnection = true }
+        )
+    }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     @Volatile private var authenticated = false
     @Volatile private var pendingLocation: JSONObject? = null

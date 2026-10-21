@@ -25,6 +25,7 @@ import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityConnectionBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import com.mobile.trackerapp.ui.tools.ZoneStore
+import com.mobile.trackerapp.ui.permission.LocationPermissionFlow
 import com.mobile.trackerapp.ui.rating.RateAppManager
 import androidx.activity.OnBackPressedCallback
 
@@ -33,13 +34,19 @@ class ConnectionActivity : DashboardActivity() {
     private var pendingSharingEnable = false
     private var backgroundSettingsOpen = false
     private var suppressSharingChange = false
+    private val locationPermissionFlow by lazy {
+        LocationPermissionFlow(
+            activity = this,
+            onGranted = { attemptEnableSharing() },
+            onDenied = {
+                pendingSharingEnable = false
+                if (::binding.isInitialized) disableSharing(null)
+            }
+        )
+    }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, results: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, results)
         when (requestCode) {
-            LOCATION_PERMISSION_REQUEST -> {
-                if (results.any { it == PackageManager.PERMISSION_GRANTED }) attemptEnableSharing()
-                else disableSharing(getString(R.string.live_location_permission_required))
-            }
             NOTIFICATION_PERMISSION_REQUEST -> {
                 if (!hasNotificationPermission()) Toast.makeText(this, R.string.connection_notifications_needed, Toast.LENGTH_LONG).show()
                 attemptEnableSharing()
@@ -51,6 +58,7 @@ class ConnectionActivity : DashboardActivity() {
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         val content = layoutInflater.inflate(R.layout.activity_connection, root, false)
         binding = ActivityConnectionBinding.bind(content)
+        locationPermissionFlow
         val contentBanner = binding.frBanner
         (content as? LinearLayout)?.removeView(contentBanner)
         root.addView(content, LinearLayout.LayoutParams(-1, 0, 1f))
@@ -101,6 +109,7 @@ class ConnectionActivity : DashboardActivity() {
             if (pendingSharingEnable && hasBackgroundLocation()) attemptEnableSharing()
             else if (pendingSharingEnable) disableSharing(getString(R.string.connection_background_access_required))
         }
+        locationPermissionFlow.onHostResume()
         if (::backend.isInitialized) loadPendingCount()
     }
 
@@ -108,7 +117,7 @@ class ConnectionActivity : DashboardActivity() {
         val sharing = binding.connectionLocationSwitch
         if (!hasForegroundLocation()) {
             setSharingChecked(false)
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST)
+            locationPermissionFlow.request()
             return
         }
         if (!hasBackgroundLocation()) {
@@ -221,7 +230,6 @@ class ConnectionActivity : DashboardActivity() {
     }
 
     companion object {
-        private const val LOCATION_PERMISSION_REQUEST = 84
         private const val NOTIFICATION_PERMISSION_REQUEST = 85
     }
 }

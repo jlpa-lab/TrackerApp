@@ -6,9 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.View
 import android.widget.TextView
 import androidx.activity.result.IntentSenderRequest
@@ -16,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -40,6 +37,7 @@ import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityNearbyBinding
 import com.mobile.trackerapp.databinding.ActivityTrafficAlertBinding
+import com.mobile.trackerapp.ui.permission.LocationPermissionFlow
 import kotlin.math.ceil
 import kotlin.math.max
 
@@ -56,22 +54,16 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
     private var locationCallback: LocationCallback? = null
     private var cameraCentered = false
     private var lastLocation: Location? = null
-    private var returningFromAppSettings = false
     private var checkingLocationSettings = false
     private var resolvingLocationSettings = false
     private var locationUpdatesActive = false
 
-    private val locationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { grants ->
-        if (grants[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-            grants[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-        ) {
-            ensureLocationSettings()
-        } else {
-            showLocationMessage("Location permission is required to show live traffic near you")
-            showPermissionHelp()
-        }
+    private val locationPermissionFlow by lazy {
+        LocationPermissionFlow(
+            activity = this,
+            onGranted = { ensureLocationSettings() },
+            onDenied = { showLocationMessage("Location permission is required to show live traffic near you") }
+        )
     }
 
     private val locationSettingsLauncher = registerForActivityResult(
@@ -87,6 +79,7 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        locationPermissionFlow
         window.statusBarColor = Color.rgb(246, 251, 248)
         window.navigationBarColor = Color.rgb(246, 251, 248)
         @Suppress("DEPRECATION")
@@ -138,16 +131,7 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
         )
     }
     private fun requestLocationAccess() {
-        if (hasLocationPermission()) {
-            ensureLocationSettings()
-        } else {
-            locationPermissionLauncher.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-            )
-        }
+        locationPermissionFlow.request()
     }
 
     private fun ensureLocationSettings() {
@@ -233,34 +217,6 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun hasLocationPermission() = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
         ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
-    private fun showPermissionHelp() {
-        val canRetry = ActivityCompat.shouldShowRequestPermissionRationale(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) || ActivityCompat.shouldShowRequestPermissionRationale(
-            this,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.traffic_location_access_needed))
-            .setMessage(getString(R.string.traffic_permission_message))
-            .setNegativeButton(R.string.common_not_now, null)
-            .setPositiveButton(if (canRetry) R.string.common_allow else R.string.common_open_settings) { _, _ ->
-                if (canRetry) {
-                    requestLocationAccess()
-                } else {
-                    returningFromAppSettings = true
-                    startActivity(
-                        Intent(
-                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                            Uri.parse("package:$packageName")
-                        )
-                    )
-                }
-            }
-            .show()
-    }
-
     private fun showLocationMessage(message: String) {
         locationHint.text = message
         locationHint.visibility = View.VISIBLE
@@ -297,10 +253,8 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-        if (returningFromAppSettings) {
-            returningFromAppSettings = false
-            requestLocationAccess()
-        } else if (map != null && hasLocationPermission() && !resolvingLocationSettings) {
+        locationPermissionFlow.onHostResume()
+        if (map != null && hasLocationPermission() && !resolvingLocationSettings) {
             ensureLocationSettings()
         }
     }

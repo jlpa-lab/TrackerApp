@@ -1,23 +1,17 @@
 package com.mobile.trackerapp.ads
 
 import android.content.Context
-import com.ads.module.ads.ERainAd
 import com.google.firebase.Firebase
-
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
-import com.mobile.trackerapp.data.model.ForceUpdateConfig
-
 import com.mobile.trackerapp.BuildConfig
 import com.mobile.trackerapp.TrackerApplication
 import com.mobile.trackerapp.app.AppConstants
 import com.mobile.trackerapp.app.AppConstants.DEFAULT_TIME_DELAY_SHOW_LANGUAGE_DONE_BUTTON
+import com.mobile.trackerapp.data.model.ForceUpdateConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import kotlin.collections.set
-import kotlin.math.max
-import kotlin.math.min
 
 object RemoteConfigUtils {
     var completed = false
@@ -27,6 +21,11 @@ object RemoteConfigUtils {
     private const val TIME_DELAY_SHOW_LANGUAGE_DONE_BUTTON = "time_delay_show_language_done_button"
     private const val AD_REMOTE_CONFIG = "ad_remote_config"
     private const val FORCE_UPDATE_CONFIG = "force_update_config"
+    private const val BACKEND_BASE_URL = "backend_base_url"
+    private const val TERMS_AND_CONDITIONS_URL = "terms_and_conditions_url"
+    private const val PRIVACY_POLICY_URL = "privacy_policy_url"
+    private const val MAPS_API_KEY = "maps_api_key"
+    private const val GOOGLE_PLACES_API_KEY = "google_places_api_key"
 
     private const val ON_ENABLE_UNINSTALL_WIDGET = "on_enable_uninstall_widget"
 
@@ -47,6 +46,14 @@ object RemoteConfigUtils {
     fun getOnShowNavigationButton(): Boolean = getBoolean(ON_SHOW_NAVIGATION_BUTTON)
     fun getOnShowDialogConsent(): Boolean = getBoolean(ON_SHOW_DIALOG_CONSENT)
     fun getOnEnableUninstallWidget(): Boolean = getBoolean(ON_ENABLE_UNINSTALL_WIDGET, false)
+    fun getBackendBaseUrl(): String = getString(BACKEND_BASE_URL, BuildConfig.TRACKER_BACKEND_URL)
+    fun getTermsAndConditionsUrl(): String =
+        getString(TERMS_AND_CONDITIONS_URL, AppConstants.LINK_TERMS_AND_CONDITIONS)
+    fun getPrivacyPolicyUrl(): String =
+        getString(PRIVACY_POLICY_URL, AppConstants.LINK_PRIVACY_POLICY)
+    fun getMapsApiKey(): String = getString(MAPS_API_KEY, BuildConfig.MAPS_API_KEY)
+    fun getGooglePlacesApiKey(): String =
+        getString(GOOGLE_PLACES_API_KEY, BuildConfig.GOOGLE_PLACES_API_KEY)
 
     interface Listener {
         fun loadSuccess()
@@ -60,6 +67,7 @@ object RemoteConfigUtils {
 
     fun init(context: Context, mListener: Listener) {
         listener = mListener
+        completed = false
         remoteConfig = getFirebaseRemoteConfig(context)
     }
 
@@ -91,6 +99,15 @@ object RemoteConfigUtils {
             }
         }
         val defaults = getDefaultsFromAdConfig(context).toMutableMap()
+        // Firebase Remote Config stores the complete placement map as one JSON string.
+        // Keep the bundled build-specific file as the SDK default as well, so the app
+        // remains usable when fetchAndActivate cannot reach Firebase.
+        defaults[AD_REMOTE_CONFIG] = loadDefaultAdRemoteConfig()
+        defaults[BACKEND_BASE_URL] = BuildConfig.TRACKER_BACKEND_URL
+        defaults[TERMS_AND_CONDITIONS_URL] = AppConstants.LINK_TERMS_AND_CONDITIONS
+        defaults[PRIVACY_POLICY_URL] = AppConstants.LINK_PRIVACY_POLICY
+        defaults[MAPS_API_KEY] = BuildConfig.MAPS_API_KEY
+        defaults[GOOGLE_PLACES_API_KEY] = BuildConfig.GOOGLE_PLACES_API_KEY
         remoteConfig.apply {
             setConfigSettingsAsync(configSettings)
             mapConditionForAd.forEach { (key, value) ->
@@ -98,8 +115,8 @@ object RemoteConfigUtils {
             }
             setDefaultsAsync(defaults)
             fetchAndActivate().addOnCompleteListener {
-                listener.loadSuccess()
                 completed = true
+                listener.loadSuccess()
             }
         }
         return remoteConfig
@@ -120,6 +137,16 @@ object RemoteConfigUtils {
         return try {
             if (!completed) defaultValue
             else remoteConfig.getLong(key)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            defaultValue
+        }
+    }
+
+    private fun getString(key: String, defaultValue: String): String {
+        return try {
+            if (!completed) defaultValue
+            else remoteConfig.getString(key).trim().ifBlank { defaultValue }
         } catch (ex: Exception) {
             ex.printStackTrace()
             defaultValue

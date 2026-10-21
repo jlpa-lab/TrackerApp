@@ -46,6 +46,7 @@ import com.mobile.trackerapp.databinding.ActivityTrafficAlertBinding
 import com.mobile.trackerapp.databinding.ActivityZoneAlertBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import com.mobile.trackerapp.ui.ZoneToggleView
+import com.mobile.trackerapp.ui.permission.LocationPermissionFlow
 import com.mobile.trackerapp.network.RealtimeLocationClient
 import com.mobile.trackerapp.network.TrackerBackendClient
 import com.mobile.trackerapp.service.LocationSharingService
@@ -78,6 +79,18 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
     private var cameraCentered = false
     private var didPromptBackground = false
     private var didAskNotifications = false
+    private val locationPermissionFlow by lazy {
+        LocationPermissionFlow(
+            activity = this,
+            onGranted = {
+                mapMessage.visibility = View.GONE
+                lastGeofenceSignature = null
+                if (map != null) startLocationUpdates()
+                renderZones(store.all())
+            },
+            onDenied = { if (::mapMessage.isInitialized) mapMessage.visibility = View.VISIBLE }
+        )
+    }
     private var lastGeofenceSignature: String? = null
     private var manageMode = false
     private var realtime: RealtimeLocationClient? = null
@@ -93,6 +106,7 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         hideNavigationBar()
         binding = ActivityZoneAlertBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        locationPermissionFlow
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 AdsManager.showInterHomeBack(this@ZoneAlertActivity) { _ ->
@@ -169,7 +183,7 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         }
         drawZones(zones)
         syncGeofences(zones)
-        if (zones.any { it.enabled && (it.alertOnEnter || it.alertOnExit) }) {
+        if (hasForegroundLocation() && zones.any { it.enabled && (it.alertOnEnter || it.alertOnExit) }) {
             maybeRequestNotificationPermission()
             if (Build.VERSION.SDK_INT < 33 || hasNotificationPermission()) maybeExplainBackgroundAccess()
         }
@@ -320,7 +334,7 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     private fun requestForegroundLocation() {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_FOREGROUND_LOCATION)
+        locationPermissionFlow.request()
     }
 
     private fun maybeRequestNotificationPermission() {
@@ -459,6 +473,7 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
+        locationPermissionFlow.onHostResume()
         if (::mapView.isInitialized) mapView.onResume()
         if (::zoneList.isInitialized) renderZones(store.all())
         showLatestFriendAlert()
@@ -494,11 +509,6 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            REQUEST_FOREGROUND_LOCATION -> {
-                if (hasForegroundLocation()) startLocationUpdates() else mapMessage.visibility = View.VISIBLE
-                lastGeofenceSignature = null
-                renderZones(store.all())
-            }
             REQUEST_NOTIFICATIONS -> {
                 if (!hasNotificationPermission()) {
                     Toast.makeText(this, getString(R.string.zone_notification_permission), Toast.LENGTH_LONG).show()
@@ -529,7 +539,6 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
     }
 
     companion object {
-        private const val REQUEST_FOREGROUND_LOCATION = 6610
         private const val REQUEST_NOTIFICATIONS = 6611
         private const val GEOFENCE_REQUEST_CODE = 6612
         private const val MAX_GEOFENCES = 100

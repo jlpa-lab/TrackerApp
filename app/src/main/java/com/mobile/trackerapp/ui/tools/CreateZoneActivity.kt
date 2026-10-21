@@ -24,7 +24,6 @@ import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -47,6 +46,7 @@ import com.mobile.trackerapp.databinding.ActivityCreateZoneBinding
 import com.mobile.trackerapp.databinding.ActivityZoneAlertBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import com.mobile.trackerapp.ui.ZoneToggleView
+import com.mobile.trackerapp.ui.permission.LocationPermissionFlow
 import java.util.Locale
 import java.util.concurrent.Executors
 
@@ -84,9 +84,22 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
     private var zoneId = NO_ZONE
     private var userMovedMap = false
     private var cameraCentered = false
+    private val locationPermissionFlow by lazy {
+        LocationPermissionFlow(
+            activity = this,
+            onGranted = {
+                if (::locationHint.isInitialized) locationHint.visibility = View.GONE
+                moveToCurrentLocation()
+            },
+            onDenied = {
+                if (::locationHint.isInitialized) locationHint.visibility = View.VISIBLE
+            }
+        )
+    }
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        locationPermissionFlow
         window.statusBarColor = Color.rgb(246, 251, 248)
         window.navigationBarColor = Color.rgb(246, 251, 248)
         @Suppress("DEPRECATION")
@@ -281,7 +294,7 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
         ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     private fun requestForegroundLocation() {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_LOCATION)
+        locationPermissionFlow.request()
     }
 
     override fun onResume() { super.onResume(); if (::mapView.isInitialized) mapView.onResume() }
@@ -298,15 +311,6 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
     override fun onDestroy() { worker.shutdownNow(); if (::mapView.isInitialized) mapView.onDestroy(); super.onDestroy() }
     override fun onLowMemory() { super.onLowMemory(); if (::mapView.isInitialized) mapView.onLowMemory() }
     override fun onSaveInstanceState(outState: Bundle) { super.onSaveInstanceState(outState); if (::mapView.isInitialized) mapView.onSaveInstanceState(outState) }
-
-    @Deprecated("Deprecated in Android")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_LOCATION) {
-            if (hasForegroundLocation()) { locationHint.visibility = android.view.View.GONE; moveToCurrentLocation() }
-            else { locationHint.visibility = android.view.View.VISIBLE; Toast.makeText(this, R.string.zone_map_permission_message, Toast.LENGTH_LONG).show() }
-        }
-    }
 
     private fun text(value: String, size: Float, color: Int, bold: Boolean = false) = TextView(this).apply {
         text = value; textSize = size; setTextColor(color)
@@ -330,7 +334,6 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
     companion object {
         const val EXTRA_ZONE_ID = "zone_id"
         private const val NO_ZONE = -1L
-        private const val REQUEST_LOCATION = 6601
         private const val MAP_HEIGHT_RATIO = 0.62f
     }
 }

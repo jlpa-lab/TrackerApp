@@ -21,7 +21,6 @@ import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.widget.ImageView
 import android.widget.FrameLayout
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.activity.result.contract.ActivityResultContracts
@@ -43,6 +42,7 @@ import com.mobile.trackerapp.network.TrackerBackendClient
 import com.mobile.trackerapp.service.LocationSharingCoordinator
 import com.mobile.trackerapp.service.LocationSharingService
 import com.mobile.trackerapp.ui.connection.TrackFriendRequestsActivity
+import com.mobile.trackerapp.ui.permission.LocationPermissionFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -63,7 +63,6 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private var marker: Marker? = null
     private var callback: LocationCallback? = null
     private var lastLocation: Location? = null
-    private var returningFromAppSettings = false
     private var pendingSharing = false
     private var pendingFocus = false
     private var backgroundSettingsOpen = false
@@ -79,21 +78,21 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private val friendLocationRequestStatus = mutableMapOf<String, String>()
     private var friendBackendUnavailable = false
     private var friendCameraFocused = false
-    private val locationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { grants ->
-        if (grants[Manifest.permission.ACCESS_FINE_LOCATION] == true || grants[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
-            if (friendsOnly) {
-                // "While using the app" is sufficient for this session. The
-                // background request is deferred until the next app launch.
-                LocationSharingCoordinator.deferBackgroundPermissionPromptForSession()
+    private val locationPermissionFlow by lazy {
+        LocationPermissionFlow(
+            activity = this,
+            onGranted = {
+                if (friendsOnly) {
+                    // "While using the app" is sufficient for this session.
+                    LocationSharingCoordinator.deferBackgroundPermissionPromptForSession()
+                }
+                ensureLocationSettings()
+            },
+            onDenied = {
+                pendingFocus = false
+                if (::address.isInitialized) address.setText(R.string.live_location_permission_required)
             }
-            ensureLocationSettings()
-        } else if (::address.isInitialized) {
-            pendingFocus = false
-            address.setText(R.string.live_location_permission_required)
-            showPermissionHelp()
-        }
+        )
     }
     private val locationSettingsLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
@@ -123,6 +122,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private val geocoder by lazy { Geocoder(this, Locale.getDefault()) }
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        locationPermissionFlow
         AdsManager.loadInterBack(this, ignoreLimit = true)
         fused = LocationServices.getFusedLocationProviderClient(this)
         setContentView(layoutInflater.inflate(locationLayout, null))
@@ -229,8 +229,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         requestPermission()
     }
     private fun requestPermission() {
-        if (hasPermission()) { ensureLocationSettings(); return }
-        locationPermissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+        locationPermissionFlow.request()
     }
     private fun hasPermission() = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
     private fun ensureLocationSettings() {
@@ -324,22 +323,6 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun hasNotificationPermission() = Build.VERSION.SDK_INT < 33 ||
         ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-    private fun showPermissionHelp() {
-        val canRetry = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION) ||
-            ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-        AlertDialog.Builder(this)
-            .setTitle(R.string.traffic_location_access_needed)
-            .setMessage(R.string.live_permission_message)
-            .setNegativeButton(R.string.common_not_now, null)
-            .setPositiveButton(if (canRetry) R.string.common_allow else R.string.common_open_settings) { _, _ ->
-                if (canRetry) requestPermission() else {
-                    returningFromAppSettings = true
-                    openLocationPermissionSettings()
-                }
-            }
-            .show()
-    }
-
     private fun openLocationPermissionSettings() {
         startActivity(Intent(
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
@@ -679,6 +662,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun shareLocation() { val l = lastLocation; val text = if (l == null) getString(R.string.live_share_message) else "My location: https://maps.google.com/?q=" + l.latitude + "," + l.longitude; startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text) }, getString(R.string.live_share_location))) }
     override fun onResume() {
         super.onResume()
+        locationPermissionFlow.onHostResume()
         if (backgroundSettingsOpen) {
             backgroundSettingsOpen = false
             if (pendingSharing && hasBackgroundLocation()) startFriendSharingFeatures()
@@ -686,10 +670,6 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 pendingSharing = false
                 LocationSharingCoordinator.deferBackgroundPermissionPromptForSession()
             }
-        }
-        if (returningFromAppSettings && !friendsOnly) {
-            returningFromAppSettings = false
-            requestPermission()
         }
     }
     override fun onPause() {

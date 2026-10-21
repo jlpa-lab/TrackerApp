@@ -107,23 +107,48 @@
         android:layout_marginTop="12dp"
         android:divider="#E8EDEA"
         android:dividerHeight="1dp" />
-
-    <!-- Done -->
-    <TextView
+    <LinearLayout
         android:id="@+id/country_done"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/bg_live_share"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
+        android:orientation="horizontal"
         android:paddingTop="14dp"
-        android:paddingBottom="14dp"
-        android:text="@string/common_done"
-        android:fontFamily="@font/inter_bold"
-        android:textColor="@color/white"
-        android:textSize="15sp" />
+        android:paddingBottom="14dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/common_done"
+            android:fontFamily="@font/inter_bold"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Done -->
+<!--    <TextView-->
+<!--        android:id="@+id/country_done"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="16dp"-->
+<!--        android:layout_marginTop="12dp"-->
+<!--        android:layout_marginEnd="16dp"-->
+<!--        android:background="@drawable/bg_live_share"-->
+<!--        android:clickable="true"-->
+<!--        android:focusable="true"-->
+<!--        android:gravity="center"-->
+<!--        android:paddingTop="14dp"-->
+<!--        android:paddingBottom="14dp"-->
+<!--        android:layout_marginBottom="20dp"-->
+<!--        android:text="@string/common_done"-->
+<!--        android:fontFamily="@font/inter_bold"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="15sp" />-->
 </LinearLayout>

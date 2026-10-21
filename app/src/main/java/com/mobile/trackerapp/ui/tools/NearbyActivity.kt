@@ -24,7 +24,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -34,13 +33,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
-import com.mobile.trackerapp.BuildConfig
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
+import com.mobile.trackerapp.ads.RemoteConfigUtils
 import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityNearbyBinding
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.permission.LocationPermissionFlow
 import com.mobile.trackerapp.ui.rating.RateAppManager
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -73,6 +73,8 @@ private class NearbyLocationException(message: String) : IOException(message)
 
 /** Nearby search backed by Google Places API (New), with an isolated optional OSM fallback. */
 class NearbyActivity : DashboardActivity() {
+    private val googlePlacesApiKey: String
+        get() = RemoteConfigUtils.getGooglePlacesApiKey()
 
     private lateinit var binding: ActivityNearbyBinding
     private val muted = Color.rgb(126, 137, 153)
@@ -103,6 +105,13 @@ class NearbyActivity : DashboardActivity() {
     private var currentQuery = ""
     private var showAllResults = false
     private var latestPlaces: List<NearbyPlace> = emptyList()
+    private val locationPermissionFlow by lazy {
+        LocationPermissionFlow(
+            activity = this,
+            onGranted = { obtainLocationAndSearch() },
+            onDenied = { showLocationPermissionState() }
+        )
+    }
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -137,6 +146,7 @@ class NearbyActivity : DashboardActivity() {
         stateDescription = binding.nearbyStateDescription
         stateAction = binding.nearbyStateAction
         loading = binding.nearbyLoading
+        locationPermissionFlow
         adapter = NearbyPlaceAdapter(this, ::openDirections)
         results.layoutManager = LinearLayoutManager(this)
         results.adapter = adapter
@@ -191,11 +201,15 @@ class NearbyActivity : DashboardActivity() {
         search.setText(currentQuery)
         suppressTextListener = false
         updateChips()
-        if (hasLocationPermission()) obtainLocationAndSearch() else showLocationPermissionState()
+        if (hasLocationPermission()) obtainLocationAndSearch() else {
+            showLocationPermissionState()
+            locationPermissionFlow.request()
+        }
     }
 
     override fun onResume() {
         super.onResume()
+        locationPermissionFlow.onHostResume()
         restoreNearbyWindow()
         if (::nearbyRoot.isInitialized) ViewCompat.requestApplyInsets(nearbyRoot)
     }
@@ -407,8 +421,8 @@ class NearbyActivity : DashboardActivity() {
     }
 
     private suspend fun fetchPlaces(category: NearbyCategory?, textQuery: String?, origin: Location, version: Int): List<NearbyPlace> {
-        if (BuildConfig.GOOGLE_PLACES_API_KEY.isBlank()) {
-            throw NearbyConfigurationException("Google Places API key is missing from local.properties.")
+        if (googlePlacesApiKey.isBlank()) {
+            throw NearbyConfigurationException("Google Places API key is missing from Remote Config/local.properties.")
         }
         return try {
             if (category != null) fetchGoogleNearbyPlaces(origin, category)
@@ -502,7 +516,7 @@ class NearbyActivity : DashboardActivity() {
                     longitude = longitude,
                     distanceMeters = origin.distanceTo(point),
                     imageUrl = photoName.takeIf { it.isNotBlank() }?.let {
-                        "https://places.googleapis.com/v1/$it/media?maxWidthPx=160&key=${BuildConfig.GOOGLE_PLACES_API_KEY}"
+                        "https://places.googleapis.com/v1/$it/media?maxWidthPx=160&key=$googlePlacesApiKey"
                     },
                     rating = item.optDouble("rating", Double.NaN).takeIf { it.isFinite() }
                         ?.let { String.format(Locale.getDefault(), "%.1f", it) },
@@ -585,7 +599,7 @@ class NearbyActivity : DashboardActivity() {
         val builder = Request.Builder().url(url)
             .post(body.toString().toRequestBody(JSON_MEDIA_TYPE))
             .header("Content-Type", "application/json")
-            .header("X-Goog-Api-Key", BuildConfig.GOOGLE_PLACES_API_KEY)
+            .header("X-Goog-Api-Key", googlePlacesApiKey)
             .header("X-Goog-FieldMask", GOOGLE_FIELD_MASK)
             .header("X-Android-Package", packageName)
         try {
@@ -749,7 +763,7 @@ class NearbyActivity : DashboardActivity() {
         stateAction.setText(R.string.common_use_my_location)
         stateAction.visibility = View.VISIBLE
         stateAction.setOnClickListener {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_LOCATION)
+            locationPermissionFlow.request()
         }
     }
 
@@ -798,14 +812,6 @@ class NearbyActivity : DashboardActivity() {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    @Deprecated("Deprecated in Android")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_LOCATION) {
-            if (hasLocationPermission()) obtainLocationAndSearch() else showLocationPermissionState()
-        }
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(STATE_CATEGORY, selectedCategory)
         outState.putString(STATE_QUERY, currentQuery)
@@ -850,7 +856,6 @@ class NearbyActivity : DashboardActivity() {
     }
 
     companion object {
-        private const val REQUEST_LOCATION = 7101
         private const val REQUEST_CATEGORIES = 7102
         private const val STATE_CATEGORY = "nearby_category"
         private const val STATE_QUERY = "nearby_query"

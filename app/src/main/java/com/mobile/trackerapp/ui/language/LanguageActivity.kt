@@ -13,15 +13,11 @@ import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.ads.module.ads.wrapper.ApNativeAd
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.itg.devconfig.utils.setOnAdminAdToggleListener
-import com.mobile.trackerapp.pref.AppSharedPref
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.AdsManager.loadNativeLanguageClick
+import com.mobile.trackerapp.ads.RemoteConfigUtils
 import com.mobile.trackerapp.ads.populateNativeAdView
 import com.mobile.trackerapp.app.AppConstants
 import com.mobile.trackerapp.bases.ext.isNetwork
@@ -57,8 +53,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
         // CHANGE: BaseActivity already inflated and attached this layout as mBinding.
         // Reusing it prevents the ad from being rendered into a detached copy.
         Log.d("AppEvent", "LanguageActivity")
-      //  FirebaseAnalytics.getInstance(this).logEvent("LanguageActivity", null)
-      //  configureRemoteConfig()
+        // Firebase Remote Config is initialized once from SplashActivity.
         confirmButton = mBinding.confirmLanguage
         populateLanguages()
 
@@ -116,29 +111,21 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
 
                 handler.removeCallbacks(revealConfirmation)
                 confirmButton.visibility = View.INVISIBLE
-                // The confirmation tick follows the design's 1.5-second delay.
+                // The confirmation tick follows the remotely configurable delay.
                 // Do not apply the locale here. Applying it immediately causes
                 // AppCompat to recreate this activity and produces a visible
                 // flash before the user confirms with the Done button.
                 pendingLocale = language.locale
 //                FirebaseAnalytics.getInstance(this)
 //                    .logEvent("LanguageActivity_select_${language.tag}", null)
-                handler.postDelayed(revealConfirmation, CONFIRMATION_DELAY_MS)
+                val delay = if (RemoteConfigUtils.shouldDelayLanguageDoneButton()) {
+                    RemoteConfigUtils.getTimeDelayButtonDoneLanguage()
+                } else {
+                    0L
+                }
+                handler.postDelayed(revealConfirmation, delay)
             }
             languageList.addView(row)
-        }
-    }
-
-    private fun configureRemoteConfig() {
-        // Bundled defaults remain available if the network fetch cannot complete.
-        FirebaseRemoteConfig.getInstance().apply {
-            setConfigSettingsAsync(
-                FirebaseRemoteConfigSettings.Builder()
-                    .setMinimumFetchIntervalInSeconds(3600)
-                    .build()
-            )
-            setDefaultsAsync(R.xml.remote_config_defaults)
-            fetchAndActivate()
         }
     }
 
@@ -187,7 +174,6 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
     }
 
     companion object {
-        private const val CONFIRMATION_DELAY_MS = 1500L
         private const val NOTIFICATION_PERMISSION_REQUEST = 1001
 
         private val languages = listOf(

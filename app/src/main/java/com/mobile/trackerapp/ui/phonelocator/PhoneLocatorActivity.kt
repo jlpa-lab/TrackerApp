@@ -234,12 +234,16 @@ class PhoneLocatorActivity : AppCompatActivity() {
             ViewCompat.requestApplyInsets(decorView)
         }
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+            // Keep Done above both the regular navigation bar and the tappable
+            // system-bar area while the hidden bar is temporarily revealed by
+            // a swipe gesture.
             val navigationBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+            val tappableBottom = insets.getInsets(WindowInsetsCompat.Type.tappableElement()).bottom
             view.setPadding(
                 view.paddingLeft,
                 view.paddingTop,
                 view.paddingRight,
-                basePickerPaddingBottom + navigationBottom
+                basePickerPaddingBottom + maxOf(navigationBottom, tappableBottom)
             )
             insets
         }

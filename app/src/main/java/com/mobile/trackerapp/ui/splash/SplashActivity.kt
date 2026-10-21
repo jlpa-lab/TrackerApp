@@ -45,6 +45,8 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
     private var loaderAnimator: ObjectAnimator? = null
     private var showLanguageNextTime = true
     private var hasMovedFromSplash = false
+    private var hasStartedStartupFlow = false
+    private var remoteConfigTimer: CountDownTimer? = null
     private lateinit var binding: ActivitySplashBinding
     private lateinit var consentHandler: ConsentHandler
     private val appSharedPref: AppSharedPref by lazy {
@@ -104,41 +106,45 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
                 start()
             }
         }
-        loadingRemoteConfig()
-//        consentHandler = ConsentHandler(
-//            activity = this,
-//            appSharedPref = appSharedPref,
-//            trackingSuffix = 1,
-//            onConsentFlowCompleted = { loadingRemoteConfig() })
-//        if (appSharedPref.isConfirmConsent.not() && appSharedPref.isUserGlobal.not() && isNetwork()) {
-//            consentHandler.requestConsent()
-//        } else {
-//            loadingRemoteConfig()
-//        }
+        consentHandler = ConsentHandler(
+            activity = this,
+            appSharedPref = appSharedPref,
+            trackingSuffix = 1,
+            onConsentFlowCompleted = { checkRemoteConfigResult() }
+        )
+        waitForRemoteConfig()
        // handler.postDelayed(openLanguageScreen, SPLASH_DURATION_MS)
 //        loadSplashBanner()
-        // Preload the language ad while Splash is visible, as required by the sample flow.
-        AdsManager.loadNativeLanguage(
-            this,
-            true,
-            R.layout.layout_native_language_click
-        )
     }
-    private fun loadingRemoteConfig() {
-        object : CountDownTimer(AppConstants.DEFAULT_TIME_SPLASH, 100) {
+    private fun waitForRemoteConfig() {
+        remoteConfigTimer = object : CountDownTimer(AppConstants.DEFAULT_TIME_SPLASH, 100) {
             override fun onTick(millisUntilFinished: Long) {
                 if (getConfigSuccess && millisUntilFinished < AppConstants.DEFAULT_LIMIT_TIME_SPLASH) {
-                    checkRemoteConfigResult()
+                    startConsentOrContinue()
                     cancel()
                 }
             }
 
             override fun onFinish() {
-                if (!getConfigSuccess) {
-                    checkRemoteConfigResult()
-                }
+                startConsentOrContinue()
             }
-        }.start()
+        }.also { it.start() }
+    }
+
+    private fun startConsentOrContinue() {
+        if (hasStartedStartupFlow || isFinishing || isDestroyed) return
+        hasStartedStartupFlow = true
+
+        if (
+            RemoteConfigUtils.getOnShowDialogConsent() &&
+            appSharedPref.isConfirmConsent.not() &&
+            appSharedPref.isUserGlobal.not() &&
+            isNetwork()
+        ) {
+            consentHandler.requestConsent()
+        } else {
+            checkRemoteConfigResult()
+        }
     }
 
     override fun loadSuccess() {
@@ -223,6 +229,7 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
         )
     }
     override fun onDestroy() {
+        remoteConfigTimer?.cancel()
         if (::consentHandler.isInitialized) {
             consentHandler.clear()
         }
