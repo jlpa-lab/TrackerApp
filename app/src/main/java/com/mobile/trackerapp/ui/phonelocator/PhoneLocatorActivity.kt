@@ -29,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.mobile.trackerapp.R
@@ -156,6 +157,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
         countryDialog?.dismiss()
         val view = layoutInflater.inflate(R.layout.dialog_country_picker, null)
         view.setBackgroundResource(R.drawable.bg_country_sheet)
+        val basePickerPaddingBottom = view.paddingBottom
         val countrySearch = view.findViewById<EditText>(R.id.country_search)
         val list = view.findViewById<ListView>(R.id.country_list)
         val defaultListHeight = list.layoutParams.height
@@ -195,6 +197,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
         }
         countryDialog = dialog
         dialog.show()
+        hideCountryPickerNavigationBar(dialog)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             dialogBackCallback = object : OnBackInvokedCallback {
                 override fun onBackInvoked() {
@@ -212,7 +215,9 @@ class PhoneLocatorActivity : AppCompatActivity() {
         )
 
         dialog.window?.decorView?.let { decorView ->
+            hideCountryPickerNavigationBar(dialog)
             ViewCompat.setOnApplyWindowInsetsListener(decorView) { _, insets ->
+                hideCountryPickerNavigationBar(dialog)
                 val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime()) ||
                     insets.getInsets(WindowInsetsCompat.Type.ime()).bottom > 0
                 // Keep this state true until the first back step handles it. On
@@ -228,6 +233,17 @@ class PhoneLocatorActivity : AppCompatActivity() {
             }
             ViewCompat.requestApplyInsets(decorView)
         }
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+            val navigationBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+            view.setPadding(
+                view.paddingLeft,
+                view.paddingTop,
+                view.paddingRight,
+                basePickerPaddingBottom + navigationBottom
+            )
+            insets
+        }
+        ViewCompat.requestApplyInsets(view)
         setCountryPickerBlurred(true)
         val hideCountryKeyboard = {
             val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
@@ -274,6 +290,8 @@ class PhoneLocatorActivity : AppCompatActivity() {
             false
         }
         val visibleCountries = allCountries.toMutableList()
+        var pendingIso = selectedIso
+        var pendingDialCode = selectedDialCode
         val selectedBg = Color.parseColor("#EDF9F3")
 
         val adapter = object : BaseAdapter() {
@@ -283,7 +301,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
             override fun getView(position: Int, recycled: View?, parent: ViewGroup): View {
                 val row = recycled ?: layoutInflater.inflate(R.layout.country_picker_row, parent, false)
                 val item = getItem(position)
-                val isSelected = item.iso == selectedIso
+                val isSelected = item.iso == pendingIso
                 row.setBackgroundColor(if (isSelected) selectedBg else Color.TRANSPARENT)
                 row.findViewById<TextView>(R.id.country_flag).apply {
                     text = regionToFlag(item.iso)
@@ -305,15 +323,19 @@ class PhoneLocatorActivity : AppCompatActivity() {
         list.adapter = adapter
         list.setOnItemClickListener { _, _, which, _ ->
             val selected = visibleCountries[which]
-            selectedIso = selected.iso
-            selectedDialCode = selected.code
-            findViewById<TextView>(R.id.country_selector).text = regionToFlag(selected.iso) + " " + selected.code
+            pendingIso = selected.iso
+            pendingDialCode = selected.code
             hideCountryKeyboard()
             adapter.notifyDataSetChanged()
         }
 
         view.findViewById<View>(R.id.country_close).setOnClickListener { hideCountryPicker() }
-        view.findViewById<View>(R.id.country_done).setOnClickListener { hideCountryPicker() }
+        view.findViewById<View>(R.id.country_done).setOnClickListener {
+            selectedIso = pendingIso
+            selectedDialCode = pendingDialCode
+            findViewById<TextView>(R.id.country_selector).text = regionToFlag(selectedIso) + " " + selectedDialCode
+            hideCountryPicker()
+        }
         countrySearch.isFocusableInTouchMode = true
         countrySearch.setOnClickListener {
             countrySearch.requestFocus()
@@ -347,6 +369,15 @@ class PhoneLocatorActivity : AppCompatActivity() {
         countryPickerKeyboardVisible = false
         countryPickerExpanded = false
         setCountryPickerBlurred(false)
+    }
+
+    private fun hideCountryPickerNavigationBar(dialog: Dialog) {
+        val dialogWindow = dialog.window ?: return
+        val decorView = dialogWindow.decorView
+        val controller = WindowCompat.getInsetsController(dialogWindow, decorView)
+        controller.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.navigationBars())
     }
 
     private fun handleCountryPickerBack(): Boolean {

@@ -83,6 +83,7 @@
     <string name="common_clear">Clear</string>
     <string name="common_retry">Try again</string>
     <string name="common_open_settings">Open settings</string>
+    <string name="common_no_browser">No browser is available</string>
     <string name="common_not_now">Not now</string>
     <string name="common_allow">Allow</string>
     <string name="common_delete">Delete</string>
@@ -386,6 +387,7 @@
     <string name="connection_background_access_required">Allow location access all the time to use friend location sharing</string>
     <string name="connection_location_shared_summary">Your location is being shared with your approved friends.</string>
     <string name="connection_sharing_off">Location sharing is off</string>
+    <string name="connection_no_active_connections">No active connections</string>
     <string name="connection_code_copied">Code copied to clipboard</string>
     <string name="connection_secure_retry">Connecting securely, please try again in a moment.</string>
     <string name="connection_own_code">That is your own invite code</string>
@@ -578,6 +580,7 @@
     <string name="live_background_message">Tracker Friends needs background location access so your live location can keep sharing while the app is closed.</string>
     <string name="live_permission_message">Live Location needs location access and device Location turned on to show and share your position.</string>
     <string name="live_me">Me</string>
+    <string name="live_my_location">My location</string>
     <string name="live_location_unavailable">Could not determine your current location</string>
     <string name="live_loading_friends">Loading accepted friends…</string>
     <string name="live_no_accepted_friends">No accepted friends yet. Accept a friend request to see them here.</string>

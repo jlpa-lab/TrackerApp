@@ -1,6 +1,7 @@
 package com.mobile.trackerapp.ui.settings
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
 import com.mobile.trackerapp.R
@@ -26,10 +27,27 @@ class SettingsActivity : DashboardActivity() {
                 startActivity(Intent(this, RateAppActivity::class.java))
             }
         }
+        root.findViewById<android.view.View>(R.id.settings_privacy).setOnClickListener {
+            openLegalPage(AppConstants.LINK_PRIVACY_POLICY)
+        }
+        root.findViewById<android.view.View>(R.id.settings_terms).setOnClickListener {
+            openLegalPage(AppConstants.LINK_TERMS_AND_CONDITIONS)
+        }
         root.addView(nav(getString(R.string.common_settings)), LinearLayout.LayoutParams(-1, wrap()))
         setContentView(root)
         AdsManager.showNativeAllAndPreload(this, R.layout.layout_native_ad_small)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))
         hideNavigationBar()
+    }
+
+    private fun openLegalPage(url: String) {
+        runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+            .onFailure {
+                android.widget.Toast.makeText(
+                    this,
+                    R.string.common_no_browser,
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
+            }
     }
 }

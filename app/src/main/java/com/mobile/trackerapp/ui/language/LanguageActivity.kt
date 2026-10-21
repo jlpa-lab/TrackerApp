@@ -31,7 +31,6 @@ import com.mobile.trackerapp.databinding.ActivityLanguageBinding
 import com.mobile.trackerapp.ui.onboarding.OnBoardingActivity
 import com.mobile.trackerapp.pref.AppSharedPreferencesApp
 import com.mobile.trackerapp.ui.BaseActivity
-import com.mobile.trackerapp.localization.LocaleManager
 import com.mobile.trackerapp.utils.Routes
 
 /** Handles language selection and the initial notification permission request. */
@@ -65,10 +64,10 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
 
         confirmButton.setOnClickListener {
           //  FirebaseAnalytics.getInstance(this).logEvent("LanguageActivity_confirm", null)
-            val localeToApply = pendingLocale ?: LocaleManager.currentLanguage(this)
-            if (localeToApply != LocaleManager.currentLanguage(this)) {
-                LocaleManager.apply(this, localeToApply)
-            }
+            val localeToApply = pendingLocale ?: appSharedPref.languageCode
+            // Match the reference flow: persist the choice first. The next
+            // BaseActivity applies it before inflating its layout.
+            appSharedPref.languageCode = localeToApply
             if (fromSetting) {
                 Routes.startMainActivity(this)
             } else {

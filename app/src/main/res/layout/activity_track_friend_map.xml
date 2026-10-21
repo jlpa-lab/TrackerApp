@@ -98,7 +98,7 @@
                     android:text="@string/live_normal"
                     android:textSize="12sp"
                     android:textColor="@color/home_phone_locator_text"
-                    android:fontFamily="@font/inter_bold" />
+                    android:fontFamily="@font/inter_regular" />
 
                 <TextView
                     android:id="@+id/map_satellite"
@@ -112,7 +112,7 @@
                     android:text="@string/live_satellite"
                     android:textSize="12sp"
                     android:textColor="@color/home_phone_locator_text"
-                    android:fontFamily="@font/inter_bold" />
+                    android:fontFamily="@font/inter_regular" />
 
                 <TextView
                     android:id="@+id/map_terrain"
@@ -126,7 +126,7 @@
                     android:text="@string/live_terrain"
                     android:textSize="12sp"
                     android:textColor="@color/home_phone_locator_text"
-                    android:fontFamily="@font/inter_bold"/>
+                    android:fontFamily="@font/inter_regular"/>
 
                 <TextView
                     android:id="@+id/map_hybrid"
@@ -140,7 +140,7 @@
                     android:text="@string/live_hybrid"
                     android:textSize="12sp"
                     android:textColor="@color/home_phone_locator_text"
-                    android:fontFamily="@font/inter_bold"/>
+                    android:fontFamily="@font/inter_regular"/>
             </LinearLayout>
         </LinearLayout>
 

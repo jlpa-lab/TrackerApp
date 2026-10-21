@@ -33,6 +33,7 @@ import com.mobile.trackerapp.bases.ConsentHandler
 import com.mobile.trackerapp.bases.ext.isNetwork
 import com.mobile.trackerapp.databinding.ActivitySplashBinding
 import com.mobile.trackerapp.pref.AppSharedPreferencesApp
+import com.mobile.trackerapp.service.LocationSharingCoordinator
 import com.mobile.trackerapp.utils.Routes
 import com.onesignal.OneSignal
 
@@ -43,6 +44,7 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
     private var getConfigSuccess = false
     private var loaderAnimator: ObjectAnimator? = null
     private var showLanguageNextTime = true
+    private var hasMovedFromSplash = false
     private lateinit var binding: ActivitySplashBinding
     private lateinit var consentHandler: ConsentHandler
     private val appSharedPref: AppSharedPref by lazy {
@@ -61,6 +63,11 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // A new splash marks a new app-launch session. Track Friend may ask
+        // for background location again during this session if it is still
+        // missing, while the current session remains usable with foreground
+        // "While using the app" access.
+        LocationSharingCoordinator.resetPermissionPromptSession()
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
@@ -78,6 +85,7 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
         setContentView(binding.root)
         Log.d("AppEvent", "SplashActivity")
         OneSignal.initWithContext(applicationContext, getString(R.string.onesignal_app_id))
+        RemoteConfigUtils.init(this, this)
 
         val track = findViewById<View>(R.id.splash_loader_track)
         val segment = findViewById<View>(R.id.splash_loader_segment)
@@ -137,18 +145,18 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
         getConfigSuccess = true
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        ERainAd.getInstance().onCheckShowSplashWhenFail(this, object : AdCallback() {
-//            override fun onNextAction() {
-//                super.onNextAction()
-//                moveActivity()
-//            }
-//        }, 1000)
-//    }
+    override fun onResume() {
+        super.onResume()
+        ERainAd.getInstance().onCheckShowSplashWhenFail(this@SplashActivity, object : AdCallback() {
+            override fun onNextAction() {
+                super.onNextAction()
+                moveActivity()
+            }
+        }, 1000)
+    }
 
     private fun checkRemoteConfigResult() {
-       // AdRemoteConfig.initialize(this, RemoteConfigUtils.getAdRemoteConfig())
+        AdRemoteConfig.initialize(this, RemoteConfigUtils.getAdRemoteConfig())
         loadSplashBanner()
         if (!isFromUninstallShortcut) {
             loadNativeLanguage(
@@ -187,6 +195,9 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
 
 
     private fun moveActivity() {
+        if (hasMovedFromSplash || isFinishing || isDestroyed) return
+        hasMovedFromSplash = true
+        loaderAnimator?.cancel()
         when {
             isFromUninstallShortcut -> Routes.startConfirmUninstallActivity(this)
             shouldShowLanguageNextTime() || appSharedPref.firstOnBoarding -> Routes.startLanguageActivity(
@@ -205,7 +216,10 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
             AdRemoteConfig.banner_splash
         }
         AdsManager.loadBanner(
-            this, bannerConfig, binding.frBanner, isCollapse = false
+            this,
+            bannerConfig,
+            binding.frBanner,
+            isCollapse = false
         )
     }
     override fun onDestroy() {

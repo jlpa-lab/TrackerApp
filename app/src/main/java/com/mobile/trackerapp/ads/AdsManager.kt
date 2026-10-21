@@ -6,6 +6,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
@@ -30,6 +32,8 @@ import timber.log.Timber
 
 @SuppressLint("StaticFieldLeak")
 object AdsManager {
+
+    private const val NATIVE_AD_LOAD_TIMEOUT_MS = 6_000L
 
     val nativeLanguageAdLive = MutableLiveData<ApNativeAd?>()
     val nativeLanguageClickAdLive = MutableLiveData<ApNativeAd?>()
@@ -85,10 +89,25 @@ object AdsManager {
             return
         }
 
+        // A stalled SDK request must not leave a native-ad shimmer visible
+        // indefinitely. Keep this guard in the shared loader so every native
+        // placement gets the same bounded loading behavior.
+        var loadTimedOut = false
+        val mainHandler = Handler(Looper.getMainLooper())
+        val timeoutRunnable = Runnable {
+            loadTimedOut = true
+            Timber.w("Native ad load timed out for ${config.id}")
+            if (publishLoadedAd) liveData.postValue(fallbackAd())
+            loadingLive?.postValue(false)
+        }
+        mainHandler.postDelayed(timeoutRunnable, NATIVE_AD_LOAD_TIMEOUT_MS)
+
         ERainAd.getInstance()
             .loadNativeAdResultCallback(activity, config.id, layoutRes, object : AdCallback() {
                 override fun onNativeAdLoaded(nativeAd: ApNativeAd) {
                     super.onNativeAdLoaded(nativeAd)
+                    if (loadTimedOut) return
+                    mainHandler.removeCallbacks(timeoutRunnable)
                     adConfigMap[nativeAd] = config
                     if (liveData === nativeHomeAdLive) cachedNativeHomeAd = nativeAd
                     if (liveData === nativeAllAdLive) cachedNativeAllAd = nativeAd
@@ -98,6 +117,8 @@ object AdsManager {
 
                 override fun onAdFailedToLoad(adError: LoadAdError?) {
                     super.onAdFailedToLoad(adError)
+                    if (loadTimedOut) return
+                    mainHandler.removeCallbacks(timeoutRunnable)
                     if (publishLoadedAd) liveData.postValue(fallbackAd())
                     loadingLive?.postValue(false)
                 }
@@ -628,6 +649,7 @@ object AdsManager {
         adUnitConfig: AdUnitConfig,
         frAds: FrameLayout,
         isCollapse: Boolean,
+        onAdClicked: () -> Unit = {},
     ) {
         if (adUnitConfig.isEnable) {
             removeBannerView(activity, frAds)
@@ -636,6 +658,11 @@ object AdsManager {
                 adUnitConfig.id,
                 AppConstant.CollapsibleGravity.BOTTOM,
                 object : AdCallback() {
+                    override fun onAdClicked() {
+                        super.onAdClicked()
+                        onAdClicked()
+                    }
+
                     override fun onAdFailedToLoad(i: LoadAdError?) {
                         super.onAdFailedToLoad(i)
                         frAds.visibility = View.GONE
@@ -645,6 +672,11 @@ object AdsManager {
                 })
             else ERainAd.getInstance()
                 .loadBanner(activity, adUnitConfig.id, object : AdCallback() {
+                    override fun onAdClicked() {
+                        super.onAdClicked()
+                        onAdClicked()
+                    }
+
                     override fun onAdFailedToLoad(i: LoadAdError?) {
                         super.onAdFailedToLoad(i)
                         frAds.visibility = View.GONE

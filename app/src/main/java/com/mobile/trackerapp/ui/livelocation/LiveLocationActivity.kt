@@ -23,6 +23,7 @@ import android.widget.ImageView
 import android.widget.FrameLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.OnBackPressedCallback
@@ -82,6 +83,11 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         ActivityResultContracts.RequestMultiplePermissions()
     ) { grants ->
         if (grants[Manifest.permission.ACCESS_FINE_LOCATION] == true || grants[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
+            if (friendsOnly) {
+                // "While using the app" is sufficient for this session. The
+                // background request is deferred until the next app launch.
+                LocationSharingCoordinator.deferBackgroundPermissionPromptForSession()
+            }
             ensureLocationSettings()
         } else if (::address.isInitialized) {
             pendingFocus = false
@@ -109,7 +115,10 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     ) { granted ->
         backgroundSettingsOpen = false
         if (granted) startFriendSharingFeatures()
-        else pendingSharing = false
+        else {
+            pendingSharing = false
+            LocationSharingCoordinator.deferBackgroundPermissionPromptForSession()
+        }
     }
     private val geocoder by lazy { Geocoder(this, Locale.getDefault()) }
     override fun onCreate(state: Bundle?) {
@@ -184,6 +193,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         findViewById<TextView>(R.id.map_satellite).setOnClickListener { selectMapType(GoogleMap.MAP_TYPE_SATELLITE, R.id.map_satellite, layers) }
         findViewById<TextView>(R.id.map_terrain).setOnClickListener { selectMapType(GoogleMap.MAP_TYPE_TERRAIN, R.id.map_terrain, layers) }
         findViewById<TextView>(R.id.map_hybrid).setOnClickListener { selectMapType(GoogleMap.MAP_TYPE_HYBRID, R.id.map_hybrid, layers) }
+        updateMapTypeTextStyle(R.id.map_normal)
         findViewById<View>(R.id.map_zoom_in).setOnClickListener { if (::map.isInitialized) map.animateCamera(CameraUpdateFactory.zoomIn()) }
         findViewById<View>(R.id.map_zoom_out).setOnClickListener { if (::map.isInitialized) map.animateCamera(CameraUpdateFactory.zoomOut()) }
         findViewById<View>(R.id.map_focus).setOnClickListener {
@@ -197,10 +207,17 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun selectMapType(type: Int, selected: Int, menu: View) {
         if (!::map.isInitialized) return
         map.mapType = type
-        listOf(R.id.map_normal, R.id.map_satellite, R.id.map_terrain, R.id.map_hybrid).forEach {
-            findViewById<TextView>(it).setTypeface(null, if (it == selected) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
-        }
+        updateMapTypeTextStyle(selected)
         menu.visibility = View.GONE
+    }
+
+    private fun updateMapTypeTextStyle(selected: Int) {
+        listOf(R.id.map_normal, R.id.map_satellite, R.id.map_terrain, R.id.map_hybrid).forEach {
+            findViewById<TextView>(it).typeface = ResourcesCompat.getFont(
+                this,
+                if (it == selected) R.font.inter_bold else R.font.inter_regular
+            )
+        }
     }
     override fun onMapReady(ready: GoogleMap) {
         map = ready
@@ -236,6 +253,10 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             if (friendsOnly) focusOnFriendLocations() else focusOnCurrentLocation()
         }
         if (friendsOnly) {
+            // Track Friend also shows the device owner's live position. This
+            // uses the foreground permission already requested for the map;
+            // it does not require background access just to display the user.
+            enableLocation()
             startFriendSharingFeatures()
         } else {
             enableLocation()
@@ -246,6 +267,10 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         if (!friendsOnly || !hasPermission()) return
         pendingSharing = true
         if (!hasBackgroundLocation()) {
+            if (LocationSharingCoordinator.shouldDeferBackgroundPermissionPromptForSession()) {
+                pendingSharing = false
+                return
+            }
             showBackgroundLocationDialog()
             return
         }
@@ -279,7 +304,11 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         AlertDialog.Builder(this)
             .setTitle(R.string.live_background_title)
             .setMessage(R.string.live_background_message)
-            .setNegativeButton(R.string.common_not_now) { _, _ -> backgroundSettingsOpen = false; pendingSharing = false }
+            .setNegativeButton(R.string.common_not_now) { _, _ ->
+                backgroundSettingsOpen = false
+                pendingSharing = false
+                LocationSharingCoordinator.deferBackgroundPermissionPromptForSession()
+            }
             .setPositiveButton(R.string.common_open_settings) { _, _ ->
                 if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
                     backgroundLocationPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
@@ -305,14 +334,21 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             .setPositiveButton(if (canRetry) R.string.common_allow else R.string.common_open_settings) { _, _ ->
                 if (canRetry) requestPermission() else {
                     returningFromAppSettings = true
-                    startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
+                    openLocationPermissionSettings()
                 }
             }
             .show()
     }
+
+    private fun openLocationPermissionSettings() {
+        startActivity(Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.parse("package:$packageName")
+        ))
+    }
     private fun enableLocation() { if (!::map.isInitialized || !hasPermission()) return; startLocationUpdates() }
     private fun startLocationUpdates() { callback?.let { fused.removeLocationUpdates(it) }; callback = object : LocationCallback() { override fun onLocationResult(r: LocationResult) { r.lastLocation?.let { updateLocation(it) } } }; val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000L).setMinUpdateDistanceMeters(5f).build(); fused.requestLocationUpdates(request, callback!!, Looper.getMainLooper()); fused.lastLocation.addOnSuccessListener { it?.let { updateLocation(it) } } }
-    private fun updateLocation(location: Location) { lastLocation = location; val point = LatLng(location.latitude, location.longitude); if (marker == null) { marker = map.addMarker(MarkerOptions().position(point).title(getString(R.string.live_me))); map.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 16f)) } else { marker?.position = point; marker?.title = getString(R.string.live_me) }; address.text = resolveAddress(location) }
+    private fun updateLocation(location: Location) { lastLocation = location; val point = LatLng(location.latitude, location.longitude); val markerTitle = getString(if (friendsOnly) R.string.live_my_location else R.string.live_me); if (marker == null) { marker = map.addMarker(MarkerOptions().position(point).title(markerTitle)); map.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 16f)) } else { marker?.position = point; marker?.title = markerTitle }; address.text = resolveAddress(location) }
     private fun focusOnCurrentLocation() {
         if (!::map.isInitialized) return
         val focus: (Location) -> Unit = { location ->
@@ -381,7 +417,11 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun focusOnFriendLocations(showInfoWindow: Boolean = false) {
-        if (!friendsOnly || !::map.isInitialized || friendMarkers.isEmpty()) return
+        if (!friendsOnly || !::map.isInitialized) return
+        if (friendMarkers.isEmpty()) {
+            focusOnCurrentLocation()
+            return
+        }
         if (friendMarkers.size == 1) {
             val marker = friendMarkers.values.first()
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.position, 16f))
@@ -642,7 +682,10 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         if (backgroundSettingsOpen) {
             backgroundSettingsOpen = false
             if (pendingSharing && hasBackgroundLocation()) startFriendSharingFeatures()
-            else if (pendingSharing) pendingSharing = false
+            else if (pendingSharing) {
+                pendingSharing = false
+                LocationSharingCoordinator.deferBackgroundPermissionPromptForSession()
+            }
         }
         if (returningFromAppSettings && !friendsOnly) {
             returningFromAppSettings = false

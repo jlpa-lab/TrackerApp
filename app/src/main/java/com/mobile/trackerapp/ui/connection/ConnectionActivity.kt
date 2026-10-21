@@ -165,12 +165,28 @@ class ConnectionActivity : DashboardActivity() {
             .setMessage(R.string.connection_background_sharing_message)
             .setNegativeButton(R.string.common_not_now) { _, _ -> backgroundSettingsOpen = false; pendingSharingEnable = false }
             .setPositiveButton(R.string.common_open_settings) { _, _ ->
-                startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
+                openLocationPermissionSettings()
             }
             .show()
     }
 
-    private fun updateSharingSummary(enabled: Boolean) { binding.connectionLocationSummary.text = getString(if (enabled) R.string.connection_location_shared_summary else R.string.connection_sharing_off) }
+    private fun updateSharingSummary(enabled: Boolean) {
+        binding.connectionLocationTitle.text = getString(
+            if (enabled) R.string.connection_sharing_on else R.string.connection_sharing_off
+        )
+        binding.connectionLocationSummary.visibility = View.VISIBLE
+        binding.connectionLocationSummary.text = getString(
+            if (enabled) R.string.connection_location_shared_summary
+            else R.string.connection_no_active_connections
+        )
+    }
+
+    private fun openLocationPermissionSettings() {
+        startActivity(Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.parse("package:$packageName")
+        ))
+    }
 
     private fun setSharingChecked(checked: Boolean) {
         suppressSharingChange = true

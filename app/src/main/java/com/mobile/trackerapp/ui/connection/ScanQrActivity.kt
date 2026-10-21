@@ -11,9 +11,9 @@ import android.widget.TextView
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
+import androidx.activity.result.PickVisualMediaRequest
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.RGBLuminanceSource
@@ -31,13 +31,11 @@ import com.mobile.trackerapp.ui.DashboardActivity
 class ScanQrActivity : DashboardActivity() {
 
     private lateinit var binding: ActivityScanQrBinding
-    private val galleryPicker = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            result.data?.data?.let { uri ->
-                val value = decodeQr(uri)
-                if (value == null) Toast.makeText(this, R.string.scan_qr_not_readable, Toast.LENGTH_LONG).show()
-                else returnCode(value)
-            }
+    private val galleryPicker = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        uri?.let {
+            val value = decodeQr(it)
+            if (value == null) Toast.makeText(this, R.string.scan_qr_not_readable, Toast.LENGTH_LONG).show()
+            else returnCode(value)
         }
     }
 
@@ -71,7 +69,7 @@ class ScanQrActivity : DashboardActivity() {
             findViewById<ImageView>(R.id.scan_flash_icon).setColorFilter(if (flashlightOn) android.graphics.Color.rgb(10, 48, 29) else android.graphics.Color.WHITE)
         }
         findViewById<View>(R.id.scan_gallery).setOnClickListener {
-            galleryPicker.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).setType("image/*").addCategory(Intent.CATEGORY_OPENABLE))
+            galleryPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
     }
 

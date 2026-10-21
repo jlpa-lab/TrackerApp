@@ -24,6 +24,22 @@ object LocationSharingCoordinator {
     private val syncRunning = AtomicBoolean(false)
     private val lastSyncAt = AtomicLong(0L)
 
+    // Background access is requested at most once per app-launch session. This
+    // lets Track Friend work with foreground access immediately, then ask again
+    // after the next launch without repeatedly interrupting the current flow.
+    @Volatile private var deferBackgroundPromptForSession = false
+
+    fun resetPermissionPromptSession() {
+        deferBackgroundPromptForSession = false
+    }
+
+    fun deferBackgroundPermissionPromptForSession() {
+        deferBackgroundPromptForSession = true
+    }
+
+    fun shouldDeferBackgroundPermissionPromptForSession(): Boolean =
+        deferBackgroundPromptForSession
+
     fun markAcceptedFriend(context: Context, friendName: String?) {
         val appContext = context.applicationContext
         appContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()

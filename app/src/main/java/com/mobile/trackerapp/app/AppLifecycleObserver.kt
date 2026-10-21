@@ -13,6 +13,7 @@ import com.mobile.trackerapp.ui.welcome.WelcomeActivity
 import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.inter_welcome_back
 import com.mobile.trackerapp.ui.onboarding.OnBoardingActivity
+import com.mobile.trackerapp.ui.phonelocator.PhoneLocatorActivity
 import com.mobile.trackerapp.service.LocationSharingCoordinator
 import com.mobile.trackerapp.utils.Routes
 import kotlin.jvm.java
@@ -26,6 +27,7 @@ class AppLifecycleObserver : DefaultLifecycleObserver {
         OnBoardingActivity::class.java,
         WelcomeActivity::class.java,
         ReasonActivity::class.java,
+        PhoneLocatorActivity::class.java,
     )
 
     override fun onStart(owner: LifecycleOwner) {

@@ -1,26 +1,31 @@
 package com.mobile.trackerapp.ui.connection
 
+import android.content.ClipData
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.FileProvider
+import com.mobile.trackerapp.BuildConfig
 import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.network.TrackerBackendClient
 import com.mobile.trackerapp.data.LocalTrackerDb
 import com.mobile.trackerapp.databinding.ActivityMyQrBinding
-import com.mobile.trackerapp.databinding.ActivityScanQrBinding
+import com.mobile.trackerapp.network.TrackerBackendClient
+import com.mobile.trackerapp.ui.DashboardActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.mobile.trackerapp.ui.DashboardActivity
+import java.io.File
 
 class MyQrActivity : DashboardActivity() {
     private lateinit var binding: ActivityMyQrBinding
+    private var qrBitmap: Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.statusBarColor = Color.rgb(246, 251, 248)
@@ -37,7 +42,8 @@ class MyQrActivity : DashboardActivity() {
         findViewById<TextView>(R.id.my_qr_status).text = getString(if (sharing) R.string.qr_sharing_active else R.string.connection_sharing_off)
         val render: (String) -> Unit = { code ->
             findViewById<TextView>(R.id.my_qr_code_text).text = code
-            findViewById<ImageView>(R.id.my_qr_image).setImageBitmap(ConnectionInvite.qrBitmap(code, 640))
+            qrBitmap = ConnectionInvite.qrBitmap(code, 640)
+            findViewById<ImageView>(R.id.my_qr_image).setImageBitmap(qrBitmap)
             findViewById<View>(R.id.my_qr_share).setOnClickListener { shareInvite(code) }
         }
         val localDb = LocalTrackerDb(this)
@@ -46,6 +52,32 @@ class MyQrActivity : DashboardActivity() {
     }
 
     private fun shareInvite(code: String) {
+        val bitmap = qrBitmap ?: ConnectionInvite.qrBitmap(code, 640).also { qrBitmap = it }
+        val shareDir = File(cacheDir, "shared_qr").apply { mkdirs() }
+        val shareFile = File(shareDir, "tracker_invite_qr.png")
+        val saved = shareFile.outputStream().use { output ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+        }
+        if (!saved) {
+            shareTextOnly(code)
+            return
+        }
+        val qrUri = FileProvider.getUriForFile(
+            this,
+            "${BuildConfig.APPLICATION_ID}.fileprovider",
+            shareFile
+        )
+        val send = Intent(Intent.ACTION_SEND).apply {
+            setDataAndType(qrUri, "image/png")
+            putExtra(Intent.EXTRA_STREAM, qrUri)
+            putExtra(Intent.EXTRA_TEXT, getString(R.string.connection_invite_share_text, code))
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            clipData = ClipData.newRawUri("QR code", qrUri)
+        }
+        startActivity(Intent.createChooser(send, getString(R.string.connection_share_friend_invite)))
+    }
+
+    private fun shareTextOnly(code: String) {
         val send = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, getString(R.string.connection_invite_share_text, code))

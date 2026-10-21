@@ -19,11 +19,11 @@
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E8EDEA" />
 
-                <include layout="@layout/settings_privacy_row" />
+                <include android:id="@+id/settings_privacy" layout="@layout/settings_privacy_row" />
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E8EDEA" />
 
-                <include layout="@layout/settings_terms_row" />
+                <include android:id="@+id/settings_terms" layout="@layout/settings_terms_row" />
             </LinearLayout>
 
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="28dp" android:gravity="center" android:text="@string/settings_version_fixed" android:textColor="@color/home_text_subtitle" android:fontFamily="@font/inter_regular" android:textSize="12sp" />

@@ -10,7 +10,9 @@ object AppConstants {
 
     internal const val KEY_TRACKING_SCREEN_FROM = "key_tracking_screen_from"
     internal const val LINK_APP = ""
-    internal const val LINK_PRIVACY_POLICY = ""
+    // Published legal pages for Phone Mobile Tracker.
+    internal const val LINK_PRIVACY_POLICY = "https://sites.google.com/view/phone-mobile-tracker/home?pli=1&authuser=0"
+    internal const val LINK_TERMS_AND_CONDITIONS = "https://sites.google.com/view/phone-mobile-tracker/home?pli=1&authuser=0"
     internal const val LINK_PLAY_STORE = ""
 
     internal const val KEY_FIRST_LANGUAGE = "KEY_FIRST_LANGUAGE"
