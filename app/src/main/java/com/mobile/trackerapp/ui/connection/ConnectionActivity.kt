@@ -26,6 +26,7 @@ import com.mobile.trackerapp.databinding.ActivityConnectionBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import com.mobile.trackerapp.ui.tools.ZoneStore
 import com.mobile.trackerapp.ui.rating.RateAppManager
+import androidx.activity.OnBackPressedCallback
 
 class ConnectionActivity : DashboardActivity() {
     private lateinit var binding: ActivityConnectionBinding
@@ -56,6 +57,13 @@ class ConnectionActivity : DashboardActivity() {
         root.addView(nav(getString(R.string.common_connection)), LinearLayout.LayoutParams(-1, wrap()))
         contentBanner?.let { root.addView(it, LinearLayout.LayoutParams(-1, wrap())) }
         setContentView(root)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                AdsManager.showInterHomeBack(this@ConnectionActivity) {
+                    finish()
+                }
+            }
+        })
         loadConnectionBanner()
         AdsManager.loadInterHome(this, ignoreLimit = true)
         binding.connectionShareInvite.setOnClickListener { startActivity(Intent(this, ShareConnectionActivity::class.java)) }
@@ -194,12 +202,6 @@ class ConnectionActivity : DashboardActivity() {
             putExtra(Intent.EXTRA_TEXT, "Connect with me on GPS Tracker. My invite code is $code")
         }
         startActivity(Intent.createChooser(send, "Share friend invite"))
-    }
-
-    override fun onBackPressed() {
-        AdsManager.showInterHomeBack(this) {
-            finish()
-        }
     }
 
     companion object {

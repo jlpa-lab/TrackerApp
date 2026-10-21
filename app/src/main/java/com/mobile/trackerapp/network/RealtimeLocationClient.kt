@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 class RealtimeLocationClient(
     context: Context,
     private val onFriendshipAccepted: (JSONObject) -> Unit = {},
+    private val onBackendUnavailable: (Throwable) -> Unit = {},
     private val onLocation: (JSONObject) -> Unit
 ) {
     private val appContext = context.applicationContext
@@ -37,12 +38,19 @@ class RealtimeLocationClient(
             }
         }
         socket.on(Socket.EVENT_DISCONNECT) { authenticated = false }
+        socket.on(Socket.EVENT_CONNECT_ERROR) { args ->
+            onBackendUnavailable(
+                IllegalStateException(args.firstOrNull()?.toString().orEmpty().ifBlank { "connection failed" })
+            )
+        }
         socket.on("friendship_accepted") { args ->
             (args.firstOrNull() as? JSONObject)?.let { payload -> onFriendshipAccepted(payload) }
         }
         socket.on("location_updated") { args -> (args.firstOrNull() as? JSONObject)?.let { payload -> LocalTrackerDb(appContext).write("friend_location_${payload.optString("device_id")}", payload.toString()); onLocation(payload) } }
         scope.launch {
-            val registered = runCatching { TrackerBackendClient(appContext).register(); true }.getOrDefault(false)
+            val registered = runCatching { TrackerBackendClient(appContext).register(); true }
+                .onFailure(onBackendUnavailable)
+                .getOrDefault(false)
             if (registered) socket.connect()
         }
     }

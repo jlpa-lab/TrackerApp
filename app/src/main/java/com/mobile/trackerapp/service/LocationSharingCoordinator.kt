@@ -12,6 +12,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicLong
 
 /** Keeps the local sharing preference and the persistent location service in sync. */
 object LocationSharingCoordinator {
@@ -21,6 +22,7 @@ object LocationSharingCoordinator {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val syncRunning = AtomicBoolean(false)
+    private val lastSyncAt = AtomicLong(0L)
 
     fun markAcceptedFriend(context: Context, friendName: String?) {
         val appContext = context.applicationContext
@@ -61,7 +63,11 @@ object LocationSharingCoordinator {
 
     /** Reconciles server-side acceptance with this device after app startup/resume. */
     fun syncAcceptedFriends(context: Context) {
+        val now = android.os.SystemClock.elapsedRealtime()
+        val previous = lastSyncAt.get()
+        if (now - previous < SYNC_INTERVAL_MS) return
         if (!syncRunning.compareAndSet(false, true)) return
+        lastSyncAt.set(now)
         val appContext = context.applicationContext
         scope.launch {
             try {
@@ -93,9 +99,16 @@ object LocationSharingCoordinator {
                         appContext.stopService(android.content.Intent(appContext, LocationSharingService::class.java))
                     }
                 }
+            } catch (error: Exception) {
+                // This reconciliation runs from app/activity lifecycle callbacks.
+                // A temporary backend or quota failure must never escape this
+                // background coroutine or show an error outside Track Friend.
+                android.util.Log.w("LocationSharing", "Friend sync unavailable", error)
             } finally {
                 syncRunning.set(false)
             }
         }
     }
+
+    private const val SYNC_INTERVAL_MS = 5 * 60_000L
 }

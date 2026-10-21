@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.activity.OnBackPressedCallback
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -69,6 +70,13 @@ open class FriendRequestsActivity : DashboardActivity() {
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
         setContentView(layoutResource)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                AdsManager.showInterHomeBack(this@FriendRequestsActivity) {
+                    finish()
+                }
+            }
+        })
         val scroll = findViewById<android.widget.ScrollView>(R.id.friend_requests_scroll)
         val friendCodeInput = findViewById<EditText>(R.id.friend_code_input)
         val initialBottomPadding = scroll.paddingBottom
@@ -137,7 +145,7 @@ open class FriendRequestsActivity : DashboardActivity() {
                 loadSentRequests()
             }.onFailure { Toast.makeText(this@FriendRequestsActivity, getString(R.string.connection_backend_unavailable, it.message.orEmpty()), Toast.LENGTH_LONG).show() }
         }
-        findViewById<View>(R.id.friend_back).setOnClickListener { onBackPressed() }
+        findViewById<View>(R.id.friend_back).setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         findViewById<View>(R.id.friend_add).setOnClickListener { hideFriendKeyboard(); showPanel(R.id.friend_add) }
         findViewById<View>(R.id.friend_received).setOnClickListener { hideFriendKeyboard(); showPanel(R.id.friend_received); loadReceivedRequests() }
         findViewById<View>(R.id.friend_sent).setOnClickListener { hideFriendKeyboard(); showPanel(R.id.friend_sent); loadSentRequests() }
@@ -484,11 +492,6 @@ open class FriendRequestsActivity : DashboardActivity() {
         focusedView.clearFocus()
     }
 
-    override fun onBackPressed() {
-        AdsManager.showInterHomeBack(this) {
-            finish()
-        }
-    }
 }
 
 

@@ -21,6 +21,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.Geofence
@@ -92,8 +93,15 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         hideNavigationBar()
         binding = ActivityZoneAlertBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                AdsManager.showInterHomeBack(this@ZoneAlertActivity) {
+                    finish()
+                }
+            }
+        })
         AdsManager.loadInterHome(this, ignoreLimit = true)
-        binding.zoneBack.setOnClickListener { onBackPressed() };
+        binding.zoneBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         loadZoneAlertBanner()
         binding.zoneAdd.setOnClickListener { startActivity(Intent(this, CreateZoneActivity::class.java)) }
         binding.zoneCount.setOnClickListener {
@@ -480,12 +488,6 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         if (::mapView.isInitialized) mapView.onSaveInstanceState(outState)
-    }
-
-    override fun onBackPressed() {
-        AdsManager.showInterHomeBack(this) {
-            finish()
-        }
     }
 
     @Deprecated("Deprecated in Android")

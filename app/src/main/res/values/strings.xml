@@ -367,6 +367,7 @@
     <string name="track_friend_friends">Friends</string>
     <string name="track_friend_count_zero">0 friends</string>
     <string name="track_friend_no_accepted">No accepted friends yet.</string>
+    <string name="track_friend_service_unavailable">Tracking service is temporarily unavailable. Please try again shortly.</string>
     <string name="track_friend_add">Add friend</string>
     <string name="track_friend_received_requests">View received requests</string>
     <string name="track_friend_sent_requests">View sent requests</string>

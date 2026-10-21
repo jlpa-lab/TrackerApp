@@ -115,7 +115,7 @@ class NearbyCategoriesActivity : DashboardActivity() {
     private fun categoryTile(category: ExploreCategory): LinearLayout = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER
-        setPadding(dp(4), dp(5), dp(4), dp(4))
+        setPadding(dp(4), dp(3), dp(4), dp(3))
         background = GradientDrawable().apply {
             setColor(Color.WHITE)
             cornerRadius = dp(18).toFloat()
@@ -135,7 +135,9 @@ class NearbyCategoriesActivity : DashboardActivity() {
             scaleType = ImageView.ScaleType.CENTER_INSIDE
             contentDescription = null
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, LinearLayout.LayoutParams(dp(48), dp(48)))
+        }, LinearLayout.LayoutParams(dp(44), dp(44)).apply {
+            gravity = Gravity.CENTER_HORIZONTAL
+        })
 
         addView(TextView(this@NearbyCategoriesActivity).apply {
             text = category.title
@@ -146,8 +148,8 @@ class NearbyCategoriesActivity : DashboardActivity() {
             includeFontPadding = false
             maxLines = 2
             setLineSpacing(0f, 0.98f)
-        }, LinearLayout.LayoutParams(-1, dp(34)).apply {
-            topMargin = dp(4)
+        }, LinearLayout.LayoutParams(-1, dp(32)).apply {
+            topMargin = dp(1)
         })
     }
 

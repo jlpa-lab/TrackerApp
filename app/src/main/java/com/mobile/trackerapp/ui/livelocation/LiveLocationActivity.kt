@@ -25,6 +25,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.IntentSenderRequest
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
@@ -75,6 +76,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private val friendPermissionGranted = mutableMapOf<String, Boolean>()
     private val friendSharingEnabled = mutableMapOf<String, Boolean>()
     private val friendLocationRequestStatus = mutableMapOf<String, String>()
+    private var friendBackendUnavailable = false
     private var friendCameraFocused = false
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -115,6 +117,14 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         AdsManager.loadInterBack(this, ignoreLimit = true)
         fused = LocationServices.getFusedLocationProviderClient(this)
         setContentView(layoutInflater.inflate(locationLayout, null))
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                dismissFriendsPopup()
+                AdsManager.showInterHomeBack(this@LiveLocationActivity) {
+                    finish()
+                }
+            }
+        })
         AdsManager.loadBanner(
             this,
             AdRemoteConfig.banner_all,
@@ -131,6 +141,12 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                         val friendName = payload.optString("friend_name").ifBlank { payload.optString("name") }
                         LocationSharingCoordinator.markAcceptedFriend(this, friendName)
                     }
+                },
+                onBackendUnavailable = {
+                    runOnUiThread {
+                        friendBackendUnavailable = true
+                        if (friendsDialog?.isShowing == true) renderFriendRows()
+                    }
                 }
             )
             realtime.connect()
@@ -138,7 +154,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         intent.getStringExtra("screen_title")?.let { findViewById<TextView>(R.id.live_title).text = it }
         intent.getStringExtra("screen_subtitle")?.let { findViewById<TextView>(R.id.live_subtitle).text = it }
         findViewById<ImageView>(R.id.live_back).setOnClickListener {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
         if (friendsOnly) {
             findViewById<View>(R.id.self_location_controls).visibility = View.GONE
@@ -425,7 +441,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun loadAcceptedFriends() {
         CoroutineScope(Dispatchers.Main).launch {
-            val result = runCatching {
+            val result = try {
                 val backend = TrackerBackendClient(this@LiveLocationActivity)
                 backend.register()
                 val array = backend.listFriendsOrLegacy().optJSONArray("friends") ?: org.json.JSONArray()
@@ -447,10 +463,17 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                     friend.optJSONObject("last_location")?.let { locations[id] = it }
                 }
                 AcceptedFriendSnapshot(friends, models, permissions, sharing, requests, locations)
-            }.getOrElse { AcceptedFriendSnapshot(linkedMapOf(), linkedMapOf(), linkedMapOf(), linkedMapOf(), linkedMapOf(), linkedMapOf()) }
+            } catch (error: Exception) {
+                android.util.Log.w("LiveLocation", "Could not load accepted friends", error)
+                AcceptedFriendSnapshot(
+                    linkedMapOf(), linkedMapOf(), linkedMapOf(), linkedMapOf(),
+                    linkedMapOf(), linkedMapOf(), backendUnavailable = true
+                )
+            }
 
             val removed = friendMarkers.keys - result.friends.keys
             removed.forEach { friendMarkers.remove(it)?.remove() }
+            friendBackendUnavailable = result.backendUnavailable
             acceptedFriends.clear(); acceptedFriends.putAll(result.friends)
             friendDeviceModels.clear(); friendDeviceModels.putAll(result.models)
             friendPermissionGranted.clear(); friendPermissionGranted.putAll(result.permissions)
@@ -470,7 +493,8 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         val permissions: LinkedHashMap<String, Boolean>,
         val sharing: LinkedHashMap<String, Boolean>,
         val requestStatus: LinkedHashMap<String, String>,
-        val locations: LinkedHashMap<String, JSONObject>
+        val locations: LinkedHashMap<String, JSONObject>,
+        val backendUnavailable: Boolean = false
     )
 
     private fun renderFriendRows() {
@@ -479,6 +503,12 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         val empty = panel.findViewById<TextView>(R.id.friend_empty_message)
         val count = panel.findViewById<TextView>(R.id.friend_count)
         rows.removeAllViews()
+        if (friendBackendUnavailable) {
+            count.text = "—"
+            empty.text = getString(R.string.track_friend_service_unavailable)
+            empty.visibility = View.VISIBLE
+            return
+        }
         count.text = if (acceptedFriends.size == 1) getString(R.string.live_friend_count_one) else getString(R.string.live_friend_count, acceptedFriends.size)
         empty.text = when {
             acceptedFriends.isEmpty() -> getString(R.string.live_no_accepted_friends)
@@ -631,11 +661,5 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onDestroy()
     }
 
-    override fun onBackPressed() {
-        dismissFriendsPopup()
-        AdsManager.showInterHomeBack(this) {
-            finish()
-        }
-    }
 }
 

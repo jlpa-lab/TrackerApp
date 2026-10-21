@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -94,8 +95,15 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityTrafficAlertBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                AdsManager.showInterHomeBack(this@TrafficAlertActivity) {
+                    finish()
+                }
+            }
+        })
         AdsManager.loadInterHome(this, ignoreLimit = true)
-        binding.trafficBack.setOnClickListener { onBackPressed() }
+        binding.trafficBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         loadTrafficAlertBanner()
         locationHint = binding.trafficLocationHint
         statusTitle = binding.trafficStatusTitle
@@ -309,12 +317,6 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
         locationCallback = null
         locationUpdatesActive = false
         super.onDestroy()
-    }
-
-    override fun onBackPressed() {
-        AdsManager.showInterHomeBack(this) {
-            finish()
-        }
     }
 
     private fun hideSystemNavigation() {

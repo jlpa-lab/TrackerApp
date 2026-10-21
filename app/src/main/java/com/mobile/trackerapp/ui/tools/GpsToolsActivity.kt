@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -33,11 +34,18 @@ class GpsToolsActivity : DashboardActivity() {
         hideNavigationBar()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val binding = com.mobile.trackerapp.databinding.ActivityGpsToolsBinding.inflate(layoutInflater)
-        setContentView(binding.root); binding.gpsToolsBack.setOnClickListener { finish() }
+        setContentView(binding.root)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                AdsManager.showInterHomeBack(this@GpsToolsActivity) {
+                    finish()
+                }
+            }
+        })
         AdsManager.loadInterHome(this, ignoreLimit = true)
         AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))
-        binding.gpsToolsBack.setOnClickListener { onBackPressed() }
+        binding.gpsToolsBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding.gpsCompassRow.root.setOnClickListener { startActivity(Intent(this, CompassActivity::class.java)) }
         binding.gpsStopwatchRow.root.setOnClickListener { startActivity(Intent(this, StopwatchActivity::class.java)) }
         binding.gpsSpeedometerRow.root.setOnClickListener { startActivity(Intent(this, SpeedometerActivity::class.java)) }
@@ -79,12 +87,6 @@ class GpsToolsActivity : DashboardActivity() {
         setColor(color)
         cornerRadius = dp(radius).toFloat()
         setStroke(dp(1), stroke)
-    }
-
-    override fun onBackPressed() {
-        AdsManager.showInterHomeBack(this) {
-            finish()
-        }
     }
 
     private data class Tool(val title: String, val subtitle: String, val icon: Int, val activity: Class<out android.app.Activity>)

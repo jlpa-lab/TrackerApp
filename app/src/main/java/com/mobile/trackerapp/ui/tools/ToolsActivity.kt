@@ -3,6 +3,7 @@ package com.mobile.trackerapp.ui.tools
 import android.os.Bundle
 import android.content.Intent
 import android.widget.LinearLayout
+import androidx.activity.OnBackPressedCallback
 import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.banner_all
@@ -21,6 +22,13 @@ class ToolsActivity : DashboardActivity() {
         binding.root.addView(nav("Tools"), LinearLayout.LayoutParams(-1, wrap()))
         binding.root.addView(toolsBanner)
         setContentView(binding.root)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                AdsManager.showInterHomeBack(this@ToolsActivity) {
+                    finish()
+                }
+            }
+        })
         AdsManager.loadInterHome(this, ignoreLimit = true)
         hideNavigationBar()
         loadToolsBanner()
@@ -65,9 +73,4 @@ class ToolsActivity : DashboardActivity() {
         )
     }
 
-    override fun onBackPressed() {
-        AdsManager.showInterHomeBack(this) {
-            finish()
-        }
-    }
 }

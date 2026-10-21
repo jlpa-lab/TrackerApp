@@ -23,6 +23,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -111,8 +112,13 @@ class NearbyActivity : DashboardActivity() {
         selectedRadiusKm = DEFAULT_RADIUS_KM
         binding = ActivityNearbyBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                AdsManager.showInterHomeBack(this@NearbyActivity) { finish() }
+            }
+        })
         AdsManager.loadInterHome(this, ignoreLimit = true)
-        binding.nearbyBack.setOnClickListener { onBackPressed() }
+        binding.nearbyBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         loadNearByBanner()
         nearbyRoot = binding.root
         search = binding.nearbySearch
@@ -229,10 +235,6 @@ class NearbyActivity : DashboardActivity() {
 
     private fun openCategories() {
         startActivityForResult(Intent(this, NearbyCategoriesActivity::class.java), REQUEST_CATEGORIES)
-    }
-
-    override fun onBackPressed() {
-        AdsManager.showInterHomeBack(this) { finish() }
     }
 
     @Deprecated("Deprecated in Android")

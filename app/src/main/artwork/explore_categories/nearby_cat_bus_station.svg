@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+<path fill="#58595b" fill-rule="evenodd" d="M12,38 13,38 13,39 12,39Z"/>
+<path fill="#58595b" fill-rule="evenodd" d="M19,38 84,38 84,50 82,50 82,54 84,54 84,58 20,58 20,39 19,39Z"/>
+<path fill="#58595b" fill-rule="evenodd" d="M25,42 24,42 24,54 74,54 74,42 26,42Z"/>
+<path fill="#55acee" fill-rule="evenodd" d="M12,42 15,42 15,43 16,43 16,57 15,57 15,58 12,58 12,43Z"/>
+<path fill="#55acee" fill-rule="evenodd" d="M25,42 73,42 73,43 74,43 74,53 73,53 73,54 25,54 25,53 24,53 24,43 25,43Z"/>
+<path fill="#ccd6dd" fill-rule="evenodd" d="M28,32 76,32 76,33 79,33 79,34 81,34 81,35 82,35 82,36 83,36 83,37 84,37 84,38 13,38 13,37 14,37 14,36 16,36 16,35 18,35 18,34 22,34 22,33 28,33Z"/>
+<path fill="#808285" fill-rule="evenodd" d="M14,62 21,62 21,63 19,63 19,64 18,64 18,65 17,65 17,66 16,66 16,67 15,67 15,69 14,69 14,71 13,71 13,69 12,69 12,66 14,66 14,63Z"/>
+<path fill="#808285" fill-rule="evenodd" d="M31,62 65,62 65,63 63,63 63,64 62,64 62,65 61,65 61,66 60,66 60,67 59,67 59,69 58,69 58,74 38,74 38,69 37,69 37,67 36,67 36,66 35,66 35,65 34,65 34,64 33,64 33,63 31,63Z"/>
+<path fill="#808285" fill-rule="evenodd" d="M75,62 84,62 84,69 83,69 83,71 82,71 82,69 81,69 81,67 80,67 80,66 79,66 79,65 78,65 78,64 77,64 77,63 75,63Z"/>
+<path fill="#000000" fill-rule="evenodd" d="M24,66 28,66 28,67 30,67 30,68 32,68 32,70 33,70 33,72 34,72 34,76 33,76 33,78 32,78 32,79 31,79 31,80 30,80 30,81 28,81 28,82 24,82 24,81 22,81 22,80 21,80 21,79 20,79 20,78 19,78 19,76 18,76 18,72 19,72 19,70 20,70 20,68 22,68 22,67 24,67Z"/>
+<path fill="#000000" fill-rule="evenodd" d="M68,66 72,66 72,67 74,67 74,68 76,68 76,70 77,70 77,72 78,72 78,76 77,76 77,78 76,78 76,79 75,79 75,80 74,80 74,81 72,81 72,82 68,82 68,81 66,81 66,80 65,80 65,79 64,79 64,78 63,78 63,76 62,76 62,72 63,72 63,70 64,70 64,68 66,68 66,67 68,67Z"/>
+<path fill="#000000" fill-rule="evenodd" d="M24,70 23,70 23,71 22,71 22,77 23,77 23,78 29,78 29,77 30,77 30,71 29,71 29,70 25,70Z"/>
+<path fill="#000000" fill-rule="evenodd" d="M68,70 67,70 67,71 66,71 66,77 67,77 67,78 73,78 73,77 74,77 74,71 73,71 73,70 69,70Z"/>
+<path fill="#939598" fill-rule="evenodd" d="M20,58 82,58 82,62 19,62 19,61 20,61 20,59Z"/>
+<path fill="#bcbec0" fill-rule="evenodd" d="M24,62 28,62 28,63 31,63 31,64 33,64 33,65 34,65 34,66 35,66 35,67 36,67 36,69 37,69 37,72 38,72 38,74 34,74 34,70 33,70 33,68 32,68 32,67 30,67 30,66 22,66 22,67 20,67 20,68 19,68 19,70 18,70 18,74 17,74 17,73 15,73 15,69 16,69 16,67 17,67 17,66 18,66 18,65 19,65 19,64 21,64 21,63 24,63Z"/>
+<path fill="#bcbec0" fill-rule="evenodd" d="M68,62 72,62 72,63 75,63 75,64 77,64 77,65 78,65 78,66 79,66 79,67 80,67 80,69 81,69 81,73 79,73 79,74 78,74 78,70 77,70 77,68 76,68 76,67 74,67 74,66 66,66 66,67 64,67 64,68 63,68 63,70 62,70 62,74 58,74 58,72 59,72 59,69 60,69 60,67 61,67 61,66 62,66 62,65 63,65 63,64 65,64 65,63 68,63Z"/>
+<path fill="#292f33" fill-rule="evenodd" d="M13,38 17,38 17,39 19,39 19,41 20,41 20,59 19,59 19,61 17,61 17,62 12,62 12,58 16,58 16,42 12,42 12,39 13,39Z"/>
+<path fill="#99aab5" fill-rule="evenodd" d="M25,70 27,70 27,71 29,71 29,73 30,73 30,75 29,75 29,77 27,77 27,78 25,78 25,77 23,77 23,75 22,75 22,73 23,73 23,71 25,71Z"/>
+<path fill="#99aab5" fill-rule="evenodd" d="M69,70 71,70 71,71 73,71 73,73 74,73 74,75 73,75 73,77 71,77 71,78 69,78 69,77 67,77 67,75 66,75 66,73 67,73 67,71 69,71Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M23,62 24,62 24,63 23,63Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M28,62 29,62 29,63 28,63Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M67,62 68,62 68,63 67,63Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M72,62 73,62 73,63 72,63Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M20,63 21,63 21,64 20,64Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M31,63 32,63 32,64 31,64Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M64,63 65,63 65,64 64,64Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M75,63 76,63 76,64 75,64Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M15,68 16,68 16,69 15,69Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M36,68 37,68 37,69 36,69Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M59,68 60,68 60,69 59,69Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M80,68 81,68 81,69 80,69Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M12,70 13,70 13,71 12,71Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M83,70 84,70 84,71 83,71Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M14,71 15,71 15,72 14,72Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M37,71 38,71 38,72 37,72Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M58,71 59,71 59,72 58,72Z"/>
+<path fill="#b5b7b9" fill-rule="evenodd" d="M81,71 82,71 82,72 81,72Z"/>
+<path fill="#f4900c" fill-rule="evenodd" d="M82,58 84,58 84,62 82,62 82,59Z"/>
+<path fill="#f4900c" fill-rule="evenodd" d="M12,62 14,62 14,66 12,66 12,63Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M18,64 19,64 19,65 18,65Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M33,64 34,64 34,65 33,65Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M62,64 63,64 63,65 62,65Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M77,64 78,64 78,65 77,65Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M16,66 17,66 17,67 16,67Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M35,66 36,66 36,67 35,67Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M60,66 61,66 61,67 60,67Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M79,66 80,66 80,67 79,67Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M18,77 19,77 19,78 18,78Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M33,77 34,77 34,78 33,78Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M62,77 63,77 63,78 62,78Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M77,77 78,77 78,78 77,78Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M22,81 23,81 23,82 22,82Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M29,81 30,81 30,82 29,82Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M66,81 67,81 67,82 66,82Z"/>
+<path fill="#a1a2a3" fill-rule="evenodd" d="M73,81 74,81 74,82 73,82Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M23,66 24,66 24,67 23,67Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M28,66 29,66 29,67 28,67Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M67,66 68,66 68,67 67,67Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M72,66 73,66 73,67 72,67Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M18,71 19,71 19,72 18,72Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M33,71 34,71 34,72 33,72Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M62,71 63,71 63,72 62,72Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M77,71 78,71 78,72 77,72Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M19,78 20,78 20,79 19,79Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M32,78 33,78 33,79 32,79Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M63,78 64,78 64,79 63,79Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M76,78 77,78 77,79 76,79Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M21,80 22,80 22,81 21,81Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M30,80 31,80 31,81 30,81Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M65,80 66,80 66,81 65,81Z"/>
+<path fill="#303030" fill-rule="evenodd" d="M74,80 75,80 75,81 74,81Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M23,70 24,70 24,71 23,71Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M23,71 23,72 22,72 22,71Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M28,70 29,70 29,71 28,71Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M29,71 30,71 30,72 29,72Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M67,70 68,70 68,71 67,71Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M67,71 67,72 66,72 66,71Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M72,70 73,70 73,71 72,71Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M73,71 74,71 74,72 73,72Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M22,76 23,76 23,77 22,77Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M23,77 24,77 24,78 23,78Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M29,76 30,76 30,77 29,77Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M29,77 29,78 28,78 28,77Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M66,76 67,76 67,77 66,77Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M67,77 68,77 68,78 67,78Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M73,76 74,76 74,77 73,77Z"/>
+<path fill="#303539" fill-rule="evenodd" d="M73,77 73,78 72,78 72,77Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M24,70 25,70 25,71 24,71Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M27,70 28,70 28,71 27,71Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M68,70 69,70 69,71 68,71Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M71,70 72,70 72,71 71,71Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M22,72 23,72 23,73 22,73Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M29,72 30,72 30,73 29,73Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M66,72 67,72 67,73 66,73Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M73,72 74,72 74,73 73,73Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M22,75 23,75 23,76 22,76Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M29,75 30,75 30,76 29,76Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M66,75 67,75 67,76 66,76Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M73,75 74,75 74,76 73,76Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M24,77 25,77 25,78 24,78Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M27,77 28,77 28,78 27,78Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M68,77 69,77 69,78 68,78Z"/>
+<path fill="#86959e" fill-rule="evenodd" d="M71,77 72,77 72,78 71,78Z"/>
+<path fill="#dde0e2" fill-rule="evenodd" d="M26,32 27,32 27,33 26,33Z"/>
+<path fill="#dde0e2" fill-rule="evenodd" d="M79,33 80,33 80,34 79,34Z"/>
+<path fill="#dde0e2" fill-rule="evenodd" d="M81,34 82,34 82,35 81,35Z"/>
+<path fill="#dde0e2" fill-rule="evenodd" d="M15,35 16,35 16,36 15,36Z"/>
+<path fill="#dde0e2" fill-rule="evenodd" d="M83,36 84,36 84,37 83,37Z"/>
+<path fill="#dde0e2" fill-rule="evenodd" d="M19,79 20,79 20,80 19,80Z"/>
+<path fill="#dde0e2" fill-rule="evenodd" d="M20,80 21,80 21,81 20,81Z"/>
+<path fill="#dde0e2" fill-rule="evenodd" d="M32,79 33,79 33,80 32,80Z"/>
+<path fill="#dde0e2" fill-rule="evenodd" d="M32,80 32,81 31,81 31,80Z"/>
+<path fill="#dde0e2" fill-rule="evenodd" d="M63,79 64,79 64,80 63,80Z"/>
+<path fill="#dde0e2" fill-rule="evenodd" d="M64,80 65,80 65,81 64,81Z"/>
+<path fill="#dde0e2" fill-rule="evenodd" d="M76,79 77,79 77,80 76,80Z"/>
+<path fill="#dde0e2" fill-rule="evenodd" d="M76,80 76,81 75,81 75,80Z"/>
+<path fill="#404143" fill-rule="evenodd" d="M18,38 19,38 19,39 18,39Z"/>
+<path fill="#404143" fill-rule="evenodd" d="M19,39 20,39 20,40 19,40Z"/>
+<path fill="#404143" fill-rule="evenodd" d="M19,59 20,59 20,60 19,60Z"/>
+<path fill="#404143" fill-rule="evenodd" d="M17,61 18,61 18,62 17,62Z"/>
+<path fill="#404143" fill-rule="evenodd" d="M18,76 19,76 19,77 18,77Z"/>
+<path fill="#404143" fill-rule="evenodd" d="M33,76 34,76 34,77 33,77Z"/>
+<path fill="#404143" fill-rule="evenodd" d="M62,76 63,76 63,77 62,77Z"/>
+<path fill="#404143" fill-rule="evenodd" d="M77,76 78,76 78,77 77,77Z"/>
+<path fill="#404143" fill-rule="evenodd" d="M23,81 24,81 24,82 23,82Z"/>
+<path fill="#404143" fill-rule="evenodd" d="M28,81 29,81 29,82 28,82Z"/>
+<path fill="#404143" fill-rule="evenodd" d="M67,81 68,81 68,82 67,82Z"/>
+<path fill="#404143" fill-rule="evenodd" d="M72,81 73,81 73,82 72,82Z"/>
+<path fill="#a7a9ab" fill-rule="evenodd" d="M22,62 23,62 23,63 22,63Z"/>
+<path fill="#a7a9ab" fill-rule="evenodd" d="M29,62 30,62 30,63 29,63Z"/>
+<path fill="#a7a9ab" fill-rule="evenodd" d="M66,62 67,62 67,63 66,63Z"/>
+<path fill="#a7a9ab" fill-rule="evenodd" d="M73,62 74,62 74,63 73,63Z"/>
+<path fill="#a7a9ab" fill-rule="evenodd" d="M17,65 18,65 18,66 17,66Z"/>
+<path fill="#a7a9ab" fill-rule="evenodd" d="M34,65 35,65 35,66 34,66Z"/>
+<path fill="#a7a9ab" fill-rule="evenodd" d="M61,65 62,65 62,66 61,66Z"/>
+<path fill="#a7a9ab" fill-rule="evenodd" d="M78,65 79,65 79,66 78,66Z"/>
+<path fill="#a7a9ab" fill-rule="evenodd" d="M14,70 15,70 15,71 14,71Z"/>
+<path fill="#a7a9ab" fill-rule="evenodd" d="M37,70 38,70 38,71 37,71Z"/>
+<path fill="#a7a9ab" fill-rule="evenodd" d="M58,70 59,70 59,71 58,71Z"/>
+<path fill="#a7a9ab" fill-rule="evenodd" d="M81,70 82,70 82,71 81,71Z"/>
+<path fill="#8c8e91" fill-rule="evenodd" d="M19,63 20,63 20,64 19,64Z"/>
+<path fill="#8c8e91" fill-rule="evenodd" d="M32,63 33,63 33,64 32,64Z"/>
+<path fill="#8c8e91" fill-rule="evenodd" d="M63,63 64,63 64,64 63,64Z"/>
+<path fill="#8c8e91" fill-rule="evenodd" d="M76,63 77,63 77,64 76,64Z"/>
+<path fill="#8c8e91" fill-rule="evenodd" d="M15,67 16,67 16,68 15,68Z"/>
+<path fill="#8c8e91" fill-rule="evenodd" d="M36,67 37,67 37,68 36,68Z"/>
+<path fill="#8c8e91" fill-rule="evenodd" d="M59,67 60,67 60,68 59,68Z"/>
+<path fill="#8c8e91" fill-rule="evenodd" d="M80,67 81,67 81,68 80,68Z"/>
+<path fill="#8c8e91" fill-rule="evenodd" d="M12,69 13,69 13,70 12,70Z"/>
+<path fill="#8c8e91" fill-rule="evenodd" d="M83,69 84,69 84,70 83,70Z"/>
+<path fill="#8c8e91" fill-rule="evenodd" d="M13,71 14,71 14,72 13,72Z"/>
+<path fill="#8c8e91" fill-rule="evenodd" d="M82,71 83,71 83,72 82,72Z"/>
+<path fill="#191919" fill-rule="evenodd" d="M21,67 22,67 22,68 21,68Z"/>
+<path fill="#191919" fill-rule="evenodd" d="M30,67 31,67 31,68 30,68Z"/>
+<path fill="#191919" fill-rule="evenodd" d="M65,67 66,67 66,68 65,68Z"/>
+<path fill="#191919" fill-rule="evenodd" d="M74,67 75,67 75,68 74,68Z"/>
+<path fill="#191919" fill-rule="evenodd" d="M19,69 20,69 20,70 19,70Z"/>
+<path fill="#191919" fill-rule="evenodd" d="M32,69 33,69 33,70 32,70Z"/>
+<path fill="#191919" fill-rule="evenodd" d="M63,69 64,69 64,70 63,70Z"/>
+<path fill="#191919" fill-rule="evenodd" d="M76,69 77,69 77,70 76,70Z"/>
+<path fill="#191919" fill-rule="evenodd" d="M20,79 21,79 21,80 20,80Z"/>
+<path fill="#191919" fill-rule="evenodd" d="M31,79 32,79 32,80 31,80Z"/>
+<path fill="#191919" fill-rule="evenodd" d="M64,79 65,79 65,80 64,80Z"/>
+<path fill="#191919" fill-rule="evenodd" d="M75,79 76,79 76,80 75,80Z"/>
+<path fill="#e6e9ec" fill-rule="evenodd" d="M24,32 26,32 26,33 24,33Z"/>
+<path fill="#e6e9ec" fill-rule="evenodd" d="M77,32 78,32 78,33 77,33Z"/>
+<path fill="#e6e9ec" fill-rule="evenodd" d="M19,33 21,33 21,34 19,34Z"/>
+<path fill="#e6e9ec" fill-rule="evenodd" d="M17,34 18,34 18,35 17,35Z"/>
+<path fill="#e6e9ec" fill-rule="evenodd" d="M12,71 13,71 13,72 12,72Z"/>
+<path fill="#e6e9ec" fill-rule="evenodd" d="M13,72 14,72 14,73 13,73Z"/>
+<path fill="#e6e9ec" fill-rule="evenodd" d="M83,71 84,71 84,72 83,72Z"/>
+<path fill="#e6e9ec" fill-rule="evenodd" d="M83,72 83,73 82,73 82,72Z"/>
+<path fill="#6b747a" fill-rule="evenodd" d="M19,60 20,60 20,61 19,61Z"/>
+<path fill="#6b747a" fill-rule="evenodd" d="M19,61 19,62 18,62 18,61Z"/>
+<path fill="#6b747a" fill-rule="evenodd" d="M22,66 23,66 23,67 22,67Z"/>
+<path fill="#6b747a" fill-rule="evenodd" d="M29,66 30,66 30,67 29,67Z"/>
+<path fill="#6b747a" fill-rule="evenodd" d="M66,66 67,66 67,67 66,67Z"/>
+<path fill="#6b747a" fill-rule="evenodd" d="M73,66 74,66 74,67 73,67Z"/>
+<path fill="#6b747a" fill-rule="evenodd" d="M18,70 19,70 19,71 18,71Z"/>
+<path fill="#6b747a" fill-rule="evenodd" d="M33,70 34,70 34,71 33,71Z"/>
+<path fill="#6b747a" fill-rule="evenodd" d="M62,70 63,70 63,71 62,71Z"/>
+<path fill="#6b747a" fill-rule="evenodd" d="M77,70 78,70 78,71 77,71Z"/>
+<path fill="#f7f8fa" fill-rule="evenodd" d="M22,32 24,32 24,33 22,33Z"/>
+<path fill="#f7f8fa" fill-rule="evenodd" d="M78,32 79,32 79,33 78,33Z"/>
+<path fill="#f7f8fa" fill-rule="evenodd" d="M80,33 81,33 81,34 80,34Z"/>
+<path fill="#f7f8fa" fill-rule="evenodd" d="M16,34 17,34 17,35 16,35Z"/>
+<path fill="#f7f8fa" fill-rule="evenodd" d="M13,36 14,36 14,37 13,37Z"/>
+<path fill="#f7f8fa" fill-rule="evenodd" d="M13,37 13,38 12,38 12,37Z"/>
+<path fill="#f7f8fa" fill-rule="evenodd" d="M14,73 15,73 15,74 14,74Z"/>
+<path fill="#f7f8fa" fill-rule="evenodd" d="M81,73 82,73 82,74 81,74Z"/>
+<path fill="#ffac33" fill-rule="evenodd" d="M82,50 84,50 84,54 82,54 82,51Z"/>
+<path fill="#939597" fill-rule="evenodd" d="M21,62 22,62 22,63 21,63Z"/>
+<path fill="#939597" fill-rule="evenodd" d="M30,62 31,62 31,63 30,63Z"/>
+<path fill="#939597" fill-rule="evenodd" d="M65,62 66,62 66,63 65,63Z"/>
+<path fill="#939597" fill-rule="evenodd" d="M74,62 75,62 75,63 74,63Z"/>
+<path fill="#939597" fill-rule="evenodd" d="M14,69 15,69 15,70 14,70Z"/>
+<path fill="#939597" fill-rule="evenodd" d="M37,69 38,69 38,70 37,70Z"/>
+<path fill="#939597" fill-rule="evenodd" d="M58,69 59,69 59,70 58,70Z"/>
+<path fill="#939597" fill-rule="evenodd" d="M81,69 82,69 82,70 81,70Z"/>
+<path fill="#a5a6a8" fill-rule="evenodd" d="M20,67 21,67 21,68 20,68Z"/>
+<path fill="#a5a6a8" fill-rule="evenodd" d="M20,68 20,69 19,69 19,68Z"/>
+<path fill="#a5a6a8" fill-rule="evenodd" d="M31,67 32,67 32,68 31,68Z"/>
+<path fill="#a5a6a8" fill-rule="evenodd" d="M32,68 33,68 33,69 32,69Z"/>
+<path fill="#a5a6a8" fill-rule="evenodd" d="M64,67 65,67 65,68 64,68Z"/>
+<path fill="#a5a6a8" fill-rule="evenodd" d="M64,68 64,69 63,69 63,68Z"/>
+<path fill="#a5a6a8" fill-rule="evenodd" d="M75,67 76,67 76,68 75,68Z"/>
+<path fill="#a5a6a8" fill-rule="evenodd" d="M76,68 77,68 77,69 76,69Z"/>
+<path fill="#5783a5" fill-rule="evenodd" d="M15,42 16,42 16,43 15,43Z"/>
+<path fill="#5783a5" fill-rule="evenodd" d="M24,42 25,42 25,43 24,43Z"/>
+<path fill="#5783a5" fill-rule="evenodd" d="M73,42 74,42 74,43 73,43Z"/>
+<path fill="#5783a5" fill-rule="evenodd" d="M24,53 25,53 25,54 24,54Z"/>
+<path fill="#5783a5" fill-rule="evenodd" d="M73,53 74,53 74,54 73,54Z"/>
+<path fill="#5783a5" fill-rule="evenodd" d="M15,57 16,57 16,58 15,58Z"/>
+<path fill="#d3dce1" fill-rule="evenodd" d="M27,32 28,32 28,33 27,33Z"/>
+<path fill="#d3dce1" fill-rule="evenodd" d="M76,32 77,32 77,33 76,33Z"/>
+<path fill="#d3dce1" fill-rule="evenodd" d="M21,33 22,33 22,34 21,34Z"/>
+<path fill="#d3dce1" fill-rule="evenodd" d="M82,35 83,35 83,36 82,36Z"/>
+<path fill="#c0c2c4" fill-rule="evenodd" d="M14,72 15,72 15,73 14,73Z"/>
+<path fill="#c0c2c4" fill-rule="evenodd" d="M81,72 82,72 82,73 81,73Z"/>
+<path fill="#c0c2c4" fill-rule="evenodd" d="M16,73 17,73 17,74 16,74Z"/>
+<path fill="#c0c2c4" fill-rule="evenodd" d="M79,73 80,73 80,74 79,74Z"/>
+<path fill="#2f3438" fill-rule="evenodd" d="M17,38 18,38 18,39 17,39Z"/>
+<path fill="#2f3438" fill-rule="evenodd" d="M19,40 20,40 20,41 19,41Z"/>
+<path fill="#d5d6d8" fill-rule="evenodd" d="M15,73 16,73 16,74 15,74Z"/>
+<path fill="#d5d6d8" fill-rule="evenodd" d="M80,73 81,73 81,74 80,74Z"/>
+</svg>

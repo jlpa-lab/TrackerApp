@@ -14,6 +14,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class TrackerBackendClient(context: Context) {
+    private class BackendHttpException(val status: Int, message: String) : IllegalStateException(message)
     private val appContext = context.applicationContext
     private val prefs = appContext.getSharedPreferences("tracker_backend", Context.MODE_PRIVATE)
     private val deviceId = Settings.Secure.getString(appContext.contentResolver, Settings.Secure.ANDROID_ID)
@@ -42,7 +43,10 @@ class TrackerBackendClient(context: Context) {
             refreshSession(prefs.getString("session_token", null))
             return call(path, method, body, retryAuth = false)
         }
-        error(runCatching { JSONObject(text).optString("error") }.getOrNull().orEmpty().ifBlank { "backend request failed ($status)" })
+        throw BackendHttpException(
+            status,
+            runCatching { JSONObject(text).optString("error") }.getOrNull().orEmpty().ifBlank { "backend request failed ($status)" }
+        )
     }
 
     private suspend fun refreshSession(invalidToken: String?) = registerMutex.withLock {
@@ -75,7 +79,10 @@ class TrackerBackendClient(context: Context) {
     suspend fun listSentRequests() = call("/api/v1/friends/requests/sent", "GET")
     suspend fun listFriends() = call("/api/v1/friends", "GET")
     suspend fun listFriendsOrLegacy(): JSONObject {
-        return runCatching { listFriends() }.getOrElse { endpointError ->
+        return try {
+            listFriends()
+        } catch (endpointError: BackendHttpException) {
+            if (endpointError.status != HttpURLConnection.HTTP_NOT_FOUND) throw endpointError
             // Older deployed backends do not have /friends yet. Reconstruct the
             // accepted-friend list from the request endpoints so the map never
             // turns a backend version mismatch into a false empty state.
