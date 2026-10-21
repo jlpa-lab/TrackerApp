@@ -24,44 +24,37 @@ class ToolsActivity : DashboardActivity() {
         setContentView(binding.root)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                AdsManager.showInterHomeBack(this@ToolsActivity) {
+                AdsManager.showInterHomeBack(this@ToolsActivity, onAction = { adWasShown ->
+                    if (adWasShown) RateAppManager.skipAutomaticTriggerForInterstitial()
                     finish()
-                }
+                })
             }
         })
         AdsManager.loadInterHome(this, ignoreLimit = true)
         hideNavigationBar()
         loadToolsBanner()
         binding.toolCompassRow.root.setOnClickListener {
-            RateAppManager.markGpsToolUsed()
             startActivity(Intent(this, CompassActivity::class.java))
         }
         binding.toolSpeedometerRow.root.setOnClickListener {
-            RateAppManager.markGpsToolUsed()
             startActivity(Intent(this, SpeedometerActivity::class.java))
         }
         binding.toolLevelRow.root.setOnClickListener {
-            RateAppManager.markGpsToolUsed()
             startActivity(Intent(this, LevelMeterActivity::class.java))
         }
         binding.toolAreaCodesRow.root.setOnClickListener {
-            RateAppManager.markGpsToolUsed()
             startActivity(Intent(this, AreaCodesActivity::class.java))
         }
         binding.toolStopwatchRow.root.setOnClickListener {
-            RateAppManager.markGpsToolUsed()
             startActivity(Intent(this, StopwatchActivity::class.java))
         }
         binding.toolTrafficRow.root.setOnClickListener {
-            RateAppManager.markCoreFeatureUsed()
             startActivity(Intent(this, TrafficAlertActivity::class.java))
         }
         binding.toolZoneRow.root.setOnClickListener {
-            RateAppManager.markZoneCreated()
             startActivity(Intent(this, ZoneAlertActivity::class.java))
         }
         binding.toolNearbyRow.root.setOnClickListener {
-            RateAppManager.markNearbyUsed()
             startActivity(Intent(this, NearbyActivity::class.java))
         }
     }

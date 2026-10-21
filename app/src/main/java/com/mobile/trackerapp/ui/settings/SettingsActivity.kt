@@ -10,6 +10,7 @@ import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ui.DashboardActivity
 import com.mobile.trackerapp.ui.language.LanguageActivity
 import com.mobile.trackerapp.ui.rating.RateAppActivity
+import com.mobile.trackerapp.ui.rating.RateAppManager
 import com.mobile.trackerapp.pref.AppSharedPreferencesApp
 import com.mobile.trackerapp.app.AppConstants
 
@@ -23,8 +24,11 @@ class SettingsActivity : DashboardActivity() {
         root.findViewById<android.view.View>(R.id.settings_rate).setOnClickListener {
             if (AppSharedPreferencesApp(this).isRate) {
                 android.widget.Toast.makeText(this, getString(R.string.settings_rating_thanks), android.widget.Toast.LENGTH_SHORT).show()
-            } else {
-                startActivity(Intent(this, RateAppActivity::class.java))
+            } else if (RateAppManager.canOpenSettingsRateDialog(this)) {
+                startActivity(
+                    Intent(this, RateAppActivity::class.java)
+                        .putExtra(RateAppActivity.EXTRA_ENTRY_POINT, RateAppManager.EntryPoint.SETTINGS.name)
+                )
             }
         }
         root.findViewById<android.view.View>(R.id.settings_privacy).setOnClickListener {

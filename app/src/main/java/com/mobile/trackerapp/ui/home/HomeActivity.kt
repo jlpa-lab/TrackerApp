@@ -157,8 +157,11 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (RateAppManager.shouldShowRateDialog(this)) {
-            startActivity(Intent(this, RateAppActivity::class.java))
+        if (RateAppManager.shouldShowAutomaticRateDialog(this)) {
+            startActivity(
+                Intent(this, RateAppActivity::class.java)
+                    .putExtra(RateAppActivity.EXTRA_ENTRY_POINT, RateAppManager.EntryPoint.AUTOMATIC.name)
+            )
         }
     }
 

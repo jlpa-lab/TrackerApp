@@ -22,6 +22,7 @@ import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityLevelMeterBinding
 import com.mobile.trackerapp.databinding.ActivityScanQrBinding
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.rating.RateAppManager
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -54,6 +55,7 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
     private var calibrationX = 0f
     private var calibrationY = 0f
     private var receivedSensorData = false
+    private var rateUseReported = false
     private var heldReading: Reading? = null
     private var currentReading = Reading(0f, 0f)
 
@@ -151,6 +153,10 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
             smoothX = -angleX
             smoothY = angleY
             receivedSensorData = true
+            if (!rateUseReported) {
+                rateUseReported = true
+                RateAppManager.markGpsToolUsed()
+            }
         } else {
             smoothX += ((-angleX) - smoothX) * 0.3f
             smoothY += (angleY - smoothY) * 0.3f

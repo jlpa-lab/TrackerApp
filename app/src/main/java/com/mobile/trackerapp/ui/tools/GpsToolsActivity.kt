@@ -37,9 +37,10 @@ class GpsToolsActivity : DashboardActivity() {
         setContentView(binding.root)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                AdsManager.showInterHomeBack(this@GpsToolsActivity) {
+                AdsManager.showInterHomeBack(this@GpsToolsActivity, onAction = { adWasShown ->
+                    if (adWasShown) com.mobile.trackerapp.ui.rating.RateAppManager.skipAutomaticTriggerForInterstitial()
                     finish()
-                }
+                })
             }
         })
         AdsManager.loadInterHome(this, ignoreLimit = true)

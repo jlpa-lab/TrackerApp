@@ -20,6 +20,7 @@ import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityAreaCodesBinding
 import com.mobile.trackerapp.databinding.ActivityStopwatchBinding
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.rating.RateAppManager
 import java.util.Locale
 
 class StopwatchActivity : DashboardActivity() {
@@ -58,7 +59,14 @@ class StopwatchActivity : DashboardActivity() {
         elapsedText = binding.stopwatchElapsed; stateText = binding.stopwatchState; currentLapText = binding.stopwatchCurrentLap
         lapCountText = binding.stopwatchLapCount; lapList = binding.stopwatchLapList; leftButton = binding.stopwatchLeft; mainButton = binding.stopwatchMain; totalTimeText = binding.textTime; currentLapRowLabel = binding.textCurrentlap
         leftButton.setOnClickListener { if (timer.isRunning) { timer.recordLap(); renderLaps(); renderState() } else if (timer.elapsedMillis() > 0L || timer.laps.isNotEmpty()) { timer.reset(); renderLaps(); renderState() } }
-        mainButton.setOnClickListener { if (timer.isRunning) timer.pause() else timer.start(); renderState(); if (timer.isRunning) startTicker() else timerHandler.removeCallbacks(ticker) }
+        mainButton.setOnClickListener {
+            if (timer.isRunning) timer.pause() else {
+                timer.start()
+                RateAppManager.markGpsToolUsed()
+            }
+            renderState()
+            if (timer.isRunning) startTicker() else timerHandler.removeCallbacks(ticker)
+        }
         renderState()
         renderLaps()
     }

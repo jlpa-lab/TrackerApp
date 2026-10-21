@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class RateAppActivity : AppCompatActivity() {
+    private lateinit var entryPoint: RateAppManager.EntryPoint
     private var rating = 0
     private var submitting = false
     private lateinit var title: TextView
@@ -32,6 +33,13 @@ class RateAppActivity : AppCompatActivity() {
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        entryPoint = intent.getStringExtra(EXTRA_ENTRY_POINT)
+            ?.let { value -> runCatching { RateAppManager.EntryPoint.valueOf(value) }.getOrNull() }
+            ?: RateAppManager.EntryPoint.AUTOMATIC
+        if (!RateAppManager.beginRateDialog(this, entryPoint)) {
+            finish()
+            return
+        }
         window.setBackgroundDrawableResource(android.R.color.transparent)
         setContentView(R.layout.activity_rate_app)
         title = findViewById(R.id.rate_title);
@@ -50,7 +58,12 @@ class RateAppActivity : AppCompatActivity() {
             RateAppManager.onRateDialogDismissed()
             finish()
         }
-        RateAppManager.onRateDialogShown()
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                RateAppManager.onRateDialogDismissed()
+                finish()
+            }
+        })
         showStart()
         stars.visibility = View.VISIBLE;
         rate_feedback_container.visibility = View.GONE;
@@ -163,7 +176,15 @@ class RateAppActivity : AppCompatActivity() {
                         189
                     )
                 )
-                setOnClickListener { rating = index + 1; showResult() }
+                setOnClickListener {
+                    rating = index + 1
+                    if (rating <= 3) {
+                        // The rating decision itself is final. Feedback upload is
+                        // best-effort and must not make the user eligible again.
+                        RateAppManager.onUserRated(this@RateAppActivity)
+                    }
+                    showResult()
+                }
             }, LinearLayout.LayoutParams(50.dp, 58.dp))
         }
     }
@@ -171,12 +192,16 @@ class RateAppActivity : AppCompatActivity() {
     private fun openPlay() {
         RateAppManager.onUserRated(this)
         val id = packageName
+        if (entryPoint == RateAppManager.EntryPoint.SETTINGS) {
+            openPlayStore(id)
+            return
+        }
         runCatching {
             val reviewManager = ReviewManagerFactory.create(this)
             reviewManager.requestReviewFlow().addOnSuccessListener { info ->
-                reviewManager.launchReviewFlow(this, info)
-            }.addOnFailureListener { openPlayStore(id) }
-        }.onFailure { openPlayStore(id) }
+                reviewManager.launchReviewFlow(this, info).addOnCompleteListener { finish() }
+            }.addOnFailureListener { finish() }
+        }.onFailure { finish() }
     }
 
     private fun openPlayStore(id: String) {
@@ -199,4 +224,8 @@ class RateAppActivity : AppCompatActivity() {
     }
 
     private val Int.dp get() = (this * resources.displayMetrics.density).toInt()
+
+    companion object {
+        const val EXTRA_ENTRY_POINT = "rate_entry_point"
+    }
 }

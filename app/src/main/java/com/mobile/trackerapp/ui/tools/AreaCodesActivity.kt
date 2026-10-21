@@ -45,6 +45,7 @@ import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityAreaCodesBinding
 import com.mobile.trackerapp.databinding.ActivityLevelMeterBinding
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.rating.RateAppManager
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Locale
@@ -139,6 +140,9 @@ class AreaCodesActivity : DashboardActivity() {
         sectionTitle.text = if (query.isBlank()) getString(R.string.area_popular) else getString(R.string.area_search_results)
         val matchingEntries = if (query.isBlank()) allEntries.take(4) else allEntries.filter {
             it.code.contains(query, ignoreCase = true) || it.city.contains(query, ignoreCase = true) || it.detail.contains(query, ignoreCase = true)
+        }
+        if (query.isNotBlank() && matchingEntries.isNotEmpty()) {
+            RateAppManager.markGpsToolUsed()
         }
         val visibleEntries = matchingEntries.take(MAX_RENDERED_RESULTS)
         countLabel.text = if (query.isBlank()) getString(R.string.area_regions_count, matchingEntries.size) else when {
@@ -445,6 +449,7 @@ class AreaCodesActivity : DashboardActivity() {
             runOnUiThread {
                 val match = countries.firstOrNull { it.iso == iso }
                 if (match != null) {
+                    RateAppManager.markGpsToolUsed()
                     chooseCountry(match)
                     Toast.makeText(this, getString(R.string.area_showing_codes_for, match.name), Toast.LENGTH_SHORT).show()
                 } else {

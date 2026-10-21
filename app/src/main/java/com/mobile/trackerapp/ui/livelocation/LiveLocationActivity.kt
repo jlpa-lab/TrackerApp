@@ -129,7 +129,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 dismissFriendsPopup()
-                AdsManager.showInterHomeBack(this@LiveLocationActivity) {
+                AdsManager.showInterHomeBack(this@LiveLocationActivity) { _ ->
                     finish()
                 }
             }

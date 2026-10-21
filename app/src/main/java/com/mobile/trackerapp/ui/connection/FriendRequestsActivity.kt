@@ -36,6 +36,7 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import androidx.core.content.res.ResourcesCompat
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.rating.RateAppManager
 import com.mobile.trackerapp.service.LocationSharingCoordinator
 import com.mobile.trackerapp.ui.tracker.TrackFriendMapActivity
 import java.text.SimpleDateFormat
@@ -72,7 +73,7 @@ open class FriendRequestsActivity : DashboardActivity() {
         setContentView(layoutResource)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                AdsManager.showInterHomeBack(this@FriendRequestsActivity) {
+                AdsManager.showInterHomeBack(this@FriendRequestsActivity) { _ ->
                     finish()
                 }
             }
@@ -201,6 +202,7 @@ open class FriendRequestsActivity : DashboardActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             runCatching { backend.sendFriendRequest(entered) }
                 .onSuccess {
+                    RateAppManager.markConnectionAdded()
                     Toast.makeText(this@FriendRequestsActivity, R.string.connection_request_sent, Toast.LENGTH_SHORT).show()
                     showPanel(R.id.friend_sent)
                     loadSentRequests()
@@ -256,6 +258,7 @@ open class FriendRequestsActivity : DashboardActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             runCatching { backend.decideRequest(id, action) }
                 .onSuccess {
+                    if (action == "accept") RateAppManager.markConnectionAdded()
                     if (action == "accept") startLocationSharingAfterAcceptance(friendName)
                     Toast.makeText(this@FriendRequestsActivity, if (action == "accept") R.string.connection_request_accepted else R.string.connection_request_rejected, Toast.LENGTH_SHORT).show()
                     loadReceivedRequests()

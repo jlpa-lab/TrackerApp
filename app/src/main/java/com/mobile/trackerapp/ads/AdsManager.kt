@@ -470,7 +470,12 @@ object AdsManager {
         if (loaded?.isReady == true) emit(loaded)
     }
 
-    fun showInterHomeBack(context: Context, ignoreLimit: Boolean = false, onAction: () -> Unit) {
+    /** Shows the back interstitial and reports whether it was consumed. */
+    fun showInterHomeBack(
+        context: Context,
+        ignoreLimit: Boolean = false,
+        onAction: (adWasShown: Boolean) -> Unit
+    ) {
         val interstitial = interHomeBackAdLive.value
         val allowShow = ignoreLimit || ERainAd.getInstance()
             .getShouldDisplayInterWelcomeBack(AdRemoteConfig.inter_back.enableUaCheck)
@@ -482,11 +487,11 @@ object AdsManager {
                     override fun onNextAction() {
                         super.onNextAction()
                         interHomeBackAdLive = MutableLiveData()
-                        onAction()
+                        onAction(true)
                     }
                 }, false)
         } else {
-            onAction()
+            onAction(false)
         }
     }
 

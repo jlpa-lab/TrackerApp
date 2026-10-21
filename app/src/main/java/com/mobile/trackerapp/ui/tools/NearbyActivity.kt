@@ -41,6 +41,7 @@ import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityNearbyBinding
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.rating.RateAppManager
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.URLEncoder
@@ -114,7 +115,10 @@ class NearbyActivity : DashboardActivity() {
         setContentView(binding.root)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                AdsManager.showInterHomeBack(this@NearbyActivity) { finish() }
+                AdsManager.showInterHomeBack(this@NearbyActivity, onAction = { adWasShown ->
+                    if (adWasShown) RateAppManager.skipAutomaticTriggerForInterstitial()
+                    finish()
+                })
             }
         })
         AdsManager.loadInterHome(this, ignoreLimit = true)
@@ -626,6 +630,9 @@ class NearbyActivity : DashboardActivity() {
 
     private fun showPlaces(places: List<NearbyPlace>, query: String, status: String?) {
         latestPlaces = places
+        if (places.isNotEmpty()) {
+            RateAppManager.markNearbyUsed()
+        }
         showAllResults = false
         resetResultsHeight()
         loading.visibility = View.GONE

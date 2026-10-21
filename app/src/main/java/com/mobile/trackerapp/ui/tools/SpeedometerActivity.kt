@@ -30,6 +30,7 @@ import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityScanQrBinding
 import com.mobile.trackerapp.databinding.ActivitySpeedometerBinding
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.rating.RateAppManager
 import java.util.Locale
 import kotlin.math.cos
 import kotlin.math.min
@@ -57,6 +58,7 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
     private var maxKmh = 0f
     private var speedSum = 0.0
     private var speedSamples = 0
+    private var rateUseReported = false
     private var distanceMeters = 0.0
     private var previousTripLocation: Location? = null
     private var elapsedBeforeRun = 0L
@@ -311,6 +313,10 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
 
     override fun onLocationChanged(location: Location) {
         if (location.hasSpeed()) {
+            if (!rateUseReported) {
+                rateUseReported = true
+                RateAppManager.markGpsToolUsed()
+            }
             speedKmh = location.speed * 3.6f
             if (trip == TripState.RUNNING) {
                 if (speedKmh > maxKmh) maxKmh = speedKmh

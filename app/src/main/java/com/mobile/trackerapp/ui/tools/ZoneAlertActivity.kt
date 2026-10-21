@@ -95,7 +95,7 @@ class ZoneAlertActivity : DashboardActivity(), OnMapReadyCallback {
         setContentView(binding.root)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                AdsManager.showInterHomeBack(this@ZoneAlertActivity) {
+                AdsManager.showInterHomeBack(this@ZoneAlertActivity) { _ ->
                     finish()
                 }
             }

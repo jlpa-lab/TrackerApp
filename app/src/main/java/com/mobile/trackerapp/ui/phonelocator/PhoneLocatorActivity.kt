@@ -441,7 +441,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
         if (countryDialog?.isShowing == true) {
             handleCountryPickerBack()
         } else if (findViewById<View>(R.id.phone_form).visibility == View.VISIBLE) {
-            AdsManager.showInterHomeBack(this) {
+            AdsManager.showInterHomeBack(this) { _ ->
                 finish()
             }
         } else {

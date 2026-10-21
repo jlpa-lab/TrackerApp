@@ -35,6 +35,7 @@ import android.text.style.ForegroundColorSpan
 import android.widget.ImageView
 import androidx.core.content.res.ResourcesCompat
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.rating.RateAppManager
 import com.mobile.trackerapp.service.LocationSharingCoordinator
 import com.mobile.trackerapp.ui.tracker.TrackFriendMapActivity
 import java.text.SimpleDateFormat
@@ -187,6 +188,7 @@ class TrackFriendRequestsActivity : DashboardActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             runCatching { backend.sendFriendRequest(entered) }
                 .onSuccess {
+                    RateAppManager.markConnectionAdded()
                     Toast.makeText(this@TrackFriendRequestsActivity, R.string.connection_request_sent, Toast.LENGTH_SHORT).show()
                     showPanel(R.id.friend_sent)
                     loadSentRequests()

@@ -47,7 +47,6 @@ import com.mobile.trackerapp.databinding.ActivityCreateZoneBinding
 import com.mobile.trackerapp.databinding.ActivityZoneAlertBinding
 import com.mobile.trackerapp.ui.DashboardActivity
 import com.mobile.trackerapp.ui.ZoneToggleView
-import com.mobile.trackerapp.ui.rating.RateAppManager
 import java.util.Locale
 import java.util.concurrent.Executors
 
@@ -261,7 +260,6 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
             ZoneStore.get(this).save(zone)
             runOnUiThread {
                 Toast.makeText(this, R.string.zone_saved, Toast.LENGTH_SHORT).show()
-                RateAppManager.markZoneCreated()
                 setResult(Activity.RESULT_OK)
                 finish()
             }

@@ -97,7 +97,7 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(binding.root)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                AdsManager.showInterHomeBack(this@TrafficAlertActivity) {
+                AdsManager.showInterHomeBack(this@TrafficAlertActivity) { _ ->
                     finish()
                 }
             }

@@ -59,9 +59,10 @@ class ConnectionActivity : DashboardActivity() {
         setContentView(root)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                AdsManager.showInterHomeBack(this@ConnectionActivity) {
+                AdsManager.showInterHomeBack(this@ConnectionActivity, onAction = { adWasShown ->
+                    if (adWasShown) RateAppManager.skipAutomaticTriggerForInterstitial()
                     finish()
-                }
+                })
             }
         })
         loadConnectionBanner()
@@ -138,7 +139,6 @@ class ConnectionActivity : DashboardActivity() {
             setSharingChecked(true)
             updateSharingSummary(true)
             Toast.makeText(this@ConnectionActivity, R.string.live_sharing_started, Toast.LENGTH_SHORT).show()
-            RateAppManager.markConnectionAdded()
             LocationSharingCoordinator.startIfPermitted(this@ConnectionActivity)
         }
     }

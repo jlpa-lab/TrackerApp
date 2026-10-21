@@ -30,6 +30,7 @@ import com.mobile.trackerapp.ads.banner_all
 import com.mobile.trackerapp.databinding.ActivityCompassBinding
 import com.mobile.trackerapp.databinding.ActivityStopwatchBinding
 import com.mobile.trackerapp.ui.DashboardActivity
+import com.mobile.trackerapp.ui.rating.RateAppManager
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.cos
@@ -54,6 +55,7 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
     private var hasHeading = false
     private var sensorAccuracy = SensorManager.SENSOR_STATUS_UNRELIABLE
     private var latestLocation: Location? = null
+    private var rateUseReported = false
     private lateinit var dial: CompassDialView
     private lateinit var headingValue: TextView
     private lateinit var directionValue: TextView
@@ -222,6 +224,10 @@ class CompassActivity : DashboardActivity(), SensorEventListener, LocationListen
         if (!hasHeading) {
             currentHeading = degrees
             hasHeading = true
+            if (!rateUseReported) {
+                rateUseReported = true
+                RateAppManager.markGpsToolUsed()
+            }
         } else {
             val delta = ((degrees - currentHeading + 540f) % 360f) - 180f
             currentHeading = (currentHeading + delta * HEADING_SMOOTHING + 360f) % 360f
