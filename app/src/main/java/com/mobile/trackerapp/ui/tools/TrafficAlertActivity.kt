@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
 import androidx.activity.result.IntentSenderRequest
@@ -118,11 +119,26 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap.apply {
             isTrafficEnabled = true
-            uiSettings.isZoomControlsEnabled = false
+            uiSettings.isZoomControlsEnabled = true
             uiSettings.isMyLocationButtonEnabled = false
             uiSettings.isCompassEnabled = true
+            uiSettings.isScrollGesturesEnabled = true
+            uiSettings.isZoomGesturesEnabled = true
             setOnCameraIdleListener { updateTrafficSummary() }
         }
+        (supportFragmentManager.findFragmentById(R.id.traffic_map) as? SupportMapFragment)
+            ?.view
+            ?.let { mapView ->
+                mapView.setOnTouchListener { view, event ->
+                    when (event.actionMasked) {
+                        MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE ->
+                            view.parent?.requestDisallowInterceptTouchEvent(true)
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
+                            view.parent?.requestDisallowInterceptTouchEvent(false)
+                    }
+                    false
+                }
+            }
         updateTrafficSummary()
         requestLocationAccess()
     }

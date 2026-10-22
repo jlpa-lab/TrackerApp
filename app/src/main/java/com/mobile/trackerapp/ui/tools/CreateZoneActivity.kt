@@ -79,7 +79,7 @@ class CreateZoneActivity : DashboardActivity(), OnMapReadyCallback {
     private var locationCallback: LocationCallback? = null
     private var selectedLocation: LatLng? = null
     private var selectedAddress = ""
-    private var radiusMeters = 500
+    private var radiusMeters = 100
     private var isSafe = true
     private var zoneId = NO_ZONE
     private var userMovedMap = false
