@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.tools
+package com.location.and.phone.tracker.locationnphonetracker.ui.tools
 
 import android.content.Intent
 import android.graphics.Color
@@ -14,10 +14,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.bindNativeAllAd
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ui.DashboardActivity
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.bindNativeAllAd
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ui.DashboardActivity
 
 /** Collection of the app's GPS and navigation tools. */
 class GpsToolsActivity : DashboardActivity() {
@@ -33,12 +33,12 @@ class GpsToolsActivity : DashboardActivity() {
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         hideNavigationBar()
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val binding = com.mobile.trackerapp.databinding.ActivityGpsToolsBinding.inflate(layoutInflater)
+        val binding = com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityGpsToolsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 AdsManager.showInterHomeBack(this@GpsToolsActivity, onAction = { adWasShown ->
-                    if (adWasShown) com.mobile.trackerapp.ui.rating.RateAppManager.skipAutomaticTriggerForInterstitial()
+                    if (adWasShown) com.location.and.phone.tracker.locationnphonetracker.ui.rating.RateAppManager.skipAutomaticTriggerForInterstitial()
                     finish()
                 })
             }

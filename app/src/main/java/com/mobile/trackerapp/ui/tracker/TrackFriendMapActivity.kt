@@ -1,10 +1,10 @@
-package com.mobile.trackerapp.ui.tracker
+package com.location.and.phone.tracker.locationnphonetracker.ui.tracker
 
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.ui.livelocation.LiveLocationActivity
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.banner_all
+import com.location.and.phone.tracker.locationnphonetracker.ui.livelocation.LiveLocationActivity
 
 /** Dedicated Track Friend map entry. It owns the Track Friend map flow and its Add Friend action. */
 class TrackFriendMapActivity : LiveLocationActivity() {

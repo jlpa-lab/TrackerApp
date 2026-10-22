@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.tools
+package com.location.and.phone.tracker.locationnphonetracker.ui.tools
 
 import android.app.Activity
 import android.content.Context
@@ -17,12 +17,12 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.core.view.WindowCompat
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.databinding.ActivityNearbyCategoriesBinding
-import com.mobile.trackerapp.ui.DashboardActivity
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.banner_all
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityNearbyCategoriesBinding
+import com.location.and.phone.tracker.locationnphonetracker.ui.DashboardActivity
 
 /** Fixed nearby category picker matching the app's three-column reference design. */
 class NearbyCategoriesActivity : DashboardActivity() {

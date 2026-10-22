@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.rating
+package com.location.and.phone.tracker.locationnphonetracker.ui.rating
 
 import android.content.res.ColorStateList
 import android.content.Intent
@@ -9,8 +9,8 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.network.TrackerBackendClient
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.network.TrackerBackendClient
 import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

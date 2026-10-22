@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.tools
+package com.location.and.phone.tracker.locationnphonetracker.ui.tools
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

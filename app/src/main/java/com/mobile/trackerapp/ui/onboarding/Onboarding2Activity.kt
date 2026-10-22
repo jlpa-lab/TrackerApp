@@ -1,5 +1,5 @@
-//package com.mobile.trackerapp
-import com.mobile.trackerapp.R
+//package com.location.and.phone.tracker.locationnphonetracker
+import com.location.and.phone.tracker.locationnphonetracker.R
 //
 //import android.app.Activity
 //import android.content.Intent

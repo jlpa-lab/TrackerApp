@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.tools
+package com.location.and.phone.tracker.locationnphonetracker.ui.tools
 
 import android.Manifest
 import android.app.Activity
@@ -38,15 +38,15 @@ import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.databinding.ActivityCreateZoneBinding
-import com.mobile.trackerapp.databinding.ActivityZoneAlertBinding
-import com.mobile.trackerapp.ui.DashboardActivity
-import com.mobile.trackerapp.ui.ZoneToggleView
-import com.mobile.trackerapp.ui.permission.LocationPermissionFlow
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.banner_all
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityCreateZoneBinding
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityZoneAlertBinding
+import com.location.and.phone.tracker.locationnphonetracker.ui.DashboardActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.ZoneToggleView
+import com.location.and.phone.tracker.locationnphonetracker.ui.permission.LocationPermissionFlow
 import java.util.Locale
 import java.util.concurrent.Executors
 

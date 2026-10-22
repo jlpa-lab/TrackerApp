@@ -18,11 +18,11 @@ plugins {
 }
 
 android {
-    namespace = "com.mobile.trackerapp"
+    namespace = "com.location.and.phone.tracker.locationnphonetracker"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.mobile.trackerapp"
+        applicationId = "com.location.and.phone.tracker.locationnphonetracker"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

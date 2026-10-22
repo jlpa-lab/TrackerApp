@@ -1,4 +1,4 @@
-package com.mobile.trackerapp
+package com.location.and.phone.tracker.locationnphonetracker
 
 import org.junit.Test
 

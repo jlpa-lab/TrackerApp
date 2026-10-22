@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.connection
+package com.location.and.phone.tracker.locationnphonetracker.ui.connection
 
 import android.content.Intent
 import android.graphics.Color
@@ -19,11 +19,11 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.bindNativeAllAd
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.network.TrackerBackendClient
-import com.mobile.trackerapp.data.LocalTrackerDb
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.bindNativeAllAd
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.network.TrackerBackendClient
+import com.location.and.phone.tracker.locationnphonetracker.data.LocalTrackerDb
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,10 +35,10 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import androidx.core.content.res.ResourcesCompat
-import com.mobile.trackerapp.ui.DashboardActivity
-import com.mobile.trackerapp.ui.rating.RateAppManager
-import com.mobile.trackerapp.service.LocationSharingCoordinator
-import com.mobile.trackerapp.ui.tracker.TrackFriendMapActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.DashboardActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.rating.RateAppManager
+import com.location.and.phone.tracker.locationnphonetracker.service.LocationSharingCoordinator
+import com.location.and.phone.tracker.locationnphonetracker.ui.tracker.TrackFriendMapActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

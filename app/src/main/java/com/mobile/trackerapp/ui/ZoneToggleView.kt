@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui
+package com.location.and.phone.tracker.locationnphonetracker.ui
 
 import android.content.Context
 import android.graphics.Canvas
@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import com.mobile.trackerapp.R
+import com.location.and.phone.tracker.locationnphonetracker.R
 
 /** Compact wrap-content zone toggle matching the app's green pill control. */
 class ZoneToggleView @JvmOverloads constructor(

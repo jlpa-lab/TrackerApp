@@ -1,6 +1,6 @@
-package com.mobile.trackerapp.ui
+package com.location.and.phone.tracker.locationnphonetracker.ui
 
-import com.mobile.trackerapp.R
+import com.location.and.phone.tracker.locationnphonetracker.R
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -21,9 +21,9 @@ import androidx.databinding.ViewDataBinding
 import com.ads.module.admob.Admob
 import com.ads.module.ads.wrapper.ApInterstitialAd
 import com.ads.module.funtion.AdCallback
-import com.mobile.trackerapp.pref.AppSharedPref
-import com.mobile.trackerapp.app.AppConstants
-import com.mobile.trackerapp.pref.AppSharedPreferencesApp
+import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPref
+import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants
+import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPreferencesApp
 import javax.inject.Inject
 import java.util.Locale
 

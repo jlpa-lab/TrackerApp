@@ -1,5 +1,5 @@
-package com.mobile.trackerapp.ui.uninstall
-import com.mobile.trackerapp.R
+package com.location.and.phone.tracker.locationnphonetracker.ui.uninstall
+import com.location.and.phone.tracker.locationnphonetracker.R
 
 import android.app.Activity
 import android.content.Intent
@@ -14,14 +14,14 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import com.ads.module.ads.wrapper.ApNativeAd
 import com.facebook.shimmer.ShimmerFrameLayout
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.populateNativeAdView
-import com.mobile.trackerapp.bases.goneView
-import com.mobile.trackerapp.bases.visibleView
-import com.mobile.trackerapp.databinding.ActivityUninstallConfirmBinding
-import com.mobile.trackerapp.ui.BaseActivity
-import com.mobile.trackerapp.ui.home.HomeActivity
-import com.mobile.trackerapp.utils.Routes
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.populateNativeAdView
+import com.location.and.phone.tracker.locationnphonetracker.bases.goneView
+import com.location.and.phone.tracker.locationnphonetracker.bases.visibleView
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityUninstallConfirmBinding
+import com.location.and.phone.tracker.locationnphonetracker.ui.BaseActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.home.HomeActivity
+import com.location.and.phone.tracker.locationnphonetracker.utils.Routes
 
 /** First shortcut screen, giving the user a chance to keep the app. */
 class ConfirmUninstallActivity : BaseActivity<ActivityUninstallConfirmBinding>() {

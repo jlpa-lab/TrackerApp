@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.connection
+package com.location.and.phone.tracker.locationnphonetracker.ui.connection
 
 import android.content.Context
 import android.graphics.Canvas
@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import com.mobile.trackerapp.R
+import com.location.and.phone.tracker.locationnphonetracker.R
 
 /** Green pill toggle used for the Connection screen's location sharing state. */
 class LocationSharingToggleView @JvmOverloads constructor(

@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.pref
+package com.location.and.phone.tracker.locationnphonetracker.pref
 
 import android.content.SharedPreferences
 

@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.bases.ext
+package com.location.and.phone.tracker.locationnphonetracker.bases.ext
 
 import android.content.Context
 import android.util.DisplayMetrics

@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.connection
+package com.location.and.phone.tracker.locationnphonetracker.ui.connection
 
 import android.content.ClipData
 import android.content.Intent
@@ -9,15 +9,15 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.FileProvider
-import com.mobile.trackerapp.BuildConfig
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.data.LocalTrackerDb
-import com.mobile.trackerapp.databinding.ActivityMyQrBinding
-import com.mobile.trackerapp.network.TrackerBackendClient
-import com.mobile.trackerapp.ui.DashboardActivity
+import com.location.and.phone.tracker.locationnphonetracker.BuildConfig
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.banner_all
+import com.location.and.phone.tracker.locationnphonetracker.data.LocalTrackerDb
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityMyQrBinding
+import com.location.and.phone.tracker.locationnphonetracker.network.TrackerBackendClient
+import com.location.and.phone.tracker.locationnphonetracker.ui.DashboardActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

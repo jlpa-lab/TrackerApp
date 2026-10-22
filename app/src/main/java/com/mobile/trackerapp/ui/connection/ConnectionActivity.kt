@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.connection
+package com.location.and.phone.tracker.locationnphonetracker.ui.connection
 
 import android.content.Intent
 import android.net.Uri
@@ -10,23 +10,23 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import com.mobile.trackerapp.network.TrackerBackendClient
-import com.mobile.trackerapp.service.LocationSharingCoordinator
-import com.mobile.trackerapp.service.LocationSharingService
+import com.location.and.phone.tracker.locationnphonetracker.network.TrackerBackendClient
+import com.location.and.phone.tracker.locationnphonetracker.service.LocationSharingCoordinator
+import com.location.and.phone.tracker.locationnphonetracker.service.LocationSharingService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.pm.PackageManager
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.databinding.ActivityConnectionBinding
-import com.mobile.trackerapp.ui.DashboardActivity
-import com.mobile.trackerapp.ui.tools.ZoneStore
-import com.mobile.trackerapp.ui.permission.LocationPermissionFlow
-import com.mobile.trackerapp.ui.rating.RateAppManager
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.banner_all
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityConnectionBinding
+import com.location.and.phone.tracker.locationnphonetracker.ui.DashboardActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.tools.ZoneStore
+import com.location.and.phone.tracker.locationnphonetracker.ui.permission.LocationPermissionFlow
+import com.location.and.phone.tracker.locationnphonetracker.ui.rating.RateAppManager
 import androidx.activity.OnBackPressedCallback
 
 class ConnectionActivity : DashboardActivity() {

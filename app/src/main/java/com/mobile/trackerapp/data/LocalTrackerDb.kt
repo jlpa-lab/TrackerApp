@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.data
+package com.location.and.phone.tracker.locationnphonetracker.data
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase

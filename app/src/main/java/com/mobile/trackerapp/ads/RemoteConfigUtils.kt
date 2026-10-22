@@ -1,15 +1,15 @@
-package com.mobile.trackerapp.ads
+package com.location.and.phone.tracker.locationnphonetracker.ads
 
 import android.content.Context
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
-import com.mobile.trackerapp.BuildConfig
-import com.mobile.trackerapp.TrackerApplication
-import com.mobile.trackerapp.app.AppConstants
-import com.mobile.trackerapp.app.AppConstants.DEFAULT_TIME_DELAY_SHOW_LANGUAGE_DONE_BUTTON
-import com.mobile.trackerapp.data.model.ForceUpdateConfig
+import com.location.and.phone.tracker.locationnphonetracker.BuildConfig
+import com.location.and.phone.tracker.locationnphonetracker.TrackerApplication
+import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants
+import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants.DEFAULT_TIME_DELAY_SHOW_LANGUAGE_DONE_BUTTON
+import com.location.and.phone.tracker.locationnphonetracker.data.model.ForceUpdateConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 

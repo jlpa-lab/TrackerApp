@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.data.model
+package com.location.and.phone.tracker.locationnphonetracker.data.model
 
 import androidx.annotation.Keep
 

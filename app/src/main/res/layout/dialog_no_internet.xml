@@ -13,7 +13,7 @@
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:padding="8dp"
-        android:contentDescription="@null"
+        android:contentDescription="@string/no_internet_icon_description"
         android:src="@drawable/ic_no_internet" />
 
     <!-- Dialog Title -->

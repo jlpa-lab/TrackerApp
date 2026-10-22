@@ -1,11 +1,11 @@
-package com.mobile.trackerapp.ui.onboarding.adapter
+package com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.adapter
 
 import android.annotation.SuppressLint
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.mobile.trackerapp.ui.onboarding.model.OnboardingItem
+import com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.model.OnboardingItem
 
 class OnboardingAdapter(
     manager: FragmentManager,

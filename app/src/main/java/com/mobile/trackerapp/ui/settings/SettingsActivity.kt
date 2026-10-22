@@ -1,19 +1,19 @@
-package com.mobile.trackerapp.ui.settings
+package com.location.and.phone.tracker.locationnphonetracker.ui.settings
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.bindNativeAllAd
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.RemoteConfigUtils
-import com.mobile.trackerapp.ui.DashboardActivity
-import com.mobile.trackerapp.ui.language.LanguageActivity
-import com.mobile.trackerapp.ui.rating.RateAppActivity
-import com.mobile.trackerapp.ui.rating.RateAppManager
-import com.mobile.trackerapp.pref.AppSharedPreferencesApp
-import com.mobile.trackerapp.app.AppConstants
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.bindNativeAllAd
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.RemoteConfigUtils
+import com.location.and.phone.tracker.locationnphonetracker.ui.DashboardActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.language.LanguageActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.rating.RateAppActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.rating.RateAppManager
+import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPreferencesApp
+import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants
 
 class SettingsActivity : DashboardActivity() {
     override fun onCreate(state: Bundle?) {

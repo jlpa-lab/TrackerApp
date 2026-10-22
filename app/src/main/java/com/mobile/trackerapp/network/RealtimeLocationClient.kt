@@ -1,11 +1,11 @@
-package com.mobile.trackerapp.network
+package com.location.and.phone.tracker.locationnphonetracker.network
 
 import android.content.Context
-import com.mobile.trackerapp.ads.RemoteConfigUtils
+import com.location.and.phone.tracker.locationnphonetracker.ads.RemoteConfigUtils
 import io.socket.client.IO
 import io.socket.client.Socket
 import org.json.JSONObject
-import com.mobile.trackerapp.data.LocalTrackerDb
+import com.location.and.phone.tracker.locationnphonetracker.data.LocalTrackerDb
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

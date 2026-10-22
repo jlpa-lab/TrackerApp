@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.tools
+package com.location.and.phone.tracker.locationnphonetracker.ui.tools
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -12,7 +12,7 @@ import android.location.Location
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.mobile.trackerapp.R
+import com.location.and.phone.tracker.locationnphonetracker.R
 import org.json.JSONObject
 
 /** Detects friend entry/exit transitions for local zones and publishes the result. */

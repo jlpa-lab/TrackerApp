@@ -1,21 +1,21 @@
-package com.mobile.trackerapp.app
+package com.location.and.phone.tracker.locationnphonetracker.app
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.ads.module.admob.AppOpenManager
 import com.ads.module.ads.ERainAd
 import com.ads.module.billing.AppPurchase
-import com.mobile.trackerapp.ui.language.LanguageActivity
-import com.mobile.trackerapp.ui.splash.SplashActivity
-import com.mobile.trackerapp.TrackerApplication
-import com.mobile.trackerapp.ui.uninstall.ReasonActivity
-import com.mobile.trackerapp.ui.welcome.WelcomeActivity
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.inter_welcome_back
-import com.mobile.trackerapp.ui.onboarding.OnBoardingActivity
-import com.mobile.trackerapp.ui.phonelocator.PhoneLocatorActivity
-import com.mobile.trackerapp.service.LocationSharingCoordinator
-import com.mobile.trackerapp.utils.Routes
+import com.location.and.phone.tracker.locationnphonetracker.ui.language.LanguageActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.splash.SplashActivity
+import com.location.and.phone.tracker.locationnphonetracker.TrackerApplication
+import com.location.and.phone.tracker.locationnphonetracker.ui.uninstall.ReasonActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.welcome.WelcomeActivity
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.inter_welcome_back
+import com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.OnBoardingActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.phonelocator.PhoneLocatorActivity
+import com.location.and.phone.tracker.locationnphonetracker.service.LocationSharingCoordinator
+import com.location.and.phone.tracker.locationnphonetracker.utils.Routes
 import kotlin.jvm.java
 
 

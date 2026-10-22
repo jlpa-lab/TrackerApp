@@ -1,8 +1,8 @@
-package com.mobile.trackerapp.pref
+package com.location.and.phone.tracker.locationnphonetracker.pref
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.mobile.trackerapp.pref.AppSharedPref
+import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPref
 
 class AppSharedPreferencesApp(context: Context) : AppSharedPref {
 

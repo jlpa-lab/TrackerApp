@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui
+package com.location.and.phone.tracker.locationnphonetracker.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater

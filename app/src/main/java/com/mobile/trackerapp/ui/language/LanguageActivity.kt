@@ -1,5 +1,5 @@
-package com.mobile.trackerapp.ui.language
-import com.mobile.trackerapp.R
+package com.location.and.phone.tracker.locationnphonetracker.ui.language
+import com.location.and.phone.tracker.locationnphonetracker.R
 
 import android.content.Intent
 import android.os.Bundle
@@ -15,19 +15,19 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.ads.module.ads.wrapper.ApNativeAd
 import com.itg.devconfig.utils.setOnAdminAdToggleListener
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.AdsManager.loadNativeLanguageClick
-import com.mobile.trackerapp.ads.RemoteConfigUtils
-import com.mobile.trackerapp.ads.populateNativeAdView
-import com.mobile.trackerapp.app.AppConstants
-import com.mobile.trackerapp.bases.ext.isNetwork
-import com.mobile.trackerapp.bases.goneView
-import com.mobile.trackerapp.bases.visibleView
-import com.mobile.trackerapp.databinding.ActivityLanguageBinding
-import com.mobile.trackerapp.ui.onboarding.OnBoardingActivity
-import com.mobile.trackerapp.pref.AppSharedPreferencesApp
-import com.mobile.trackerapp.ui.BaseActivity
-import com.mobile.trackerapp.utils.Routes
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager.loadNativeLanguageClick
+import com.location.and.phone.tracker.locationnphonetracker.ads.RemoteConfigUtils
+import com.location.and.phone.tracker.locationnphonetracker.ads.populateNativeAdView
+import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants
+import com.location.and.phone.tracker.locationnphonetracker.bases.ext.isNetwork
+import com.location.and.phone.tracker.locationnphonetracker.bases.goneView
+import com.location.and.phone.tracker.locationnphonetracker.bases.visibleView
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityLanguageBinding
+import com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.OnBoardingActivity
+import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPreferencesApp
+import com.location.and.phone.tracker.locationnphonetracker.ui.BaseActivity
+import com.location.and.phone.tracker.locationnphonetracker.utils.Routes
 
 /** Handles language selection and the initial notification permission request. */
 class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {

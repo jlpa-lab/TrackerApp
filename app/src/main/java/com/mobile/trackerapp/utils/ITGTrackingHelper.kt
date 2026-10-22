@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.utils
+package com.location.and.phone.tracker.locationnphonetracker.utils
 
 import android.os.Bundle
 import android.util.Log

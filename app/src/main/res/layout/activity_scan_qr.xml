@@ -78,7 +78,7 @@
                 android:layout_height="match_parent"
                 app:zxing_scanner_layout="@layout/zxing_barcode_scanner" />
 
-            <com.mobile.trackerapp.ui.connection.ScanFrameOverlayView
+            <com.location.and.phone.tracker.locationnphonetracker.ui.connection.ScanFrameOverlayView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clickable="false"

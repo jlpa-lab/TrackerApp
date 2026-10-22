@@ -1,5 +1,5 @@
-package com.mobile.trackerapp.ui.welcome
-import com.mobile.trackerapp.R
+package com.location.and.phone.tracker.locationnphonetracker.ui.welcome
+import com.location.and.phone.tracker.locationnphonetracker.R
 
 import android.content.Intent
 import android.graphics.Color
@@ -14,10 +14,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.OnBackPressedCallback
 import com.ads.module.admob.AppOpenManager
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.app.AppConstants
-import com.mobile.trackerapp.ui.phonelocator.PhoneLocatorActivity
-import com.mobile.trackerapp.ui.tracker.TrackFriendActivity
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants
+import com.location.and.phone.tracker.locationnphonetracker.ui.phonelocator.PhoneLocatorActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.tracker.TrackFriendActivity
 
 /** No-ad welcome screen displayed after returning from the background. */
 class WelcomeActivity : AppCompatActivity() {

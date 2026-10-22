@@ -1,22 +1,22 @@
-package com.mobile.trackerapp.ui.onboarding.adapter
+package com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.adapter
 
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import com.ads.module.ads.wrapper.ApNativeAd
 import com.bumptech.glide.Glide
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.populateNativeAdView
-import com.mobile.trackerapp.bases.click
-import com.mobile.trackerapp.bases.ext.parcelable
-import com.mobile.trackerapp.bases.goneView
-import com.mobile.trackerapp.bases.invisibleView
-import com.mobile.trackerapp.bases.visibleView
-import com.mobile.trackerapp.databinding.FragmentOnboardingPageBinding
-import com.mobile.trackerapp.ui.onboarding.model.OnboardingItem
-import com.mobile.trackerapp.ui.onboarding.viewmodel.OnboardingViewModel
-import com.mobile.trackerapp.ui.BaseFragment
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.populateNativeAdView
+import com.location.and.phone.tracker.locationnphonetracker.bases.click
+import com.location.and.phone.tracker.locationnphonetracker.bases.ext.parcelable
+import com.location.and.phone.tracker.locationnphonetracker.bases.goneView
+import com.location.and.phone.tracker.locationnphonetracker.bases.invisibleView
+import com.location.and.phone.tracker.locationnphonetracker.bases.visibleView
+import com.location.and.phone.tracker.locationnphonetracker.databinding.FragmentOnboardingPageBinding
+import com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.model.OnboardingItem
+import com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.viewmodel.OnboardingViewModel
+import com.location.and.phone.tracker.locationnphonetracker.ui.BaseFragment
 
 class OnboardingPageFragment : BaseFragment<FragmentOnboardingPageBinding>() {
 

@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.service
+package com.location.and.phone.tracker.locationnphonetracker.service
 
 import android.content.BroadcastReceiver
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.bases
+package com.location.and.phone.tracker.locationnphonetracker.bases
 
 import android.app.Activity
 import android.os.SystemClock

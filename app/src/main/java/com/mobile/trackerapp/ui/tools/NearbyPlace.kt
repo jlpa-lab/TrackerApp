@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.tools
+package com.location.and.phone.tracker.locationnphonetracker.ui.tools
 
 internal enum class NearbySource(val label: String) {
     GOOGLE("Google"),

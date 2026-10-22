@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui
+package com.location.and.phone.tracker.locationnphonetracker.ui
 
 import android.content.Intent
 import android.graphics.Color
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
-import com.mobile.trackerapp.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
 
 abstract class DashboardActivity : AppCompatActivity() {
     override fun onCreate(state: Bundle?) {
@@ -47,14 +47,14 @@ abstract class DashboardActivity : AppCompatActivity() {
     protected fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
     protected fun wrap() = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
     protected fun nav(active: String): android.widget.LinearLayout = android.widget.LinearLayout(this).apply {
-        val bar = layoutInflater.inflate(com.mobile.trackerapp.R.layout.home_bottom_nav, this, false) as android.widget.LinearLayout
+        val bar = layoutInflater.inflate(com.location.and.phone.tracker.locationnphonetracker.R.layout.home_bottom_nav, this, false) as android.widget.LinearLayout
         val activeColor = Color.rgb(8, 163, 49)
         val inactiveColor = Color.rgb(120, 132, 148)
         val tabs = listOf(
             "Home" to bar.getChildAt(0),
-            "Tools" to bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_tools),
-            "Connection" to bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_connection),
-            "Setting" to bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_settings)
+            "Tools" to bar.findViewById<View>(com.location.and.phone.tracker.locationnphonetracker.R.id.nav_tools),
+            "Connection" to bar.findViewById<View>(com.location.and.phone.tracker.locationnphonetracker.R.id.nav_connection),
+            "Setting" to bar.findViewById<View>(com.location.and.phone.tracker.locationnphonetracker.R.id.nav_settings)
         )
         tabs.forEach { (name, tab) ->
             val selected = name == active
@@ -70,17 +70,17 @@ abstract class DashboardActivity : AppCompatActivity() {
                 setColorFilter(stateColor)
             }
         }
-        bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_tools).setOnClickListener {
-            if (active != "Tools") { startActivity(Intent(this@DashboardActivity, com.mobile.trackerapp.ui.tools.ToolsActivity::class.java)); finish() }
+        bar.findViewById<View>(com.location.and.phone.tracker.locationnphonetracker.R.id.nav_tools).setOnClickListener {
+            if (active != "Tools") { startActivity(Intent(this@DashboardActivity, com.location.and.phone.tracker.locationnphonetracker.ui.tools.ToolsActivity::class.java)); finish() }
         }
-        bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_connection).setOnClickListener {
-            if (active != "Connection") { startActivity(Intent(this@DashboardActivity, com.mobile.trackerapp.ui.connection.ConnectionActivity::class.java)); finish() }
+        bar.findViewById<View>(com.location.and.phone.tracker.locationnphonetracker.R.id.nav_connection).setOnClickListener {
+            if (active != "Connection") { startActivity(Intent(this@DashboardActivity, com.location.and.phone.tracker.locationnphonetracker.ui.connection.ConnectionActivity::class.java)); finish() }
         }
-        bar.findViewById<View>(com.mobile.trackerapp.R.id.nav_settings).setOnClickListener {
-            if (active != "Setting") { startActivity(Intent(this@DashboardActivity, com.mobile.trackerapp.ui.settings.SettingsActivity::class.java)); finish() }
+        bar.findViewById<View>(com.location.and.phone.tracker.locationnphonetracker.R.id.nav_settings).setOnClickListener {
+            if (active != "Setting") { startActivity(Intent(this@DashboardActivity, com.location.and.phone.tracker.locationnphonetracker.ui.settings.SettingsActivity::class.java)); finish() }
         }
         bar.getChildAt(0).setOnClickListener {
-            if (active != "Home") { startActivity(Intent(this@DashboardActivity, com.mobile.trackerapp.ui.home.HomeActivity::class.java)); finish() }
+            if (active != "Home") { startActivity(Intent(this@DashboardActivity, com.location.and.phone.tracker.locationnphonetracker.ui.home.HomeActivity::class.java)); finish() }
         }
         addView(bar, android.widget.LinearLayout.LayoutParams(-1, wrap()))
     }

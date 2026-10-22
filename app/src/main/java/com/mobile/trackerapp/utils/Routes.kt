@@ -1,15 +1,15 @@
-package com.mobile.trackerapp.utils
+package com.location.and.phone.tracker.locationnphonetracker.utils
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.mobile.trackerapp.app.AppConstants
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ui.home.HomeActivity
-import com.mobile.trackerapp.ui.language.LanguageActivity
-import com.mobile.trackerapp.ui.onboarding.OnBoardingActivity
-import com.mobile.trackerapp.ui.splash.SplashActivity
-import com.mobile.trackerapp.ui.uninstall.ConfirmUninstallActivity
-import com.mobile.trackerapp.ui.welcome.WelcomeActivity
+import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ui.home.HomeActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.language.LanguageActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.OnBoardingActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.splash.SplashActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.uninstall.ConfirmUninstallActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.welcome.WelcomeActivity
 object Routes {
     private fun Activity.launch(target: Class<*>, bundle: Bundle? = null) { startActivity(Intent(this, target).apply { putExtra(AppConstants.KEY_TRACKING_SCREEN_FROM, this@launch::class.java.simpleName); bundle?.let(::putExtras) }) }
     fun startMainActivity(fromActivity: Activity) {

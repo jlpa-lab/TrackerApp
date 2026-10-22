@@ -1,9 +1,9 @@
-package com.mobile.trackerapp.network
+package com.location.and.phone.tracker.locationnphonetracker.network
 
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
-import com.mobile.trackerapp.ads.RemoteConfigUtils
+import com.location.and.phone.tracker.locationnphonetracker.ads.RemoteConfigUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.splash
+package com.location.and.phone.tracker.locationnphonetracker.ui.splash
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
@@ -22,24 +22,24 @@ import android.view.Window
 import com.ads.module.admob.AppOpenManager
 import com.ads.module.ads.ERainAd
 import com.ads.module.funtion.AdCallback
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.AdsManager.loadNativeLanguage
-import com.mobile.trackerapp.ads.RemoteConfigUtils
-import com.mobile.trackerapp.ads.banner_splash
-import com.mobile.trackerapp.ads.banner_splash_uninstall
-import com.mobile.trackerapp.ads.inter_splash
-import com.mobile.trackerapp.ads.inter_splash_uninstall
-import com.mobile.trackerapp.ads.open_resume
-import com.mobile.trackerapp.app.AppConstants
-import com.mobile.trackerapp.app.ResumeAdsEntryRule
-import com.mobile.trackerapp.bases.ConsentHandler
-import com.mobile.trackerapp.databinding.ActivitySplashBinding
-import com.mobile.trackerapp.pref.AppSharedPref
-import com.mobile.trackerapp.pref.AppSharedPreferencesApp
-import com.mobile.trackerapp.service.LocationSharingCoordinator
-import com.mobile.trackerapp.utils.Routes
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager.loadNativeLanguage
+import com.location.and.phone.tracker.locationnphonetracker.ads.RemoteConfigUtils
+import com.location.and.phone.tracker.locationnphonetracker.ads.banner_splash
+import com.location.and.phone.tracker.locationnphonetracker.ads.banner_splash_uninstall
+import com.location.and.phone.tracker.locationnphonetracker.ads.inter_splash
+import com.location.and.phone.tracker.locationnphonetracker.ads.inter_splash_uninstall
+import com.location.and.phone.tracker.locationnphonetracker.ads.open_resume
+import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants
+import com.location.and.phone.tracker.locationnphonetracker.app.ResumeAdsEntryRule
+import com.location.and.phone.tracker.locationnphonetracker.bases.ConsentHandler
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivitySplashBinding
+import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPref
+import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPreferencesApp
+import com.location.and.phone.tracker.locationnphonetracker.service.LocationSharingCoordinator
+import com.location.and.phone.tracker.locationnphonetracker.utils.Routes
 import com.onesignal.OneSignal
 
 

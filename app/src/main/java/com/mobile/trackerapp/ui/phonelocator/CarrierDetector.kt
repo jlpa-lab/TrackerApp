@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.phonelocator
+package com.location.and.phone.tracker.locationnphonetracker.ui.phonelocator
 
 import android.content.Context
 import com.google.i18n.phonenumbers.PhoneNumberUtil

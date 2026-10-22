@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.bases
+package com.location.and.phone.tracker.locationnphonetracker.bases
 
 import android.app.Activity
 import android.os.Handler
@@ -7,11 +7,11 @@ import com.google.android.ump.ConsentInformation
 import com.google.android.ump.FormError
 import com.itg.iaumodule.IAdConsentCallBack
 import com.itg.iaumodule.ITGAdConsent
-import com.mobile.trackerapp.pref.AppSharedPref
-import com.mobile.trackerapp.BuildConfig
-import com.mobile.trackerapp.app.AppConstants
-import com.mobile.trackerapp.utils.ITGTrackingHelper
-import com.mobile.trackerapp.utils.ITGTrackingHelper.logEvent
+import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPref
+import com.location.and.phone.tracker.locationnphonetracker.BuildConfig
+import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants
+import com.location.and.phone.tracker.locationnphonetracker.utils.ITGTrackingHelper
+import com.location.and.phone.tracker.locationnphonetracker.utils.ITGTrackingHelper.logEvent
 
 
 class ConsentHandler(

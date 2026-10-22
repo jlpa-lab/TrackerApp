@@ -1,7 +1,7 @@
-package com.mobile.trackerapp.ui.rating
+package com.location.and.phone.tracker.locationnphonetracker.ui.rating
 
 import android.content.Context
-import com.mobile.trackerapp.pref.AppSharedPreferencesApp
+import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPreferencesApp
 
 /** Coordinates the one-per-session rate prompt and its automatic entry triggers. */
 object RateAppManager {

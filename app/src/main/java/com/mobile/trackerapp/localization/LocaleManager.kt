@@ -1,9 +1,9 @@
-package com.mobile.trackerapp.localization
+package com.location.and.phone.tracker.locationnphonetracker.localization
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
-import com.mobile.trackerapp.pref.AppSharedPreferencesApp
+import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPreferencesApp
 
 /** Single source of truth for the app's selected locale. */
 object LocaleManager {

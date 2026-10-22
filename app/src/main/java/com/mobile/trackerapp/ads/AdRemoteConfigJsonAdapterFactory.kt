@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ads
+package com.location.and.phone.tracker.locationnphonetracker.ads
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader

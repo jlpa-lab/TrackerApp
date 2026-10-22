@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.onboarding
+package com.location.and.phone.tracker.locationnphonetracker.ui.onboarding
 
 import android.os.Build
 import com.ads.module.ads.ERainAd
@@ -7,19 +7,19 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
-import com.mobile.trackerapp.ui.onboarding.adapter.OnboardingAdapter
-import com.mobile.trackerapp.ui.onboarding.model.OnboardingItem
-import com.mobile.trackerapp.ui.onboarding.viewmodel.OnboardingViewModel
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.RemoteConfigUtils
-import com.mobile.trackerapp.ads.native_onboarding_fullscreen_1_3
-import com.mobile.trackerapp.bases.ext.isNetwork
-import com.mobile.trackerapp.databinding.ActivityOnboardingBinding
-import com.mobile.trackerapp.ui.BaseActivity
-import com.mobile.trackerapp.ui.uninstall.ShortcutManager
-import com.mobile.trackerapp.utils.Routes
+import com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.adapter.OnboardingAdapter
+import com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.model.OnboardingItem
+import com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.viewmodel.OnboardingViewModel
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.RemoteConfigUtils
+import com.location.and.phone.tracker.locationnphonetracker.ads.native_onboarding_fullscreen_1_3
+import com.location.and.phone.tracker.locationnphonetracker.bases.ext.isNetwork
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityOnboardingBinding
+import com.location.and.phone.tracker.locationnphonetracker.ui.BaseActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.uninstall.ShortcutManager
+import com.location.and.phone.tracker.locationnphonetracker.utils.Routes
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.abs
 

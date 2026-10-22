@@ -1,7 +1,7 @@
-package com.mobile.trackerapp.ads
+package com.location.and.phone.tracker.locationnphonetracker.ads
 
 import android.content.Context
-import com.mobile.trackerapp.BuildConfig
+import com.location.and.phone.tracker.locationnphonetracker.BuildConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import timber.log.Timber

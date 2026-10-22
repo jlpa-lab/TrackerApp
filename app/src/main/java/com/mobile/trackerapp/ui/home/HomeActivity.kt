@@ -1,39 +1,44 @@
-package com.mobile.trackerapp.ui.home
+package com.location.and.phone.tracker.locationnphonetracker.ui.home
 
 import android.content.Intent
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import com.ads.module.ads.ERainAd
 import com.ads.module.funtion.AdCallback
 import android.view.View
+import android.view.WindowManager
 import android.widget.FrameLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.shimmer.ShimmerFrameLayout
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.inter_home
-import com.mobile.trackerapp.ads.inter_splash
-import com.mobile.trackerapp.ads.inter_splash_uninstall
-import com.mobile.trackerapp.ads.banner_collapsible_home
-import com.mobile.trackerapp.bases.ext.isNetwork
-import com.mobile.trackerapp.ads.populateNativeAdView
-import com.mobile.trackerapp.databinding.ActivityMainBinding
-import com.mobile.trackerapp.ui.connection.ConnectionActivity
-import com.mobile.trackerapp.ui.connection.FriendRequestsActivity
-import com.mobile.trackerapp.ui.connection.ShareConnectionActivity
-import com.mobile.trackerapp.ui.settings.SettingsActivity
-import com.mobile.trackerapp.ui.tools.GpsToolsActivity
-import com.mobile.trackerapp.ui.tools.NearbyActivity
-import com.mobile.trackerapp.ui.tools.TrafficAlertActivity
-import com.mobile.trackerapp.ui.tools.ZoneAlertActivity
-import com.mobile.trackerapp.ui.tools.ToolsActivity
-import com.mobile.trackerapp.ui.phonelocator.PhoneLocatorActivity
-import com.mobile.trackerapp.ui.livelocation.LiveLocationActivity
-import com.mobile.trackerapp.ui.tracker.TrackFriendMapActivity
-import com.mobile.trackerapp.ui.tracker.TrackFriendActivity
-import com.mobile.trackerapp.ui.rating.RateAppActivity
-import com.mobile.trackerapp.ui.rating.RateAppManager
-import com.mobile.trackerapp.utils.Routes
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.inter_home
+import com.location.and.phone.tracker.locationnphonetracker.ads.inter_splash
+import com.location.and.phone.tracker.locationnphonetracker.ads.inter_splash_uninstall
+import com.location.and.phone.tracker.locationnphonetracker.ads.banner_collapsible_home
+import com.location.and.phone.tracker.locationnphonetracker.bases.ext.isNetwork
+import com.location.and.phone.tracker.locationnphonetracker.ads.populateNativeAdView
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityMainBinding
+import com.location.and.phone.tracker.locationnphonetracker.ui.connection.ConnectionActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.connection.FriendRequestsActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.connection.ShareConnectionActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.settings.SettingsActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.tools.GpsToolsActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.tools.NearbyActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.tools.TrafficAlertActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.tools.ZoneAlertActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.tools.ToolsActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.phonelocator.PhoneLocatorActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.livelocation.LiveLocationActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.tracker.TrackFriendMapActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.tracker.TrackFriendActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.rating.RateAppActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.rating.RateAppManager
+import com.location.and.phone.tracker.locationnphonetracker.utils.Routes
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -41,11 +46,17 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var nativeHomeAdContainer: FrameLayout
     private lateinit var nativeHomeShimmer: ShimmerFrameLayout
     private var nativeHomeRenderRunnable: Runnable? = null
+    private var exitDialog: Dialog? = null
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showExitDialog()
+            }
+        })
         val homeRoot = binding.root
         val homeNav = homeRoot.getChildAt(homeRoot.childCount - 1)
         val navTabs = listOf(
@@ -85,7 +96,7 @@ class HomeActivity : AppCompatActivity() {
                 startActivity(
                     Intent(
                         this,
-                        com.mobile.trackerapp.ui.livelocation.LiveLocationActivity::class.java
+                        com.location.and.phone.tracker.locationnphonetracker.ui.livelocation.LiveLocationActivity::class.java
                     )
                 )
             }
@@ -231,7 +242,39 @@ class HomeActivity : AppCompatActivity() {
     override fun onDestroy() {
         nativeHomeRenderRunnable?.let(nativeHomeShimmer::removeCallbacks)
         if (::nativeHomeShimmer.isInitialized) nativeHomeShimmer.stopShimmer()
+        exitDialog?.dismiss()
+        exitDialog = null
         super.onDestroy()
+    }
+
+    private fun showExitDialog() {
+        if (exitDialog?.isShowing == true) return
+
+        val dialog = Dialog(this)
+        exitDialog = dialog
+        dialog.setContentView(R.layout.dialog_exit_app)
+        dialog.setCancelable(true)
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setOnDismissListener {
+            if (exitDialog === dialog) exitDialog = null
+        }
+        dialog.findViewById<View>(R.id.exit_primary).setOnClickListener {
+            dialog.dismiss()
+            finishAffinity()
+        }
+        dialog.findViewById<View>(R.id.exit_secondary).setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.window?.apply {
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            attributes = attributes.apply { dimAmount = 0.52f }
+        }
+        dialog.show()
+        dialog.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 0.88f).toInt(),
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
     }
 
     companion object {

@@ -1,12 +1,12 @@
-package com.mobile.trackerapp
-import com.mobile.trackerapp.ui.home.HomeActivity
-import com.mobile.trackerapp.ui.splash.SplashActivity
-import com.mobile.trackerapp.ui.welcome.WelcomeActivity
-import com.mobile.trackerapp.ui.language.LanguageActivity
-import com.mobile.trackerapp.ui.onboarding.OnBoardingActivity
-import com.mobile.trackerapp.ui.uninstall.ConfirmUninstallActivity
-import com.mobile.trackerapp.ui.uninstall.ReasonActivity
-import com.mobile.trackerapp.localization.LocaleManager
+package com.location.and.phone.tracker.locationnphonetracker
+import com.location.and.phone.tracker.locationnphonetracker.ui.home.HomeActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.splash.SplashActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.welcome.WelcomeActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.language.LanguageActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.OnBoardingActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.uninstall.ConfirmUninstallActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.uninstall.ReasonActivity
+import com.location.and.phone.tracker.locationnphonetracker.localization.LocaleManager
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -27,9 +27,9 @@ import com.ads.module.billing.AppPurchase
 import com.ads.module.config.AdjustConfig
 import com.ads.module.config.ERainAdConfig
 import com.itg.devconfig.DevConfig
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.app.AppActivityLifecycleCallbacks
-import com.mobile.trackerapp.app.AppLifecycleObserver
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.app.AppActivityLifecycleCallbacks
+import com.location.and.phone.tracker.locationnphonetracker.app.AppLifecycleObserver
 
 /** Tracks the visible activity so application-level resume navigation stays safe. */
 class TrackerApplication : AdsMultiDexApplication() {

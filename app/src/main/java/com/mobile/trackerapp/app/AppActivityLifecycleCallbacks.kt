@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.app
+package com.location.and.phone.tracker.locationnphonetracker.app
 
 import android.app.Activity
 import android.app.Application
@@ -10,9 +10,9 @@ import android.view.WindowInsetsController
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ads.module.admob.AppOpenManager
-import com.mobile.trackerapp.TrackerApplication
-import com.mobile.trackerapp.app.ResumeAdsEntryRule
-import com.mobile.trackerapp.service.LocationSharingCoordinator
+import com.location.and.phone.tracker.locationnphonetracker.TrackerApplication
+import com.location.and.phone.tracker.locationnphonetracker.app.ResumeAdsEntryRule
+import com.location.and.phone.tracker.locationnphonetracker.service.LocationSharingCoordinator
 
 class AppActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit

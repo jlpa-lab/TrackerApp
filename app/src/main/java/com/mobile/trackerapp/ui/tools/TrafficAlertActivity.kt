@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.tools
+package com.location.and.phone.tracker.locationnphonetracker.ui.tools
 
 import android.Manifest
 import android.app.Activity
@@ -31,13 +31,13 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.databinding.ActivityNearbyBinding
-import com.mobile.trackerapp.databinding.ActivityTrafficAlertBinding
-import com.mobile.trackerapp.ui.permission.LocationPermissionFlow
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.banner_all
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityNearbyBinding
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityTrafficAlertBinding
+import com.location.and.phone.tracker.locationnphonetracker.ui.permission.LocationPermissionFlow
 import kotlin.math.ceil
 import kotlin.math.max
 

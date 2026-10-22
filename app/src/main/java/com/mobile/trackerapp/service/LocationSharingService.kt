@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.service
+package com.location.and.phone.tracker.locationnphonetracker.service
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -13,10 +13,10 @@ import android.os.Looper
 import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.*
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.network.RealtimeLocationClient
-import com.mobile.trackerapp.ui.tools.ZoneAlertNotifier
-import com.mobile.trackerapp.ui.tools.ZoneStore
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.network.RealtimeLocationClient
+import com.location.and.phone.tracker.locationnphonetracker.ui.tools.ZoneAlertNotifier
+import com.location.and.phone.tracker.locationnphonetracker.ui.tools.ZoneStore
 
 class LocationSharingService : Service() {
     private lateinit var fused: FusedLocationProviderClient

@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.connection
+package com.location.and.phone.tracker.locationnphonetracker.ui.connection
 
 import android.content.Context
 import android.graphics.Bitmap

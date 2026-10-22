@@ -1,9 +1,9 @@
-package com.mobile.trackerapp.ui.onboarding.model
+package com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.model
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.mobile.trackerapp.R
+import com.location.and.phone.tracker.locationnphonetracker.R
 import kotlinx.android.parcel.Parcelize
 
 

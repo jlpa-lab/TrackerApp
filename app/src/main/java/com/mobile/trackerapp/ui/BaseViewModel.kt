@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui
+package com.location.and.phone.tracker.locationnphonetracker.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

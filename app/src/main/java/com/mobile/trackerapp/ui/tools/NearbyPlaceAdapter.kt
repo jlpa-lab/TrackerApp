@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.tools
+package com.location.and.phone.tracker.locationnphonetracker.ui.tools
 
 import android.content.Context
 import android.graphics.Color
@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.mobile.trackerapp.R
+import com.location.and.phone.tracker.locationnphonetracker.R
 import java.util.Locale
 import kotlin.math.roundToInt
 

@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.tools
+package com.location.and.phone.tracker.locationnphonetracker.ui.tools
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -14,7 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
-import com.mobile.trackerapp.R
+import com.location.and.phone.tracker.locationnphonetracker.R
 import java.util.concurrent.Executors
 
 /** Delivers entry/exit notifications for saved zones while the app is not visible. */

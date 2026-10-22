@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ads
+package com.location.and.phone.tracker.locationnphonetracker.ads
 
 import android.app.Activity
 import android.graphics.Color
@@ -12,11 +12,11 @@ import com.ads.module.ads.ERainAd
 import com.ads.module.ads.wrapper.ApNativeAd
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.gms.ads.nativead.NativeAdView
-import com.mobile.trackerapp.R
+import com.location.and.phone.tracker.locationnphonetracker.R
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.mobile.trackerapp.bases.ext.dpToPx
+import com.location.and.phone.tracker.locationnphonetracker.bases.ext.dpToPx
 
 /**
  * Top-level helper – CTA height/color resolved automatically from [AdsManager.getAdConfig].

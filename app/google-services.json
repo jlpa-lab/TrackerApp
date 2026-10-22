@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:816844427394:android:04ce1ad0c8ca62f95e249b",
+        "android_client_info": {
+          "package_name": "com.location.and.phone.tracker.locationnphonetracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDc-M6AOSB2QZRMK7D2Suk7CG7R7j_HU90"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:816844427394:android:4003be117a8024445e249b",
         "android_client_info": {
           "package_name": "com.mobile.trackerapp"

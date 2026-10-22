@@ -1,15 +1,15 @@
-package com.mobile.trackerapp.ui.tools
+package com.location.and.phone.tracker.locationnphonetracker.ui.tools
 
 import android.os.Bundle
 import android.content.Intent
 import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.databinding.ActivityToolsBinding
-import com.mobile.trackerapp.ui.DashboardActivity
-import com.mobile.trackerapp.ui.rating.RateAppManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.banner_all
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityToolsBinding
+import com.location.and.phone.tracker.locationnphonetracker.ui.DashboardActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.rating.RateAppManager
 
 class ToolsActivity : DashboardActivity() {
     private lateinit var binding: ActivityToolsBinding

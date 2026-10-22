@@ -22,7 +22,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/layoutAds">
 
-                <com.mobile.trackerapp.TopCropImageView
+                <com.location.and.phone.tracker.locationnphonetracker.TopCropImageView
                     android:id="@+id/imgOnboarding"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"

@@ -1,4 +1,4 @@
-package com.mobile.trackerapp
+package com.location.and.phone.tracker.locationnphonetracker
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.mobile.trackerapp", appContext.packageName)
+        assertEquals("com.location.and.phone.tracker.locationnphonetracker", appContext.packageName)
     }
 }

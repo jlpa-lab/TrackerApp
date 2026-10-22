@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ads
+package com.location.and.phone.tracker.locationnphonetracker.ads
 
 import android.annotation.SuppressLint
 import android.app.Activity

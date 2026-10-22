@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.data.event
+package com.location.and.phone.tracker.locationnphonetracker.data.event
 
 object EventTracking {
     const val SPLASH = "splash_scr_view"

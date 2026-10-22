@@ -53,6 +53,11 @@
     <string name="start">Start</string>
     <string name="back">Back</string>
     <string name="home">Home</string>
+    <string name="exit_app_title">Exit App</string>
+    <string name="exit_app_message">Please press Back again to exit the app.</string>
+    <string name="exit_app_yes">Yes</string>
+    <string name="exit_app_no">No</string>
+    <string name="exit_app_icon_description">Exit app</string>
     <string name="press_back_again_to_exit">Press back again to exit</string>
     <string name="onboarding_title_1">Find Your Family in a Crowd</string>
     <string name="onboarding_des_1">See the live location of people who share their location with you, all on one map.</string>
@@ -89,6 +94,8 @@
     <string name="location_permission_title">Allow Location Access</string>
     <string name="location_permission_message">We need access to your location so you can use location-based features on your device.</string>
     <string name="location_permission_allow_access">Allow Access</string>
+    <string name="location_access_required_title">Location Access Required</string>
+    <string name="location_access_required_message">Location Access is needed to use your location. Please allow location access in Settings to continue.</string>
     <string name="location_permission_not_granted_title">Location Permission Not Granted</string>
     <string name="location_permission_not_granted_message">Location permission is required. Please allow location access in Settings to continue using all features.</string>
     <string name="location_permission_open_settings">Open Settings</string>
@@ -614,4 +621,5 @@
     <string name="live_hours_ago">%1$d hours ago</string>
     <string name="live_yesterday">yesterday</string>
     <string name="live_days_ago">%1$d days ago</string>
+    <string name="no_internet_icon_description">No internet connection</string>
 </resources>

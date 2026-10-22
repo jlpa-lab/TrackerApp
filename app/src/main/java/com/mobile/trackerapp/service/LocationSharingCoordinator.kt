@@ -1,11 +1,11 @@
-package com.mobile.trackerapp.service
+package com.location.and.phone.tracker.locationnphonetracker.service
 
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
-import com.mobile.trackerapp.network.TrackerBackendClient
+import com.location.and.phone.tracker.locationnphonetracker.network.TrackerBackendClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.uninstall
+package com.location.and.phone.tracker.locationnphonetracker.ui.uninstall
 
 import android.content.Context
 import android.content.Intent
@@ -6,13 +6,13 @@ import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.os.Build
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ui.splash.SplashActivity
-import com.mobile.trackerapp.ui.welcome.WelcomeActivity
-import com.mobile.trackerapp.app.AppConstants
-import com.mobile.trackerapp.bases.ext.getSystemLocaleString
-import com.mobile.trackerapp.ui.phonelocator.PhoneLocatorActivity
-import com.mobile.trackerapp.ui.tracker.TrackFriendActivity
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ui.splash.SplashActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.welcome.WelcomeActivity
+import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants
+import com.location.and.phone.tracker.locationnphonetracker.bases.ext.getSystemLocaleString
+import com.location.and.phone.tracker.locationnphonetracker.ui.phonelocator.PhoneLocatorActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.tracker.TrackFriendActivity
 
 
 object ShortcutManager {

@@ -1,10 +1,10 @@
-package com.mobile.trackerapp.ads
+package com.location.and.phone.tracker.locationnphonetracker.ads
 
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.shimmer.ShimmerFrameLayout
-import com.mobile.trackerapp.R
+import com.location.and.phone.tracker.locationnphonetracker.R
 
 fun bindNativeAllAd(activity: AppCompatActivity, root: View?) {
     root ?: return

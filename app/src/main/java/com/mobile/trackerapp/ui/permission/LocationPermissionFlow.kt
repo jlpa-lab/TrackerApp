@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.permission
+package com.location.and.phone.tracker.locationnphonetracker.ui.permission
 
 import android.Manifest
 import android.app.Dialog
@@ -15,8 +15,8 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.app.ResumeAdsEntryRule
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.app.ResumeAdsEntryRule
 
 /**
  * Shared foreground-location permission flow used by all location features.
@@ -30,6 +30,7 @@ class LocationPermissionFlow(
     private val onDenied: () -> Unit = {}
 ) {
     private var accessDialog: Dialog? = null
+    private var accessRequiredDialog: Dialog? = null
     private var notGrantedDialog: Dialog? = null
     private var settingsOpened = false
 
@@ -41,7 +42,7 @@ class LocationPermissionFlow(
         if (granted || hasForegroundLocation()) {
             onGranted()
         } else {
-            showNotGrantedDialog()
+            showAccessRequiredDialog()
         }
     }
 
@@ -50,7 +51,10 @@ class LocationPermissionFlow(
             onGranted()
             return
         }
-        if (accessDialog?.isShowing == true || notGrantedDialog?.isShowing == true) return
+        if (accessDialog?.isShowing == true ||
+            accessRequiredDialog?.isShowing == true ||
+            notGrantedDialog?.isShowing == true
+        ) return
         showAccessDialog()
     }
 
@@ -67,8 +71,10 @@ class LocationPermissionFlow(
 
     fun dismiss() {
         accessDialog?.dismiss()
+        accessRequiredDialog?.dismiss()
         notGrantedDialog?.dismiss()
         accessDialog = null
+        accessRequiredDialog = null
         notGrantedDialog = null
     }
 
@@ -103,7 +109,36 @@ class LocationPermissionFlow(
         }
         secondary.setOnClickListener {
             dialog.dismiss()
-            showNotGrantedDialog()
+            showAccessRequiredDialog()
+        }
+        dialog.show()
+    }
+
+    private fun showAccessRequiredDialog() {
+        if (accessRequiredDialog?.isShowing == true) return
+
+        val dialog = createDialog()
+        accessRequiredDialog = dialog
+        dialog.findViewById<ImageView>(R.id.permission_icon)
+            .setImageResource(R.drawable.ic_permission_location)
+        dialog.findViewById<TextView>(R.id.permission_title)
+            .setText(R.string.location_access_required_title)
+        dialog.findViewById<TextView>(R.id.permission_message)
+            .setText(R.string.location_access_required_message)
+        dialog.findViewById<TextView>(R.id.permission_primary).apply {
+            setText(R.string.location_permission_open_settings)
+            setOnClickListener {
+                dialog.dismiss()
+                openApplicationSettings()
+            }
+        }
+        dialog.findViewById<TextView>(R.id.permission_secondary).apply {
+            visibility = View.VISIBLE
+            setText(R.string.common_cancel)
+            setOnClickListener {
+                dialog.dismiss()
+                showNotGrantedDialog()
+            }
         }
         dialog.show()
     }
@@ -124,18 +159,22 @@ class LocationPermissionFlow(
             setText(R.string.location_permission_open_settings)
             setOnClickListener {
                 dialog.dismiss()
-                settingsOpened = true
-                ResumeAdsEntryRule.suppressNextResume()
-                activity.startActivity(
-                    Intent(
-                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.parse("package:${activity.packageName}")
-                    )
-                )
+                openApplicationSettings()
             }
         }
         dialog.findViewById<TextView>(R.id.permission_secondary).visibility = View.GONE
         dialog.show()
+    }
+
+    private fun openApplicationSettings() {
+        settingsOpened = true
+        ResumeAdsEntryRule.suppressNextResume()
+        activity.startActivity(
+            Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:${activity.packageName}")
+            )
+        )
     }
 
     private fun createDialog(): Dialog {

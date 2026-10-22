@@ -1,9 +1,9 @@
-package com.mobile.trackerapp.app
+package com.location.and.phone.tracker.locationnphonetracker.app
 
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.inter_welcome_back
-import com.mobile.trackerapp.ads.native_welcome
-import com.mobile.trackerapp.ads.open_resume
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.inter_welcome_back
+import com.location.and.phone.tracker.locationnphonetracker.ads.native_welcome
+import com.location.and.phone.tracker.locationnphonetracker.ads.open_resume
 
 enum class ResumeAdsEntryMode {
     OPEN_RESUME,

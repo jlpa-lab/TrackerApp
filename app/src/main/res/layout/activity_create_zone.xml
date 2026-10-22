@@ -108,7 +108,7 @@
                 android:background="@drawable/bg_traffic_map"
                 android:clipToOutline="true">
 
-                <com.mobile.trackerapp.ui.tools.GestureMapView
+                <com.location.and.phone.tracker.locationnphonetracker.ui.tools.GestureMapView
                     android:id="@+id/create_zone_map"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -366,7 +366,7 @@
                             android:textSize="13sp" />
                     </LinearLayout>
 
-                    <com.mobile.trackerapp.ui.ZoneToggleView
+                    <com.location.and.phone.tracker.locationnphonetracker.ui.ZoneToggleView
                         android:id="@+id/create_zone_enter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
@@ -414,7 +414,7 @@
                             android:textSize="13sp" />
                     </LinearLayout>
 
-                    <com.mobile.trackerapp.ui.ZoneToggleView
+                    <com.location.and.phone.tracker.locationnphonetracker.ui.ZoneToggleView
                         android:id="@+id/create_zone_exit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />

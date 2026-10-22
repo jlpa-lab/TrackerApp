@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ads
+package com.location.and.phone.tracker.locationnphonetracker.ads
 
 val AdRemoteConfig.Companion.inter_splash: AdUnitConfig
     get() = getInstance().inter_splash

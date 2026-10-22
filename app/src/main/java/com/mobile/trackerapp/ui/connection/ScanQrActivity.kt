@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.connection
+package com.location.and.phone.tracker.locationnphonetracker.ui.connection
 
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -20,13 +20,13 @@ import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.databinding.ActivityScanQrBinding
-import com.mobile.trackerapp.databinding.ActivityToolsBinding
-import com.mobile.trackerapp.ui.DashboardActivity
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.banner_all
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityScanQrBinding
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityToolsBinding
+import com.location.and.phone.tracker.locationnphonetracker.ui.DashboardActivity
 
 class ScanQrActivity : DashboardActivity() {
 

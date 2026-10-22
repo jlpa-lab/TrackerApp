@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.app
+package com.location.and.phone.tracker.locationnphonetracker.app
 
 object AppConstants {
     internal const val KEY_CONFIRM_CONSENT = "key_confirm_consent"

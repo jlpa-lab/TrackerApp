@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.phonelocator
+package com.location.and.phone.tracker.locationnphonetracker.ui.phonelocator
 import android.Manifest
 
 import android.content.Intent
@@ -32,10 +32,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.bindNativeAllAd
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.databinding.ActivityPhoneLocatorBinding
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.bindNativeAllAd
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityPhoneLocatorBinding
 import java.util.Locale
 
 class PhoneLocatorActivity : AppCompatActivity() {

@@ -1,4 +1,4 @@
-package com.mobile.trackerapp.ui.tools
+package com.location.and.phone.tracker.locationnphonetracker.ui.tools
 
 import android.graphics.Color
 import android.graphics.Typeface
@@ -13,14 +13,14 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import com.mobile.trackerapp.R
-import com.mobile.trackerapp.ads.AdRemoteConfig
-import com.mobile.trackerapp.ads.AdsManager
-import com.mobile.trackerapp.ads.banner_all
-import com.mobile.trackerapp.databinding.ActivityAreaCodesBinding
-import com.mobile.trackerapp.databinding.ActivityStopwatchBinding
-import com.mobile.trackerapp.ui.DashboardActivity
-import com.mobile.trackerapp.ui.rating.RateAppManager
+import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.ads.banner_all
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityAreaCodesBinding
+import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityStopwatchBinding
+import com.location.and.phone.tracker.locationnphonetracker.ui.DashboardActivity
+import com.location.and.phone.tracker.locationnphonetracker.ui.rating.RateAppManager
 import java.util.Locale
 
 class StopwatchActivity : DashboardActivity() {

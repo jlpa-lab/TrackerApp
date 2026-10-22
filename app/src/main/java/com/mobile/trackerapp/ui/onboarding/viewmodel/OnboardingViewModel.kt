@@ -1,9 +1,9 @@
-package com.mobile.trackerapp.ui.onboarding.viewmodel
+package com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.mobile.trackerapp.ui.BaseViewModel
+import com.location.and.phone.tracker.locationnphonetracker.ui.BaseViewModel
 import kotlinx.coroutines.launch
 
 class OnboardingViewModel : BaseViewModel() {
