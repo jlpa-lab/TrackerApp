@@ -593,4 +593,22 @@
     <string name="live_hours_ago">il y a %1$d heures</string>
     <string name="live_yesterday">hier</string>
     <string name="live_days_ago">il y a %1$d jours</string>
+    <string name="exit_app_title">Quitter l’application</string>
+    <string name="exit_app_message">Appuyez à nouveau sur Retour pour quitter l’application.</string>
+    <string name="exit_app_yes">Oui</string>
+    <string name="exit_app_no">Non</string>
+    <string name="exit_app_icon_description">Quitter l’application</string>
+    <string name="location_permission_title">Autoriser l’accès à la position</string>
+    <string name="location_permission_message">Nous avons besoin d’accéder à votre position pour utiliser les fonctionnalités basées sur la localisation.</string>
+    <string name="location_permission_allow_access">Autoriser l’accès</string>
+    <string name="location_access_required_title">Accès à la position requis</string>
+    <string name="location_access_required_message">L’accès à la position est nécessaire pour utiliser votre position. Autorisez l’accès dans les paramètres pour continuer.</string>
+    <string name="location_permission_not_granted_title">Autorisation de localisation non accordée</string>
+    <string name="location_permission_not_granted_message">L’autorisation de localisation est requise. Autorisez l’accès dans les paramètres pour continuer à utiliser toutes les fonctionnalités.</string>
+    <string name="location_permission_open_settings">Ouvrir les paramètres</string>
+    <string name="location_permission_icon_description">Autorisation de localisation</string>
+    <string name="no_internet_title">Aucune connexion Internet</string>
+    <string name="no_internet_message">Impossible de charger les données.&#10;Vérifiez votre connexion Internet.</string>
+    <string name="no_internet_connect">Se connecter à Internet</string>
+    <string name="no_internet_icon_description">Aucune connexion Internet</string>
 </resources>

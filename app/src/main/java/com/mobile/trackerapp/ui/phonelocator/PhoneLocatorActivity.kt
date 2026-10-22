@@ -36,6 +36,7 @@ import com.location.and.phone.tracker.locationnphonetracker.R
 import com.location.and.phone.tracker.locationnphonetracker.ads.bindNativeAllAd
 import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
 import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityPhoneLocatorBinding
+import com.location.and.phone.tracker.locationnphonetracker.localization.LocaleManager
 import java.util.Locale
 
 class PhoneLocatorActivity : AppCompatActivity() {
@@ -73,6 +74,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        LocaleManager.applyPersisted(this)
         binding = ActivityPhoneLocatorBinding.inflate(layoutInflater)
         setContentView(binding.root)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -82,7 +84,7 @@ class PhoneLocatorActivity : AppCompatActivity() {
         })
         binding.root.isClickable = true
         binding.root.setOnClickListener { hideKeyboard() }
-        AdsManager.showNativeAllAndPreload(this, R.layout.layout_native_ad_small)
+        AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))
         AdsManager.loadInterHome(this, ignoreLimit = true)
         AdsManager.loadInterBack(this, ignoreLimit = true)

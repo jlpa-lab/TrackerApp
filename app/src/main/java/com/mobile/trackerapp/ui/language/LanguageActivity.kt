@@ -24,6 +24,7 @@ import com.location.and.phone.tracker.locationnphonetracker.bases.ext.isNetwork
 import com.location.and.phone.tracker.locationnphonetracker.bases.goneView
 import com.location.and.phone.tracker.locationnphonetracker.bases.visibleView
 import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityLanguageBinding
+import com.location.and.phone.tracker.locationnphonetracker.localization.LocaleManager
 import com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.OnBoardingActivity
 import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPreferencesApp
 import com.location.and.phone.tracker.locationnphonetracker.ui.BaseActivity
@@ -63,6 +64,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
             // Match the reference flow: persist the choice first. The next
             // BaseActivity applies it before inflating its layout.
             appSharedPref.languageCode = localeToApply
+            LocaleManager.apply(this, localeToApply)
             if (fromSetting) {
                 Routes.startMainActivity(this)
             } else {

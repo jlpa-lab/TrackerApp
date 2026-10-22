@@ -73,7 +73,14 @@ open class FriendRequestsActivity : DashboardActivity() {
         setContentView(layoutResource)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                AdsManager.showInterHomeBack(this@FriendRequestsActivity) { _ ->
+                AdsManager.showInterHomeBack(this@FriendRequestsActivity) { adWasShown ->
+                    // This screen normally returns to ConnectionActivity. The
+                    // rate trigger is evaluated only on the final Connection ->
+                    // Home transition. ShareConnectionActivity is the direct
+                    // Home entry point, so only that subclass consumes it here.
+                    if (adWasShown && this@FriendRequestsActivity is ShareConnectionActivity) {
+                        RateAppManager.skipAutomaticTriggerForInterstitial()
+                    }
                     finish()
                 }
             }

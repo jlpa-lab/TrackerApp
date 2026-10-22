@@ -592,4 +592,22 @@
     <string name="live_hours_ago">%1$d時間前</string>
     <string name="live_yesterday">昨日</string>
     <string name="live_days_ago">%1$d日前</string>
+    <string name="exit_app_title">アプリを終了</string>
+    <string name="exit_app_message">アプリを終了するには、もう一度戻るを押してください。</string>
+    <string name="exit_app_yes">はい</string>
+    <string name="exit_app_no">いいえ</string>
+    <string name="exit_app_icon_description">アプリを終了</string>
+    <string name="location_permission_title">位置情報へのアクセスを許可</string>
+    <string name="location_permission_message">位置情報を利用する機能を使うには、位置情報へのアクセスが必要です。</string>
+    <string name="location_permission_allow_access">アクセスを許可</string>
+    <string name="location_access_required_title">位置情報へのアクセスが必要です</string>
+    <string name="location_access_required_message">位置情報を使用するにはアクセスが必要です。続行するには設定で位置情報へのアクセスを許可してください。</string>
+    <string name="location_permission_not_granted_title">位置情報の権限が許可されていません</string>
+    <string name="location_permission_not_granted_message">位置情報の権限が必要です。すべての機能を使うには設定で許可してください。</string>
+    <string name="location_permission_open_settings">設定を開く</string>
+    <string name="location_permission_icon_description">位置情報の権限</string>
+    <string name="no_internet_title">インターネット接続なし</string>
+    <string name="no_internet_message">データを読み込めませんでした。&#10;インターネット接続を確認してください。</string>
+    <string name="no_internet_connect">インターネットに接続</string>
+    <string name="no_internet_icon_description">インターネット接続なし</string>
 </resources>

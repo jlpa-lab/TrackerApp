@@ -23,6 +23,7 @@ import com.location.and.phone.tracker.locationnphonetracker.ads.banner_collapsib
 import com.location.and.phone.tracker.locationnphonetracker.bases.ext.isNetwork
 import com.location.and.phone.tracker.locationnphonetracker.ads.populateNativeAdView
 import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityMainBinding
+import com.location.and.phone.tracker.locationnphonetracker.localization.LocaleManager
 import com.location.and.phone.tracker.locationnphonetracker.ui.connection.ConnectionActivity
 import com.location.and.phone.tracker.locationnphonetracker.ui.connection.FriendRequestsActivity
 import com.location.and.phone.tracker.locationnphonetracker.ui.connection.ShareConnectionActivity
@@ -50,6 +51,9 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        // HomeActivity is not a BaseActivity; always restore the persisted
+        // in-app language before inflating the home layout.
+        LocaleManager.applyPersisted(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -87,8 +91,8 @@ class HomeActivity : AppCompatActivity() {
         AdsManager.loadInterHome(this, ignoreLimit = true)
         AdsManager.loadInterBack(this, ignoreLimit = true)
         observeNativeHomeAd()
-        AdsManager.showNativeHomeAndPreload(this, R.layout.layout_native_home)
-        AdsManager.preloadNativeAll(this, R.layout.layout_native_ad_small)
+        AdsManager.loadNativeHome(this, R.layout.layout_native_home)
+        AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
         //hideNavigationBar()
         findViewById<android.view.View>(R.id.open_live_map).setOnClickListener {
             AdsManager.loadInterBack(this, ignoreLimit = true)
@@ -146,7 +150,7 @@ class HomeActivity : AppCompatActivity() {
         findViewById<android.view.View>(R.id.home_nearby_tile).setOnClickListener {
             AdsManager.loadInterBack(this, ignoreLimit = true)
             AdsManager.showInterHome(this) {
-                startActivity(Intent(this, NearbyActivity::class.java))
+                startActivity(Intent(this, NearbyActivity::class.java).putExtra(NearbyActivity.EXTRA_RETURN_TO_HOME, true))
             }
         }
         findViewById<android.view.View>(R.id.nav_tools).setOnClickListener {
@@ -168,11 +172,20 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (RateAppManager.shouldShowAutomaticRateDialog(this)) {
-            startActivity(
-                Intent(this, RateAppActivity::class.java)
-                    .putExtra(RateAppActivity.EXTRA_ENTRY_POINT, RateAppManager.EntryPoint.AUTOMATIC.name)
-            )
+        if (RateAppManager.claimAutomaticRateDialog(this)) {
+            // Post until Home has completed its resume/layout pass. This also
+            // prevents a duplicate launch if multiple child activities finish
+            // in the same frame; RateAppManager owns the atomic claim.
+            window.decorView.post {
+                if (isFinishing || isDestroyed) {
+                    RateAppManager.cancelAutomaticRateDialogClaim()
+                    return@post
+                }
+                startActivity(
+                    Intent(this, RateAppActivity::class.java)
+                        .putExtra(RateAppActivity.EXTRA_ENTRY_POINT, RateAppManager.EntryPoint.AUTOMATIC.name)
+                )
+            }
         }
     }
 

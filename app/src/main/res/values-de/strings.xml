@@ -592,4 +592,22 @@
     <string name="live_hours_ago">Vor %1$d Stunden</string>
     <string name="live_yesterday">Gestern</string>
     <string name="live_days_ago">Vor %1$d Tagen</string>
+    <string name="exit_app_title">App beenden</string>
+    <string name="exit_app_message">Drücke erneut auf Zurück, um die App zu beenden.</string>
+    <string name="exit_app_yes">Ja</string>
+    <string name="exit_app_no">Nein</string>
+    <string name="exit_app_icon_description">App beenden</string>
+    <string name="location_permission_title">Standortzugriff erlauben</string>
+    <string name="location_permission_message">Wir benötigen Zugriff auf deinen Standort, damit du standortbasierte Funktionen nutzen kannst.</string>
+    <string name="location_permission_allow_access">Zugriff erlauben</string>
+    <string name="location_access_required_title">Standortzugriff erforderlich</string>
+    <string name="location_access_required_message">Der Standortzugriff wird benötigt, um deinen Standort zu verwenden. Bitte erlaube den Zugriff in den Einstellungen, um fortzufahren.</string>
+    <string name="location_permission_not_granted_title">Standortberechtigung nicht erteilt</string>
+    <string name="location_permission_not_granted_message">Die Standortberechtigung ist erforderlich. Bitte erlaube den Zugriff in den Einstellungen, um alle Funktionen weiter zu nutzen.</string>
+    <string name="location_permission_open_settings">Einstellungen öffnen</string>
+    <string name="location_permission_icon_description">Standortberechtigung</string>
+    <string name="no_internet_title">Keine Internetverbindung</string>
+    <string name="no_internet_message">Die Daten konnten nicht geladen werden.&#10;Bitte überprüfe deine Internetverbindung.</string>
+    <string name="no_internet_connect">Mit dem Internet verbinden</string>
+    <string name="no_internet_icon_description">Keine Internetverbindung</string>
 </resources>

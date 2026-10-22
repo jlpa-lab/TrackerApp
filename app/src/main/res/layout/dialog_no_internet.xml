@@ -18,7 +18,7 @@
 
     <!-- Dialog Title -->
     <TextView
-        android:text="No Internet Connection"
+        android:text="@string/no_internet_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -37,7 +37,7 @@
         android:lineSpacingExtra="3dp"
         android:textColor="@color/text_secondary"
         android:textSize="12sp"
-        android:text="We couldn't load the data.\nPlease check your internet\nconnection." />
+        android:text="@string/no_internet_message" />
 
     <!-- Action Button -->
     <TextView
@@ -48,7 +48,7 @@
         android:gravity="center"
         android:clickable="true"
         android:focusable="true"
-        android:text="Connect internet"
+        android:text="@string/no_internet_connect"
         android:fontFamily="@font/inter_bold"
         android:textColor="@color/white"
         android:textSize="16sp"

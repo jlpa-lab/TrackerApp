@@ -125,7 +125,12 @@ class NearbyActivity : DashboardActivity() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 AdsManager.showInterHomeBack(this@NearbyActivity, onAction = { adWasShown ->
-                    if (adWasShown) RateAppManager.skipAutomaticTriggerForInterstitial()
+                    // Nearby can be opened from Home or from the Tools list.
+                    // Only the direct Home route is the final automatic-rate
+                    // transition; preserve the trigger when returning to Tools.
+                    if (adWasShown && intent.getBooleanExtra(EXTRA_RETURN_TO_HOME, true)) {
+                        RateAppManager.skipAutomaticTriggerForInterstitial()
+                    }
                     finish()
                 })
             }
@@ -856,6 +861,7 @@ class NearbyActivity : DashboardActivity() {
     }
 
     companion object {
+        const val EXTRA_RETURN_TO_HOME = "nearby_return_to_home"
         private const val REQUEST_CATEGORIES = 7102
         private const val STATE_CATEGORY = "nearby_category"
         private const val STATE_QUERY = "nearby_query"

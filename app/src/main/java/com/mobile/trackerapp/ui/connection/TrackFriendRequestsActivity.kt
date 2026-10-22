@@ -110,7 +110,7 @@ class TrackFriendRequestsActivity : DashboardActivity() {
             }
             false
         }
-        AdsManager.showNativeAllAndPreload(this, R.layout.layout_native_ad_small)
+        AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))
         findViewById<TextView>(R.id.my_invite_code)?.text = "------"
         localDb = LocalTrackerDb(this)

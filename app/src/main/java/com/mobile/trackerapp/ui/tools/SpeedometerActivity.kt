@@ -58,7 +58,6 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
     private var maxKmh = 0f
     private var speedSum = 0.0
     private var speedSamples = 0
-    private var rateUseReported = false
     private var distanceMeters = 0.0
     private var previousTripLocation: Location? = null
     private var elapsedBeforeRun = 0L
@@ -173,6 +172,7 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
         when (trip) {
             TripState.NOT_STARTED, TripState.PAUSED -> {
                 trip = TripState.RUNNING
+                RateAppManager.markGpsToolUsed()
                 runStartedAt = SystemClock.elapsedRealtime()
                 previousTripLocation = null
                 timerHandler.removeCallbacks(timerTick)
@@ -301,10 +301,6 @@ class SpeedometerActivity : DashboardActivity(), LocationListener {
 
     override fun onLocationChanged(location: Location) {
         if (location.hasSpeed()) {
-            if (!rateUseReported) {
-                rateUseReported = true
-                RateAppManager.markGpsToolUsed()
-            }
             speedKmh = location.speed * 3.6f
             if (trip == TripState.RUNNING) {
                 if (speedKmh > maxKmh) maxKmh = speedKmh

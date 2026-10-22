@@ -592,4 +592,22 @@
     <string name="live_hours_ago">%1$d giờ trước</string>
     <string name="live_yesterday">hôm qua</string>
     <string name="live_days_ago">%1$d ngày trước</string>
+    <string name="exit_app_title">Thoát ứng dụng</string>
+    <string name="exit_app_message">Nhấn nút Quay lại lần nữa để thoát ứng dụng.</string>
+    <string name="exit_app_yes">Có</string>
+    <string name="exit_app_no">Không</string>
+    <string name="exit_app_icon_description">Thoát ứng dụng</string>
+    <string name="location_permission_title">Cho phép truy cập vị trí</string>
+    <string name="location_permission_message">Chúng tôi cần quyền truy cập vị trí để bạn sử dụng các tính năng dựa trên vị trí.</string>
+    <string name="location_permission_allow_access">Cho phép truy cập</string>
+    <string name="location_access_required_title">Cần quyền truy cập vị trí</string>
+    <string name="location_access_required_message">Cần quyền truy cập vị trí để sử dụng vị trí của bạn. Vui lòng cho phép trong Cài đặt để tiếp tục.</string>
+    <string name="location_permission_not_granted_title">Chưa cấp quyền vị trí</string>
+    <string name="location_permission_not_granted_message">Cần quyền vị trí. Vui lòng cho phép trong Cài đặt để tiếp tục sử dụng tất cả tính năng.</string>
+    <string name="location_permission_open_settings">Mở Cài đặt</string>
+    <string name="location_permission_icon_description">Quyền vị trí</string>
+    <string name="no_internet_title">Không có kết nối Internet</string>
+    <string name="no_internet_message">Không thể tải dữ liệu.&#10;Vui lòng kiểm tra kết nối Internet.</string>
+    <string name="no_internet_connect">Kết nối Internet</string>
+    <string name="no_internet_icon_description">Không có kết nối Internet</string>
 </resources>

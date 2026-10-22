@@ -592,4 +592,22 @@
     <string name="live_hours_ago">%1$d घंटे पहले</string>
     <string name="live_yesterday">कल</string>
     <string name="live_days_ago">%1$d दिन पहले</string>
+    <string name="exit_app_title">ऐप से बाहर निकलें</string>
+    <string name="exit_app_message">ऐप से बाहर निकलने के लिए फिर से बैक दबाएँ।</string>
+    <string name="exit_app_yes">हाँ</string>
+    <string name="exit_app_no">नहीं</string>
+    <string name="exit_app_icon_description">ऐप से बाहर निकलें</string>
+    <string name="location_permission_title">स्थान की अनुमति दें</string>
+    <string name="location_permission_message">स्थान आधारित सुविधाओं का उपयोग करने के लिए हमें आपके स्थान की अनुमति चाहिए।</string>
+    <string name="location_permission_allow_access">अनुमति दें</string>
+    <string name="location_access_required_title">स्थान की अनुमति आवश्यक है</string>
+    <string name="location_access_required_message">आपके स्थान का उपयोग करने के लिए स्थान की अनुमति आवश्यक है। जारी रखने के लिए सेटिंग्स में स्थान की अनुमति दें।</string>
+    <string name="location_permission_not_granted_title">स्थान की अनुमति नहीं मिली</string>
+    <string name="location_permission_not_granted_message">स्थान की अनुमति आवश्यक है। सभी सुविधाओं का उपयोग जारी रखने के लिए सेटिंग्स में अनुमति दें।</string>
+    <string name="location_permission_open_settings">सेटिंग खोलें</string>
+    <string name="location_permission_icon_description">स्थान की अनुमति</string>
+    <string name="no_internet_title">इंटरनेट कनेक्शन नहीं है</string>
+    <string name="no_internet_message">डेटा लोड नहीं हो सका।&#10;कृपया अपना इंटरनेट कनेक्शन जाँचें।</string>
+    <string name="no_internet_connect">इंटरनेट से कनेक्ट करें</string>
+    <string name="no_internet_icon_description">इंटरनेट कनेक्शन नहीं है</string>
 </resources>

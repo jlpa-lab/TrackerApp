@@ -9,6 +9,7 @@ object RateAppManager {
 
     private var shownThisSession = false
     private var automaticTriggerPending = false
+    private var automaticLaunchInProgress = false
 
     fun markConnectionAdded() {
         automaticTriggerPending = true
@@ -23,7 +24,17 @@ object RateAppManager {
     }
 
     fun shouldShowAutomaticRateDialog(context: Context): Boolean =
-        !AppSharedPreferencesApp(context).isRate && !shownThisSession && automaticTriggerPending
+        !AppSharedPreferencesApp(context).isRate && !shownThisSession &&
+            automaticTriggerPending && !automaticLaunchInProgress
+
+    /** Claims the first automatic prompt before starting its Activity. */
+    fun claimAutomaticRateDialog(context: Context): Boolean {
+        if (AppSharedPreferencesApp(context).isRate || shownThisSession ||
+            !automaticTriggerPending || automaticLaunchInProgress
+        ) return false
+        automaticLaunchInProgress = true
+        return true
+    }
 
     fun canOpenSettingsRateDialog(context: Context): Boolean =
         !AppSharedPreferencesApp(context).isRate && !shownThisSession
@@ -32,11 +43,17 @@ object RateAppManager {
 
     /** Atomically claims the dialog so duplicate activity resumes cannot show it twice. */
     fun beginRateDialog(context: Context, entryPoint: EntryPoint): Boolean {
-        if (AppSharedPreferencesApp(context).isRate || shownThisSession) return false
-        if (entryPoint == EntryPoint.AUTOMATIC && !automaticTriggerPending) return false
+        if (AppSharedPreferencesApp(context).isRate || shownThisSession) {
+            automaticLaunchInProgress = false
+            return false
+        }
+        if (entryPoint == EntryPoint.AUTOMATIC &&
+            !automaticTriggerPending && !automaticLaunchInProgress
+        ) return false
 
         shownThisSession = true
         automaticTriggerPending = false
+        automaticLaunchInProgress = false
         return true
     }
 
@@ -44,16 +61,30 @@ object RateAppManager {
         AppSharedPreferencesApp(context).isRate = true
         shownThisSession = true
         automaticTriggerPending = false
+        automaticLaunchInProgress = false
     }
 
     fun onRateDialogDismissed() {
         // Dismissal blocks the prompt for this session, but is not persisted as Rated.
         shownThisSession = true
         automaticTriggerPending = false
+        automaticLaunchInProgress = false
+    }
+
+    /** Negative feedback ends this session's prompt without permanently rating the user. */
+    fun onNegativeFeedbackSubmitted() {
+        shownThisSession = true
+        automaticTriggerPending = false
+        automaticLaunchInProgress = false
+    }
+
+    fun cancelAutomaticRateDialogClaim() {
+        automaticLaunchInProgress = false
     }
 
     /** Consume only the trigger that was followed by an interstitial. */
     fun skipAutomaticTriggerForInterstitial() {
         automaticTriggerPending = false
+        automaticLaunchInProgress = false
     }
 }

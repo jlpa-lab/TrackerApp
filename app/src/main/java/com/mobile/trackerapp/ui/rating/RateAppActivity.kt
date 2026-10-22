@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.location.and.phone.tracker.locationnphonetracker.R
+import com.location.and.phone.tracker.locationnphonetracker.localization.LocaleManager
 import com.location.and.phone.tracker.locationnphonetracker.network.TrackerBackendClient
 import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +34,7 @@ class RateAppActivity : AppCompatActivity() {
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        LocaleManager.applyPersisted(this)
         entryPoint = intent.getStringExtra(EXTRA_ENTRY_POINT)
             ?.let { value -> runCatching { RateAppManager.EntryPoint.valueOf(value) }.getOrNull() }
             ?: RateAppManager.EntryPoint.AUTOMATIC
@@ -135,6 +137,9 @@ class RateAppActivity : AppCompatActivity() {
             feedback.error = getString(R.string.rate_feedback_required); return
         }
         if (submitting) return
+        // Negative feedback is not a permanent rating. It only suppresses
+        // another prompt until the next app session.
+        RateAppManager.onNegativeFeedbackSubmitted()
         submitting = true; action.isEnabled = false; action.setText(R.string.rate_saving)
         CoroutineScope(Dispatchers.Main).launch {
             runCatching {
@@ -142,7 +147,6 @@ class RateAppActivity : AppCompatActivity() {
                 this@RateAppActivity
             ).submitFeedback(rating, text) }
                 .onSuccess {
-                    RateAppManager.onUserRated(this@RateAppActivity)
                     Toast.makeText(this@RateAppActivity, R.string.rate_feedback_thanks, Toast.LENGTH_SHORT).show()
                     finish()
                 }
@@ -178,11 +182,8 @@ class RateAppActivity : AppCompatActivity() {
                 )
                 setOnClickListener {
                     rating = index + 1
-                    if (rating <= 3) {
-                        // The rating decision itself is final. Feedback upload is
-                        // best-effort and must not make the user eligible again.
-                        RateAppManager.onUserRated(this@RateAppActivity)
-                    }
+                    // First show the rating result. For 1–3 stars, the result
+                    // screen exposes "Give Feedback", which opens the form.
                     showResult()
                 }
             }, LinearLayout.LayoutParams(50.dp, 58.dp))
@@ -190,12 +191,14 @@ class RateAppActivity : AppCompatActivity() {
     }
 
     private fun openPlay() {
-        RateAppManager.onUserRated(this)
         val id = packageName
         if (entryPoint == RateAppManager.EntryPoint.SETTINGS) {
-            openPlayStore(id)
+            if (openPlayStore(id)) {
+                RateAppManager.onUserRated(this)
+            }
             return
         }
+        RateAppManager.onUserRated(this)
         runCatching {
             val reviewManager = ReviewManagerFactory.create(this)
             reviewManager.requestReviewFlow().addOnSuccessListener { info ->
@@ -204,23 +207,36 @@ class RateAppActivity : AppCompatActivity() {
         }.onFailure { finish() }
     }
 
-    private fun openPlayStore(id: String) {
-        runCatching {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("market://details?id=$id")
-                )
-            )
-        }.onFailure {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=$id")
-                )
-            )
+    private fun openPlayStore(id: String): Boolean {
+        val marketIntent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("market://details?id=$id")
+        ).apply {
+            // Prefer the Play Store app when it is installed.
+            setPackage("com.android.vending")
         }
-        finish()
+        val webIntent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("https://play.google.com/store/apps/details?id=$id")
+        )
+
+        val launched = runCatching {
+            if (marketIntent.resolveActivity(packageManager) != null) {
+                startActivity(marketIntent)
+            } else if (webIntent.resolveActivity(packageManager) != null) {
+                startActivity(webIntent)
+            } else {
+                return@runCatching false
+            }
+            true
+        }.getOrDefault(false)
+
+        if (launched) {
+            finish()
+        } else {
+            Toast.makeText(this, R.string.common_no_browser, Toast.LENGTH_SHORT).show()
+        }
+        return launched
     }
 
     private val Int.dp get() = (this * resources.displayMetrics.density).toInt()

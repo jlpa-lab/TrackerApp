@@ -55,7 +55,7 @@ class ToolsActivity : DashboardActivity() {
             startActivity(Intent(this, ZoneAlertActivity::class.java))
         }
         binding.toolNearbyRow.root.setOnClickListener {
-            startActivity(Intent(this, NearbyActivity::class.java))
+            startActivity(Intent(this, NearbyActivity::class.java).putExtra(NearbyActivity.EXTRA_RETURN_TO_HOME, false))
         }
     }
 

@@ -17,6 +17,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.animation.LinearInterpolator
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import android.provider.Settings
 import android.view.Window
 import com.ads.module.admob.AppOpenManager
@@ -36,6 +37,7 @@ import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants
 import com.location.and.phone.tracker.locationnphonetracker.app.ResumeAdsEntryRule
 import com.location.and.phone.tracker.locationnphonetracker.bases.ConsentHandler
 import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivitySplashBinding
+import com.location.and.phone.tracker.locationnphonetracker.localization.LocaleManager
 import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPref
 import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPreferencesApp
 import com.location.and.phone.tracker.locationnphonetracker.service.LocationSharingCoordinator
@@ -53,6 +55,7 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
     private var hasMovedFromSplash = false
     private var isCheckingNetworkForStartup = true
     private var hasStartedStartupFlow = false
+    private var startupServicesStarted = false
     private var remoteConfigTimer: CountDownTimer? = null
     private lateinit var binding: ActivitySplashBinding
     private lateinit var consentHandler: ConsentHandler
@@ -74,7 +77,13 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
 //    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Install the Android 12+ splash handoff before Activity.onCreate so
+        // the system splash exits as soon as this activity draws its layout.
+        installSplashScreen()
         super.onCreate(savedInstanceState)
+        // SplashActivity is not a BaseActivity, so apply the saved in-app
+        // language before inflating the first screen after a cold start.
+        LocaleManager.applyPersisted(this)
         // A new splash marks a new app-launch session. Track Friend may ask
         // for background location again during this session if it is still
         // missing, while the current session remains usable with foreground
@@ -131,6 +140,8 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
 
 
     private fun startAppFlow() {
+        if (startupServicesStarted) return
+        startupServicesStarted = true
         RemoteConfigUtils.init(this, this)
         waitForRemoteConfig()
         AdsManager.loadNativeLanguage(
@@ -146,6 +157,10 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
             binding.frBanner.visibility = View.VISIBLE
             if (isCheckingNetworkForStartup) {
                 isCheckingNetworkForStartup = false
+                startAppFlow()
+            } else if (!hasStartedStartupFlow && !startupServicesStarted) {
+                // Remote Config may have timed out while the device was
+                // offline. Restart the startup services after validation.
                 startAppFlow()
             }
         } else {
@@ -168,6 +183,14 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 // Connection restored: Resume startup flow on main thread
+                handler.post {
+                    checkAndStartAppFlow()
+                }
+            }
+
+            override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) {
+                // onAvailable can arrive before DNS validation completes.
+                // Re-check when Android reports the validated capability too.
                 handler.post {
                     checkAndStartAppFlow()
                 }
@@ -231,6 +254,11 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
 
     private fun startConsentOrContinue() {
         if (hasStartedStartupFlow || isFinishing || isDestroyed) return
+        if (!isNetwork()) {
+            startupServicesStarted = false
+            showNoInternetDialog()
+            return
+        }
         hasStartedStartupFlow = true
 
         if (
@@ -351,9 +379,10 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
         val activeNetwork = connectivityManager.activeNetwork ?: return false
         val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
 
-        return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || // 0
+        val hasTransport = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || // 0
                 networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||     // 1
                 networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)   // 3
+        return hasTransport && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
     }
 
 

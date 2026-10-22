@@ -8,10 +8,14 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
 import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
+import com.location.and.phone.tracker.locationnphonetracker.localization.LocaleManager
 
 abstract class DashboardActivity : AppCompatActivity() {
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        // Dashboard screens do not inherit BaseActivity, so apply the saved
+        // app language before Settings/Tools layouts are inflated.
+        LocaleManager.applyPersisted(this)
         AdsManager.loadInterBack(this, ignoreLimit = true)
     }
 

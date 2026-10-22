@@ -37,12 +37,14 @@ import com.location.and.phone.tracker.locationnphonetracker.R
 import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
 import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
 import com.location.and.phone.tracker.locationnphonetracker.ads.banner_all
+import com.location.and.phone.tracker.locationnphonetracker.localization.LocaleManager
 import com.location.and.phone.tracker.locationnphonetracker.network.RealtimeLocationClient
 import com.location.and.phone.tracker.locationnphonetracker.network.TrackerBackendClient
 import com.location.and.phone.tracker.locationnphonetracker.service.LocationSharingCoordinator
 import com.location.and.phone.tracker.locationnphonetracker.service.LocationSharingService
 import com.location.and.phone.tracker.locationnphonetracker.ui.connection.TrackFriendRequestsActivity
 import com.location.and.phone.tracker.locationnphonetracker.ui.permission.LocationPermissionFlow
+import com.location.and.phone.tracker.locationnphonetracker.ui.rating.RateAppManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -122,6 +124,7 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private val geocoder by lazy { Geocoder(this, Locale.getDefault()) }
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        LocaleManager.applyPersisted(this)
         locationPermissionFlow
         AdsManager.loadInterBack(this, ignoreLimit = true)
         fused = LocationServices.getFusedLocationProviderClient(this)
@@ -129,7 +132,8 @@ open class LiveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 dismissFriendsPopup()
-                AdsManager.showInterHomeBack(this@LiveLocationActivity) { _ ->
+                AdsManager.showInterHomeBack(this@LiveLocationActivity) { adWasShown ->
+                    if (adWasShown) RateAppManager.skipAutomaticTriggerForInterstitial()
                     finish()
                 }
             }

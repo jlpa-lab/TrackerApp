@@ -14,7 +14,12 @@ import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.StringRes
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.android.gms.ads.MobileAds
@@ -28,8 +33,10 @@ import com.ads.module.config.AdjustConfig
 import com.ads.module.config.ERainAdConfig
 import com.itg.devconfig.DevConfig
 import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
 import com.location.and.phone.tracker.locationnphonetracker.app.AppActivityLifecycleCallbacks
 import com.location.and.phone.tracker.locationnphonetracker.app.AppLifecycleObserver
+import com.location.and.phone.tracker.locationnphonetracker.bases.ext.isNetwork
 
 /** Tracks the visible activity so application-level resume navigation stays safe. */
 class TrackerApplication : AdsMultiDexApplication() {
@@ -63,7 +70,28 @@ class TrackerApplication : AdsMultiDexApplication() {
 
         // 5. Initialize Billing IAP
         initBilling()
+        registerNetworkMonitor()
 
+    }
+
+    private fun registerNetworkMonitor() {
+        val connectivity = getSystemService(CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return
+        val mainHandler = Handler(Looper.getMainLooper())
+        val refreshAds = {
+            if (!applicationContext.isNetwork()) {
+                AdsManager.clearAll()
+            }
+        }
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onLost(network: Network) {
+                mainHandler.post(refreshAds)
+            }
+
+            override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) {
+                mainHandler.post(refreshAds)
+            }
+        }
+        runCatching { connectivity.registerDefaultNetworkCallback(callback) }
     }
 
     private fun initAds() {

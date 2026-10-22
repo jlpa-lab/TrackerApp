@@ -37,6 +37,7 @@ import com.location.and.phone.tracker.locationnphonetracker.ads.AdsManager
 import com.location.and.phone.tracker.locationnphonetracker.ads.banner_all
 import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityNearbyBinding
 import com.location.and.phone.tracker.locationnphonetracker.databinding.ActivityTrafficAlertBinding
+import com.location.and.phone.tracker.locationnphonetracker.localization.LocaleManager
 import com.location.and.phone.tracker.locationnphonetracker.ui.permission.LocationPermissionFlow
 import kotlin.math.ceil
 import kotlin.math.max
@@ -79,6 +80,7 @@ class TrafficAlertActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        LocaleManager.applyPersisted(this)
         locationPermissionFlow
         window.statusBarColor = Color.rgb(246, 251, 248)
         window.navigationBarColor = Color.rgb(246, 251, 248)

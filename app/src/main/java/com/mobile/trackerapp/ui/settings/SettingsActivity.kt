@@ -40,7 +40,7 @@ class SettingsActivity : DashboardActivity() {
         }
         root.addView(nav(getString(R.string.common_settings)), LinearLayout.LayoutParams(-1, wrap()))
         setContentView(root)
-        AdsManager.showNativeAllAndPreload(this, R.layout.layout_native_ad_small)
+        AdsManager.loadNativeAll(this, R.layout.layout_native_ad_small)
         bindNativeAllAd(this, findViewById(R.id.native_all_container))
         hideNavigationBar()
     }

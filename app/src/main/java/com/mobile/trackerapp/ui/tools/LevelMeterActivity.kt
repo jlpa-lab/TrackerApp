@@ -55,7 +55,6 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
     private var calibrationX = 0f
     private var calibrationY = 0f
     private var receivedSensorData = false
-    private var rateUseReported = false
     private var heldReading: Reading? = null
     private var currentReading = Reading(0f, 0f)
 
@@ -111,6 +110,7 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
         )
     }
     private fun toggleHold() {
+        RateAppManager.markGpsToolUsed()
         if (heldReading == null) {
             heldReading = currentReading.copy()
             setHoldAppearance()
@@ -123,6 +123,7 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
     }
 
     private fun calibrate() {
+        RateAppManager.markGpsToolUsed()
         calibrationX = smoothX
         calibrationY = smoothY
         heldReading = null
@@ -153,10 +154,6 @@ class LevelMeterActivity : DashboardActivity(), SensorEventListener {
             smoothX = -angleX
             smoothY = angleY
             receivedSensorData = true
-            if (!rateUseReported) {
-                rateUseReported = true
-                RateAppManager.markGpsToolUsed()
-            }
         } else {
             smoothX += ((-angleX) - smoothX) * 0.3f
             smoothY += (angleY - smoothY) * 0.3f

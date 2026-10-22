@@ -23,9 +23,9 @@ import com.ads.module.ads.wrapper.ApInterstitialAd
 import com.ads.module.funtion.AdCallback
 import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPref
 import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants
+import com.location.and.phone.tracker.locationnphonetracker.localization.LocaleManager
 import com.location.and.phone.tracker.locationnphonetracker.pref.AppSharedPreferencesApp
 import javax.inject.Inject
-import java.util.Locale
 
 abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity() {
 
@@ -77,12 +77,7 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity() {
     open fun observerData() {}
 
     private fun setLocal() {
-        val locale = Locale.forLanguageTag(appSharedPref.languageCode.ifBlank { "en" })
-        Locale.setDefault(locale)
-        val configuration = Configuration(resources.configuration)
-        configuration.setLocale(locale)
-        @Suppress("DEPRECATION")
-        resources.updateConfiguration(configuration, resources.displayMetrics)
+        LocaleManager.applyPersisted(this)
     }
 
     override fun onResume() {

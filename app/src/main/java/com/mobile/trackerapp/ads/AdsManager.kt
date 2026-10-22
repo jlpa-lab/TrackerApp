@@ -24,6 +24,7 @@ import com.ads.module.funtion.AdType
 import com.ads.module.funtion.RewardCallback
 import com.ads.module.util.AppConstant
 import com.google.android.gms.ads.AdValue
+import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewarded.RewardItem
@@ -34,6 +35,7 @@ import timber.log.Timber
 object AdsManager {
 
     private const val NATIVE_AD_LOAD_TIMEOUT_MS = 6_000L
+    private const val WELCOME_AD_SHOW_FALLBACK_TIMEOUT_MS = 2_500L
 
     val nativeLanguageAdLive = MutableLiveData<ApNativeAd?>()
     val nativeLanguageClickAdLive = MutableLiveData<ApNativeAd?>()
@@ -55,8 +57,6 @@ object AdsManager {
     var interHomeAdLive = MutableLiveData<ApInterstitialAd?>()
     // Auto-resolve config for each loaded native ad
     private val adConfigMap = mutableMapOf<ApNativeAd, AdUnitConfig>()
-    private var cachedNativeHomeAd: ApNativeAd? = null
-    private var cachedNativeAllAd: ApNativeAd? = null
     fun getAdConfig(ad: ApNativeAd): AdUnitConfig? = adConfigMap[ad]
 
     private var interSplashAd: ApInterstitialAd? = null
@@ -70,21 +70,19 @@ object AdsManager {
         layoutRes: Int,
         liveData: MutableLiveData<ApNativeAd?>,
         shouldDisplay: Boolean = true,
-        fallbackAd: () -> ApNativeAd? = { null },
         loadingLive: MutableLiveData<Boolean>? = null,
-        publishLoadedAd: Boolean = true,
     ) {
         if (!config.isEnable
             || AppPurchase.getInstance().isPurchased(activity)
             || !shouldDisplay
         ) {
             loadingLive?.postValue(false)
-            if (publishLoadedAd) liveData.postValue(null)
+            liveData.postValue(null)
             return
         }
         loadingLive?.postValue(true)
         if (!activity.isNetworkAvailable()) {
-            if (publishLoadedAd) liveData.postValue(fallbackAd())
+            liveData.postValue(null)
             loadingLive?.postValue(false)
             return
         }
@@ -97,7 +95,7 @@ object AdsManager {
         val timeoutRunnable = Runnable {
             loadTimedOut = true
             Timber.w("Native ad load timed out for ${config.id}")
-            if (publishLoadedAd) liveData.postValue(fallbackAd())
+            liveData.postValue(null)
             loadingLive?.postValue(false)
         }
         mainHandler.postDelayed(timeoutRunnable, NATIVE_AD_LOAD_TIMEOUT_MS)
@@ -109,9 +107,7 @@ object AdsManager {
                     if (loadTimedOut) return
                     mainHandler.removeCallbacks(timeoutRunnable)
                     adConfigMap[nativeAd] = config
-                    if (liveData === nativeHomeAdLive) cachedNativeHomeAd = nativeAd
-                    if (liveData === nativeAllAdLive) cachedNativeAllAd = nativeAd
-                    if (publishLoadedAd) liveData.postValue(nativeAd)
+                    liveData.postValue(nativeAd)
                     loadingLive?.postValue(false)
                 }
 
@@ -119,7 +115,7 @@ object AdsManager {
                     super.onAdFailedToLoad(adError)
                     if (loadTimedOut) return
                     mainHandler.removeCallbacks(timeoutRunnable)
-                    if (publishLoadedAd) liveData.postValue(fallbackAd())
+                    liveData.postValue(null)
                     loadingLive?.postValue(false)
                 }
             })
@@ -206,89 +202,24 @@ object AdsManager {
     }
 
     fun loadNativeHome(activity: Activity, layoutRes: Int) {
-        preloadNativeHome(activity, layoutRes)
-    }
-
-    /** Preloads the next native-home ad without disturbing an ad already available to Home. */
-    fun preloadNativeHome(activity: Activity, layoutRes: Int) {
-        if (nativeHomeLoadingLive.value == true || cachedNativeHomeAd != null || nativeHomeAdLive.value != null) return
         val config = AdRemoteConfig.native_home
-        val fallback = cachedNativeHomeAd ?: nativeHomeAdLive.value
-        nativeHomeLoadingLive.value = true
         loadNativeInternal(
             activity,
             config,
             layoutRes,
             nativeHomeAdLive,
             ERainAd.getInstance().getShouldDisplayNativeHome(config.enableUaCheck),
-            fallbackAd = { fallback },
             loadingLive = nativeHomeLoadingLive
         )
     }
 
     fun loadNativeAll(activity: Activity, layoutRes: Int) {
-        preloadNativeAll(activity, layoutRes)
-    }
-
-    /** Preloads the next native-all ad without clearing the current slot. */
-    fun preloadNativeAll(activity: Activity, layoutRes: Int) {
-        if (nativeAllLoadingLive.value == true || cachedNativeAllAd != null || nativeAllAdLive.value != null) return
-        val fallback = cachedNativeAllAd ?: nativeAllAdLive.value
-        nativeAllLoadingLive.value = true
         loadNativeInternal(
             activity,
             AdRemoteConfig.native_all,
             layoutRes,
             nativeAllAdLive,
-            fallbackAd = { fallback },
             loadingLive = nativeAllLoadingLive
-        )
-    }
-
-    /** Shows the preloaded native-home ad with the normal shimmer handoff, then preloads its replacement. */
-    fun showNativeHomeAndPreload(activity: Activity, layoutRes: Int) {
-        val current = cachedNativeHomeAd ?: nativeHomeAdLive.value
-        if (current == null && nativeHomeLoadingLive.value == true) return
-
-        if (current == null) {
-            nativeHomeAdLive.value = null
-            preloadNativeHome(activity, layoutRes)
-            return
-        }
-
-        nativeHomeLoadingLive.value = true
-        nativeHomeAdLive.value = current
-        loadNativeInternal(
-            activity = activity,
-            config = AdRemoteConfig.native_home,
-            layoutRes = layoutRes,
-            liveData = nativeHomeAdLive,
-            shouldDisplay = ERainAd.getInstance().getShouldDisplayNativeHome(AdRemoteConfig.native_home.enableUaCheck),
-            loadingLive = nativeHomeLoadingLive,
-            publishLoadedAd = false
-        )
-    }
-
-    /** Shows the preloaded native-all ad with the normal shimmer handoff, then preloads its replacement. */
-    fun showNativeAllAndPreload(activity: Activity, layoutRes: Int) {
-        val current = cachedNativeAllAd ?: nativeAllAdLive.value
-        if (current == null && nativeAllLoadingLive.value == true) return
-
-        if (current == null) {
-            nativeAllAdLive.value = null
-            preloadNativeAll(activity, layoutRes)
-            return
-        }
-
-        nativeAllLoadingLive.value = true
-        nativeAllAdLive.value = current
-        loadNativeInternal(
-            activity = activity,
-            config = AdRemoteConfig.native_all,
-            layoutRes = layoutRes,
-            liveData = nativeAllAdLive,
-            loadingLive = nativeAllLoadingLive,
-            publishLoadedAd = false
         )
     }
 
@@ -476,18 +407,71 @@ object AdsManager {
         ignoreLimit: Boolean = false,
         onAction: (adWasShown: Boolean) -> Unit
     ) {
+        if (!context.isNetworkAvailable()) {
+            onAction(false)
+            return
+        }
         val interstitial = interHomeBackAdLive.value
         val allowShow = ignoreLimit || ERainAd.getInstance()
             .getShouldDisplayInterWelcomeBack(AdRemoteConfig.inter_back.enableUaCheck)
         if (interstitial != null && interstitial.isReady && !AppPurchase.getInstance()
                 .isPurchased(context) && allowShow
         ) {
+            val handler = Handler(Looper.getMainLooper())
+            var adStarted = false
+            var actionCompleted = false
+            fun continueOnce(adWasShown: Boolean) {
+                if (actionCompleted) return
+                actionCompleted = true
+                handler.removeCallbacksAndMessages(null)
+                interHomeBackAdLive = MutableLiveData()
+                loadInterBack(context, ignoreLimit = true)
+                onAction(adWasShown)
+            }
+            handler.postDelayed(
+                { if (!adStarted) continueOnce(false) },
+                WELCOME_AD_SHOW_FALLBACK_TIMEOUT_MS
+            )
             ERainAd.getInstance()
                 .forceShowInterstitial(context, interstitial, object : AdCallback() {
+                    override fun onInterstitialShow() {
+                        super.onInterstitialShow()
+                        adStarted = true
+                    }
+
+                    override fun onAdImpression() {
+                        super.onAdImpression()
+                        adStarted = true
+                    }
+
                     override fun onNextAction() {
                         super.onNextAction()
-                        interHomeBackAdLive = MutableLiveData()
-                        onAction(true)
+                        continueOnce(adStarted)
+                    }
+
+                    override fun onAdClosed() {
+                        super.onAdClosed()
+                        continueOnce(adStarted)
+                    }
+
+                    override fun onAdFailedToShow(adError: AdError?) {
+                        super.onAdFailedToShow(adError)
+                        continueOnce(false)
+                    }
+
+                    override fun onAdFailedToShowHigh(adError: AdError?) {
+                        super.onAdFailedToShowHigh(adError)
+                        continueOnce(false)
+                    }
+
+                    override fun onAdFailedToShowMedium(adError: AdError?) {
+                        super.onAdFailedToShowMedium(adError)
+                        continueOnce(false)
+                    }
+
+                    override fun onAdFailedToShowAll(adError: AdError?) {
+                        super.onAdFailedToShowAll(adError)
+                        continueOnce(false)
                     }
                 }, false)
         } else {
@@ -496,6 +480,13 @@ object AdsManager {
     }
 
     fun showInterWelcome(context: Context, ignoreLimit: Boolean = false, onAction: () -> Unit) {
+        // Do not wait on a stale SDK ad object when the device is offline or
+        // DNS validation has failed. The reference flow continues immediately
+        // when an interstitial cannot be shown.
+        if (!context.isNetworkAvailable()) {
+            onAction()
+            return
+        }
         val interstitial = interWelcomeAdLive.value
         val config = AdRemoteConfig.inter_welcome_back
         val isPurchased = AppPurchase.getInstance().isPurchased(context)
@@ -505,17 +496,11 @@ object AdsManager {
         ) {
             showLoadedWelcomeInterstitial(context, interstitial, onAction)
         } else if (config.isEnable && !isPurchased && allowShow) {
-            // The first preload can legitimately be skipped while the 35-second
-            // interval is still closed. When the user presses Start/back after
-            // the interval opens, request the ad again instead of treating the
-            // earlier empty cache as a permanent result.
-            loadInterWelcome(context, ignoreLimit = true) { loaded ->
-                if (loaded?.isReady == true && !AppPurchase.getInstance().isPurchased(context)) {
-                    showLoadedWelcomeInterstitial(context, loaded, onAction)
-                } else {
-                    onAction()
-                }
-            }
+            // Never block the Welcome Back CTA on a new ad request. The ad is
+            // already preloaded while the screen is visible; if it is not
+            // ready (offline, DNS failure, timeout, or SDK failure), continue
+            // immediately and let the next Welcome Back screen preload again.
+            onAction()
         } else {
             onAction()
         }
@@ -526,15 +511,67 @@ object AdsManager {
         interstitial: ApInterstitialAd,
         onAction: () -> Unit
     ) {
+        val handler = Handler(Looper.getMainLooper())
+        var adStarted = false
+        var actionCompleted = false
+        fun continueOnce() {
+            if (actionCompleted) return
+            actionCompleted = true
+            handler.removeCallbacksAndMessages(null)
+            interWelcomeAdLive = MutableLiveData()
+            // Keep the next Welcome Back cycle preloaded, matching the
+            // reference ad flow without delaying the current navigation.
+            loadInterWelcome(context, ignoreLimit = true)
+            onAction()
+        }
+        val fallback = Runnable {
+            // A stale ad can report itself ready but never invoke an SDK
+            // show/failure callback (DNS failure, timeout, or mediation error).
+            // Only bypass it when the ad never started; a real ad remains on
+            // screen until its normal close callback.
+            if (!adStarted) continueOnce()
+        }
+        handler.postDelayed(fallback, WELCOME_AD_SHOW_FALLBACK_TIMEOUT_MS)
         ERainAd.getInstance()
             .forceShowInterstitial(context, interstitial, object : AdCallback() {
+                override fun onInterstitialShow() {
+                    super.onInterstitialShow()
+                    adStarted = true
+                }
+
+                override fun onAdImpression() {
+                    super.onAdImpression()
+                    adStarted = true
+                }
+
                 override fun onNextAction() {
                     super.onNextAction()
-                    interWelcomeAdLive = MutableLiveData()
-                    // Keep the next Welcome Back flow preloaded while the
-                    // interval gate controls when it may actually be shown.
-                    loadInterWelcome(context, ignoreLimit = true)
-                    onAction()
+                    continueOnce()
+                }
+
+                override fun onAdClosed() {
+                    super.onAdClosed()
+                    continueOnce()
+                }
+
+                override fun onAdFailedToShow(adError: AdError?) {
+                    super.onAdFailedToShow(adError)
+                    continueOnce()
+                }
+
+                override fun onAdFailedToShowHigh(adError: AdError?) {
+                    super.onAdFailedToShowHigh(adError)
+                    continueOnce()
+                }
+
+                override fun onAdFailedToShowMedium(adError: AdError?) {
+                    super.onAdFailedToShowMedium(adError)
+                    continueOnce()
+                }
+
+                override fun onAdFailedToShowAll(adError: AdError?) {
+                    super.onAdFailedToShowAll(adError)
+                    continueOnce()
                 }
             }, false)
     }
@@ -729,8 +766,6 @@ object AdsManager {
         nativeAllAdLive.postValue(null)
         nativeHomeLoadingLive.postValue(false)
         nativeAllLoadingLive.postValue(false)
-        cachedNativeHomeAd = null
-        cachedNativeAllAd = null
         interWelcomeAdLive = MutableLiveData()
         interSplashAd = null
         interOnboarding = null
@@ -742,9 +777,10 @@ object AdsManager {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val network = connectivityManager.activeNetwork ?: return false
             val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+            val hasTransport = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
                     capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
                     capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+            hasTransport && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
         } else {
             @Suppress("DEPRECATION")
             connectivityManager.activeNetworkInfo?.isConnectedOrConnecting == true
