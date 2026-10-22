@@ -1,10 +1,13 @@
 package com.mobile.trackerapp.ui.splash
-import com.mobile.trackerapp.R
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Dialog
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -13,11 +16,13 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.LinearInterpolator
-import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatActivity
+import android.provider.Settings
+import android.view.Window
 import com.ads.module.admob.AppOpenManager
 import com.ads.module.ads.ERainAd
 import com.ads.module.funtion.AdCallback
-import com.mobile.trackerapp.pref.AppSharedPref
+import com.mobile.trackerapp.R
 import com.mobile.trackerapp.ads.AdRemoteConfig
 import com.mobile.trackerapp.ads.AdsManager
 import com.mobile.trackerapp.ads.AdsManager.loadNativeLanguage
@@ -30,12 +35,13 @@ import com.mobile.trackerapp.ads.open_resume
 import com.mobile.trackerapp.app.AppConstants
 import com.mobile.trackerapp.app.ResumeAdsEntryRule
 import com.mobile.trackerapp.bases.ConsentHandler
-import com.mobile.trackerapp.bases.ext.isNetwork
 import com.mobile.trackerapp.databinding.ActivitySplashBinding
+import com.mobile.trackerapp.pref.AppSharedPref
 import com.mobile.trackerapp.pref.AppSharedPreferencesApp
 import com.mobile.trackerapp.service.LocationSharingCoordinator
 import com.mobile.trackerapp.utils.Routes
 import com.onesignal.OneSignal
+
 
 /** Displays the branded launch artwork while startup services initialize. */
 class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
@@ -45,10 +51,14 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
     private var loaderAnimator: ObjectAnimator? = null
     private var showLanguageNextTime = true
     private var hasMovedFromSplash = false
+    private var isCheckingNetworkForStartup = true
     private var hasStartedStartupFlow = false
     private var remoteConfigTimer: CountDownTimer? = null
     private lateinit var binding: ActivitySplashBinding
     private lateinit var consentHandler: ConsentHandler
+    private var noInternetDialog: Dialog? = null
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
+
     private val appSharedPref: AppSharedPref by lazy {
         AppSharedPreferencesApp(applicationContext)
     }
@@ -87,7 +97,7 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
         setContentView(binding.root)
         Log.d("AppEvent", "SplashActivity")
         OneSignal.initWithContext(applicationContext, getString(R.string.onesignal_app_id))
-        RemoteConfigUtils.init(this, this)
+    //    RemoteConfigUtils.init(this, this)
 
         val track = findViewById<View>(R.id.splash_loader_track)
         val segment = findViewById<View>(R.id.splash_loader_segment)
@@ -106,15 +116,103 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
                 start()
             }
         }
+
+//        waitForRemoteConfig()
+        registerNetworkCallback()
         consentHandler = ConsentHandler(
             activity = this,
             appSharedPref = appSharedPref,
             trackingSuffix = 1,
             onConsentFlowCompleted = { checkRemoteConfigResult() }
         )
+        // NEW: Initial network check to start app flow or show no internet dialog
+        checkAndStartAppFlow()
+    }
+
+
+    private fun startAppFlow() {
+        RemoteConfigUtils.init(this, this)
         waitForRemoteConfig()
-       // handler.postDelayed(openLanguageScreen, SPLASH_DURATION_MS)
-//        loadSplashBanner()
+        AdsManager.loadNativeLanguage(
+            this,
+            true,
+            R.layout.layout_native_language_click
+        )
+    }
+
+    private fun checkAndStartAppFlow() {
+        if (isNetwork()) {
+            noInternetDialog?.dismiss()
+            binding.frBanner.visibility = View.VISIBLE
+            if (isCheckingNetworkForStartup) {
+                isCheckingNetworkForStartup = false
+                startAppFlow()
+            }
+        } else {
+            showNoInternetDialog()
+        }
+    }
+
+    private fun unregisterNetworkCallback() {
+        networkCallback?.let {
+            val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+            try {
+                connectivityManager?.unregisterNetworkCallback(it)
+            } catch (_: Exception) {}
+        }
+        networkCallback = null
+    }
+
+    private fun registerNetworkCallback() {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return
+        networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                // Connection restored: Resume startup flow on main thread
+                handler.post {
+                    checkAndStartAppFlow()
+                }
+            }
+
+            override fun onLost(network: Network) {
+                // Connection lost: Show dialog on main thread
+                handler.post {
+                    if (!isNetwork()) {
+                        showNoInternetDialog()
+                    }
+                }
+            }
+        }
+        try {
+            connectivityManager.registerDefaultNetworkCallback(networkCallback!!)
+        } catch (_: Exception) {}
+    }
+    private fun showNoInternetDialog() {
+        binding.frBanner.visibility = View.GONE
+        if (noInternetDialog == null) {
+            val dialog = Dialog(this)
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setContentView(R.layout.dialog_no_internet)
+            dialog.setCancelable(false) // Prevent user from dismissing dialog without internet
+            dialog.window?.apply {
+                setBackgroundDrawableResource(android.R.color.transparent)
+                setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
+            }
+            // Direct user to Wi-Fi settings when clicking "Connect" button
+            dialog.findViewById<View>(R.id.btnConnectInternet)?.setOnClickListener {
+                try {
+                    startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+                } catch (_: Exception) {
+                    try {
+                        startActivity(Intent(Settings.ACTION_SETTINGS))
+                    } catch (_: Exception) {}
+                }
+            }
+            noInternetDialog = dialog
+        }
+        noInternetDialog?.takeIf { !it.isShowing }?.show()
     }
     private fun waitForRemoteConfig() {
         remoteConfigTimer = object : CountDownTimer(AppConstants.DEFAULT_TIME_SPLASH, 100) {
@@ -153,12 +251,18 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
 
     override fun onResume() {
         super.onResume()
-        ERainAd.getInstance().onCheckShowSplashWhenFail(this@SplashActivity, object : AdCallback() {
-            override fun onNextAction() {
-                super.onNextAction()
-                moveActivity()
-            }
-        }, 1000)
+        // Re-check network state when returning to app (e.g. after changing settings in Wi-Fi screen)
+        if (!isCheckingNetworkForStartup && isNetwork()) {
+            noInternetDialog?.dismiss()
+            ERainAd.getInstance().onCheckShowSplashWhenFail(this@SplashActivity, object : AdCallback() {
+                override fun onNextAction() {
+                    super.onNextAction()
+                    moveActivity()
+                }
+            }, 1000)
+        } else if (!isNetwork()) {
+            showNoInternetDialog()
+        }
     }
 
     private fun checkRemoteConfigResult() {
@@ -176,7 +280,7 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
         } else {
             AdRemoteConfig.inter_splash
         }
-        if (splashInterConfig.isEnable && isNetwork(this@SplashActivity)) {
+        if (splashInterConfig.isEnable && isNetwork()) {
             ERainAd.getInstance().loadSplashInterstitialAds(
                 this, splashInterConfig.id, 30000, 5000, object : AdCallback() {
                     override fun onNextAction() {
@@ -228,7 +332,12 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
             isCollapse = false
         )
     }
+
     override fun onDestroy() {
+        // Clean up callbacks and dialog references
+        unregisterNetworkCallback()
+        noInternetDialog?.dismiss()
+        noInternetDialog = null
         remoteConfigTimer?.cancel()
         if (::consentHandler.isInitialized) {
             consentHandler.clear()
@@ -236,6 +345,17 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
         loaderAnimator?.cancel()
         super.onDestroy()
     }
+
+    private fun isNetwork(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return false
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+
+        return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || // 0
+                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||     // 1
+                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)   // 3
+    }
+
 
     companion object {
         // Use the project-defined Splash duration instead of the old 1-second shortcut.

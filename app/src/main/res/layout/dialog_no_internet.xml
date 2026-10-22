@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="24dp"
+    android:background="@drawable/bg_dialog_no_internet"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="28dp">
+
+    <!-- Wi-Fi Off Icon -->
+    <ImageView
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:padding="8dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_no_internet" />
+
+    <!-- Dialog Title -->
+    <TextView
+        android:text="No Internet Connection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:fontFamily="@font/inter_bold"
+        android:textColor="@color/text_primary"
+        android:textSize="18sp" />
+
+    <!-- Dialog Description -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:fontFamily="@font/inter_regular"
+        android:lineSpacingExtra="3dp"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp"
+        android:text="We couldn't load the data.\nPlease check your internet\nconnection." />
+
+    <!-- Action Button -->
+    <TextView
+        android:id="@+id/btnConnectInternet"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Connect internet"
+        android:fontFamily="@font/inter_bold"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:background="@drawable/bg_permission_primary"  />
+
+</LinearLayout>

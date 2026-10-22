@@ -1,98 +1,329 @@
 <?xml version='1.0' encoding='utf-8'?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/home_bg" android:fitsSystemWindows="false" android:orientation="vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/home_bg"
+    android:fitsSystemWindows="false"
+    android:orientation="vertical">
 
-    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:fillViewport="true" android:layout_weight="1">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_gps_title" android:textColor="@color/home_green_title" android:textSize="26sp" android:fontFamily="@font/inter_bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="@string/home_gps_title"
+                    android:textColor="@color/home_green_title"
+                    android:textSize="26sp" />
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_tracker_title" android:fontFamily="@font/inter_bold" android:textColor="@color/home_text_dark" android:textSize="26sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="@string/home_tracker_title"
+                    android:textColor="@color/home_text_dark"
+                    android:textSize="26sp" />
             </LinearLayout>
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/inter_regular" android:text="@string/home_location_subtitle" android:textColor="@color/home_text_subtitle" android:textSize="12sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/home_location_subtitle"
+                android:textColor="@color/home_text_subtitle"
+                android:textSize="12sp" />
 
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:gravity="center_vertical" android:layout_gravity="center_vertical" android:background="@drawable/bg_live_card" android:padding="16dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_live_card"
+                android:gravity="center_vertical"
+                android:padding="16dp">
 
-                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="8dp" android:orientation="vertical" android:layout_weight="0.6" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@id/live_illustration" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="0.6"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/live_illustration"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_live_location" android:textColor="@color/white" android:textSize="23sp" android:singleLine="true" android:ellipsize="end" android:fontFamily="@font/inter_bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:fontFamily="@font/inter_bold"
+                        android:singleLine="true"
+                        android:text="@string/home_live_location"
+                        android:textColor="@color/white"
+                        android:textSize="23sp" />
 
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_location_description" android:textColor="@color/white" android:fontFamily="@font/inter_regular" android:textSize="12sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_regular"
+                        android:text="@string/home_location_description"
+                        android:textColor="@color/white"
+                        android:textSize="12sp" />
 
-                    <TextView android:id="@+id/open_live_map" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="@drawable/bg_pill_white" android:paddingVertical="8dp" android:paddingHorizontal="16dp" android:fontFamily="@font/inter_bold" android:text="@string/home_open_live_map" android:textColor="@color/home_green_button_text" />
+                    <TextView
+                        android:id="@+id/open_live_map"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_pill_white"
+                        android:fontFamily="@font/inter_bold"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="8dp"
+                        android:text="@string/home_open_live_map"
+                        android:textColor="@color/home_green_button_text" />
                 </LinearLayout>
 
-                <ImageView android:id="@+id/live_illustration" android:layout_width="0dp" android:layout_height="90dp" android:scaleType="centerInside" android:layout_weight="0.4" android:src="@drawable/home_live_location" app:layout_constraintEnd_toEndOf="parent" />
+                <ImageView
+                    android:id="@+id/live_illustration"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_weight="0.4"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/home_live_location"
+                    app:layout_constraintEnd_toEndOf="parent" />
             </LinearLayout>
 
 
+            <FrameLayout
+                android:id="@+id/native_home_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
 
+                <include
+                    android:id="@+id/native_home_shimmer"
+                    layout="@layout/layout_shimmer_native_home"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-            <FrameLayout android:id="@+id/native_home_container" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
-
-                <include android:id="@+id/native_home_shimmer" layout="@layout/layout_shimmer_native_home" android:layout_width="match_parent" android:layout_height="wrap_content" />
-
-                <FrameLayout android:id="@+id/fr_native_home" android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone" />
+                <FrameLayout
+                    android:id="@+id/fr_native_home"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
             </FrameLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_gravity="center_vertical" android:layout_marginTop="8dp">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical">
 
-                <LinearLayout android:id="@+id/action_phone_locator" android:layout_width="0dp" android:layout_height="0dp" android:background="@drawable/bg_phone_locator" android:orientation="vertical" android:padding="16dp" android:gravity="center_vertical" android:layout_gravity="center_vertical" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@id/action_right" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent">
+                <LinearLayout
+                    android:id="@+id/action_phone_locator"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/bg_phone_locator"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/action_right"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:adjustViewBounds="true" android:src="@drawable/home_phone_locator" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/home_phone_locator" />
 
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_phone_locator" android:textSize="14sp" android:textColor="@color/home_phone_locator_text" android:fontFamily="@font/inter_bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="@string/home_phone_locator"
+                        android:textColor="@color/home_phone_locator_text"
+                        android:textSize="14sp" />
 
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_phone_locator_description" android:textColor="@color/home_text_muted" android:textSize="12sp" android:fontFamily="@font/inter_regular" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_regular"
+                        android:text="@string/home_phone_locator_description"
+                        android:textColor="@color/home_text_muted"
+                        android:textSize="12sp" />
                 </LinearLayout>
 
-                <LinearLayout android:id="@+id/action_right" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:orientation="vertical" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toEndOf="@id/action_phone_locator" app:layout_constraintTop_toTopOf="parent">
+                <LinearLayout
+                    android:id="@+id/action_right"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/action_phone_locator"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <LinearLayout android:id="@+id/action_track_friend" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_track_friend" android:clickable="true" android:focusable="true" android:gravity="center" android:layout_gravity="center" android:orientation="vertical" android:padding="12dp">
+                    <LinearLayout
+                        android:id="@+id/action_track_friend"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_track_friend"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="12dp">
 
-                        <ImageView android:layout_width="match_parent" android:layout_height="60dp" android:src="@drawable/home_track_friend" />
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:src="@drawable/home_track_friend" />
 
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_track_friend" android:textColor="@color/home_phone_locator_text" android:textSize="14sp" android:fontFamily="@font/inter_bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_bold"
+                            android:text="@string/home_track_friend"
+                            android:textColor="@color/home_phone_locator_text"
+                            android:textSize="14sp" />
                     </LinearLayout>
 
-                    <Space android:layout_width="match_parent" android:layout_height="8dp" />
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp" />
 
-                    <LinearLayout android:id="@+id/action_shared_connection" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_shared_connection" android:clickable="true" android:focusable="true" android:gravity="center" android:layout_gravity="center" android:orientation="vertical" android:padding="12dp">
+                    <LinearLayout
+                        android:id="@+id/action_shared_connection"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_shared_connection"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="12dp">
 
-                        <ImageView android:layout_width="match_parent" android:layout_height="60dp" android:src="@drawable/home_shared_connection" />
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:src="@drawable/home_shared_connection" />
 
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_shared_connection" android:textColor="@color/home_phone_locator_text" android:textSize="14sp" android:fontFamily="@font/inter_bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_bold"
+                            android:text="@string/home_shared_connection"
+                            android:textColor="@color/home_phone_locator_text"
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp">
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_explore_tools" android:textColor="@color/home_phone_locator_text" android:textSize="16sp" android:fontFamily="@font/inter_bold" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="@string/home_explore_tools"
+                    android:textColor="@color/home_phone_locator_text"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView android:id="@+id/view_all_tools" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:text="@string/home_view_all" android:textSize="12sp" android:textColor="@color/home_see_all" android:fontFamily="@font/inter_bold" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/view_all_tools"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="@string/home_view_all"
+                    android:textColor="@color/home_see_all"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:columnCount="2" android:rowCount="2">
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="2">
 
-                <include layout="@layout/home_tool_tile" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp" />
+                <include
+                    layout="@layout/home_tool_tile"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp" />
 
-                <include layout="@layout/home_tool_tile_nearby" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp" />
+                <include
+                    layout="@layout/home_tool_tile_nearby"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp" />
 
-                <include layout="@layout/home_tool_tile_traffic" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp" />
+                <include
+                    layout="@layout/home_tool_tile_traffic"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp" />
 
-                <include layout="@layout/home_tool_tile_zone" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp" />
+                <include
+                    layout="@layout/home_tool_tile_zone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp" />
             </GridLayout>
         </LinearLayout>
     </ScrollView>
 
-    <FrameLayout android:id="@+id/fr_banner_collapsible_home" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@color/black">
+    <FrameLayout
+        android:id="@+id/fr_banner_collapsible_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black">
 
-        <include android:id="@+id/include_banner_collapsible_home" layout="@layout/layout_banner_control" android:layout_width="match_parent" android:layout_height="wrap_content" />
+        <include
+            android:id="@+id/include_banner_collapsible_home"
+            layout="@layout/layout_banner_control"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </FrameLayout>
 
-    <include layout="@layout/home_bottom_nav" android:layout_width="match_parent" android:layout_height="wrap_content" />
+    <include
+        layout="@layout/home_bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>
