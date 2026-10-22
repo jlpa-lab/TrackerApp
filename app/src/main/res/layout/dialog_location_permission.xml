@@ -22,7 +22,7 @@
     <TextView
         android:id="@+id/permission_title"
         android:layout_width="match_parent"
-        android:layout_height="33dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:fontFamily="@font/inter_bold"
         android:gravity="center"

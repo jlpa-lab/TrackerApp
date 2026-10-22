@@ -34,6 +34,13 @@ class AppLifecycleObserver : DefaultLifecycleObserver {
         val currentActivity = TrackerApplication.currentActivity
         if (currentActivity != null) {
             LocationSharingCoordinator.syncAcceptedFriends(currentActivity.applicationContext)
+            if (ResumeAdsEntryRule.consumeResumeSuppression()) {
+                // Returning from Android Settings must restore the feature
+                // that opened it, without inserting Welcome Back or an app
+                // open ad into that navigation path.
+                AppOpenManager.getInstance().disableAppResume()
+                return
+            }
             val isDisable = listActivityDisableResume.any { clazz ->
                 clazz.isInstance(currentActivity)
             }

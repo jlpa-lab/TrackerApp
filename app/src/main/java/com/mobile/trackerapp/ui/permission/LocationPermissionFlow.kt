@@ -16,6 +16,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.mobile.trackerapp.R
+import com.mobile.trackerapp.app.ResumeAdsEntryRule
 
 /**
  * Shared foreground-location permission flow used by all location features.
@@ -57,6 +58,10 @@ class LocationPermissionFlow(
     fun onHostResume() {
         if (!settingsOpened) return
         settingsOpened = false
+        // Usually the process observer consumes this suppression while the
+        // app is stopped. Consume it here as a fallback for devices that keep
+        // the app process started while Settings is displayed.
+        ResumeAdsEntryRule.consumeResumeSuppression()
         if (hasForegroundLocation()) onGranted() else activity.finish()
     }
 
@@ -120,6 +125,7 @@ class LocationPermissionFlow(
             setOnClickListener {
                 dialog.dismiss()
                 settingsOpened = true
+                ResumeAdsEntryRule.suppressNextResume()
                 activity.startActivity(
                     Intent(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
