@@ -80,7 +80,9 @@ android {
         viewBinding = true
     }
 }
-
+configurations.all {
+    exclude(group = "org.json", module = "json")
+}
 dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.constraintlayout)

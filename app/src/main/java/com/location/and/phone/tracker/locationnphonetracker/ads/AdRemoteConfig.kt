@@ -209,9 +209,6 @@ data class AdRemoteConfig(
     val inter_welcome_back: AdUnitConfig
         get() = getAdUnit("inter_welcome_back")
 
-    val reward_example: AdUnitConfig
-        get() = getAdUnit("reward_example")
-
     val banner_all: AdUnitConfig
         get() = getAdUnit("banner_all")
 

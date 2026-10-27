@@ -631,60 +631,6 @@ object AdsManager {
             onAction()
         }
     }
-    fun loadAndShowReward(
-        activity: Activity,
-        onSuccess: () -> Unit,
-        onFailed: () -> Unit
-    ) {
-        if (AdRemoteConfig.reward_example.isEnable.not() || AppPurchase.getInstance()
-                .isPurchased(activity)
-        ) {
-            onFailed()
-            return
-        }
-
-        ERainAd.getInstance().initRewardAds(
-            activity,
-            AdRemoteConfig.reward_example.id,
-            object : AdCallback() {
-                override fun onRewardAdLoaded(rewardedAd: RewardedAd?) {
-                    super.onRewardAdLoaded(rewardedAd)
-                    rewardExample = rewardedAd
-
-                    var isEarn = false
-                    ERainAd.getInstance().showRewardAds(
-                        activity,
-                        rewardExample,
-                        object : RewardCallback {
-                            override fun onUserEarnedReward(var1: RewardItem?) {
-                                isEarn = true
-                                rewardExample = null
-                            }
-
-                            override fun onRewardedAdClosed() {
-                                if (isEarn) onSuccess()
-                                else onFailed()
-                            }
-
-                            override fun onRewardedAdFailedToShow(codeError: Int) {
-                                rewardExample = null
-                                onFailed()
-                            }
-
-                            override fun onAdClicked() {
-
-                            }
-                        }
-                    )
-                }
-
-                override fun onAdFailedToLoad(i: LoadAdError?) {
-                    super.onAdFailedToLoad(i)
-                    onFailed()
-                }
-            }
-        )
-    }
 
     fun loadBanner(
         activity: AppCompatActivity,
