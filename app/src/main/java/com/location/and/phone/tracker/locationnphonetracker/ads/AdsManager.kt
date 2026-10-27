@@ -64,6 +64,8 @@ object AdsManager {
 
     private var rewardExample :RewardedAd? = null
 
+    private fun adsEnabled(): Boolean = RemoteConfigUtils.getShowAds()
+
     private fun loadNativeInternal(
         activity: Activity,
         config: AdUnitConfig,
@@ -72,7 +74,8 @@ object AdsManager {
         shouldDisplay: Boolean = true,
         loadingLive: MutableLiveData<Boolean>? = null,
     ) {
-        if (!config.isEnable
+        if (!adsEnabled()
+            || !config.isEnable
             || AppPurchase.getInstance().isPurchased(activity)
             || !shouldDisplay
         ) {
@@ -104,7 +107,11 @@ object AdsManager {
             .loadNativeAdResultCallback(activity, config.id, layoutRes, object : AdCallback() {
                 override fun onNativeAdLoaded(nativeAd: ApNativeAd) {
                     super.onNativeAdLoaded(nativeAd)
-                    if (loadTimedOut) return
+                    if (loadTimedOut || !adsEnabled()) {
+                        liveData.postValue(null)
+                        loadingLive?.postValue(false)
+                        return
+                    }
                     mainHandler.removeCallbacks(timeoutRunnable)
                     adConfigMap[nativeAd] = config
                     liveData.postValue(nativeAd)
@@ -290,7 +297,8 @@ object AdsManager {
 
     fun loadInterOnboarding(context: Context, ignoreLimit: Boolean = false) {
         val config = AdRemoteConfig.inter_onboarding
-        if (!config.isEnable
+        if (!adsEnabled()
+            || !config.isEnable
             || AppPurchase.getInstance().isPurchased(context)
             || (!ignoreLimit && !ERainAd.getInstance().getShouldDisplayInterOnboarding(config.enableUaCheck))
         ) {
@@ -328,7 +336,8 @@ object AdsManager {
             request.value = ad
         }
         val config = AdRemoteConfig.inter_back
-        if (!config.isEnable
+        if (!adsEnabled()
+            || !config.isEnable
             || AppPurchase.getInstance().isPurchased(context)
             || (!ignoreLimit && !ERainAd.getInstance()
                 .getShouldDisplayInterWelcomeBack(config.enableUaCheck))
@@ -374,7 +383,8 @@ object AdsManager {
         // The Welcome Back flow has its own ad unit. Keep the live data name
         // stable because the screen consumes the same cache for start/back.
         val config = AdRemoteConfig.inter_welcome_back
-        if (!config.isEnable
+        if (!adsEnabled()
+            || !config.isEnable
             || AppPurchase.getInstance().isPurchased(context)
             || (!ignoreLimit && !ERainAd.getInstance()
                 .getShouldDisplayInterWelcomeBack(config.enableUaCheck))
@@ -407,7 +417,7 @@ object AdsManager {
         ignoreLimit: Boolean = false,
         onAction: (adWasShown: Boolean) -> Unit
     ) {
-        if (!context.isNetworkAvailable()) {
+        if (!adsEnabled() || !context.isNetworkAvailable()) {
             onAction(false)
             return
         }
@@ -483,7 +493,7 @@ object AdsManager {
         // Do not wait on a stale SDK ad object when the device is offline or
         // DNS validation has failed. The reference flow continues immediately
         // when an interstitial cannot be shown.
-        if (!context.isNetworkAvailable()) {
+        if (!adsEnabled() || !context.isNetworkAvailable()) {
             onAction()
             return
         }
@@ -585,7 +595,8 @@ object AdsManager {
             request.value = ad
         }
         val config = AdRemoteConfig.inter_home
-        if (!config.isEnable
+        if (!adsEnabled()
+            || !config.isEnable
             || AppPurchase.getInstance().isPurchased(context)
             || (!ignoreLimit && !ERainAd.getInstance()
                 .getShouldDisplayInterWelcomeBack(config.enableUaCheck))
@@ -614,8 +625,9 @@ object AdsManager {
 
     fun showInterHome(context: Context, ignoreLimit: Boolean = false, onAction: () -> Unit) {
         val interstitial = interHomeAdLive.value
-        val allowShow = ignoreLimit || ERainAd.getInstance()
+        val allowShow = adsEnabled() && (ignoreLimit || ERainAd.getInstance()
             .getShouldDisplayInterWelcomeBack(AdRemoteConfig.inter_home.enableUaCheck)
+        )
         if (interstitial != null && interstitial.isReady && !AppPurchase.getInstance()
                 .isPurchased(context) && allowShow
         ) {
@@ -639,7 +651,7 @@ object AdsManager {
         isCollapse: Boolean,
         onAdClicked: () -> Unit = {},
     ) {
-        if (adUnitConfig.isEnable) {
+        if (adsEnabled() && adUnitConfig.isEnable) {
             removeBannerView(activity, frAds)
             if (isCollapse) ERainAd.getInstance().loadCollapsibleBanner(
                 activity,

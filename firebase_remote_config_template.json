@@ -7,6 +7,18 @@
       },
       "description": "Complete ad placement configuration. Keep this value as a JSON object serialized into a string."
     },
+    "show_ads": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "Global ad switch. Set to false to disable all app ads."
+    },
+    "onesignal_app_id": {
+      "defaultValue": {
+        "value": "e2a6c33e-9de1-4681-99ec-29defce96132"
+      },
+      "description": "OneSignal application ID used to initialize push notifications."
+    },
     "on_show_dialog_consent": {
       "defaultValue": {
         "value": "true"

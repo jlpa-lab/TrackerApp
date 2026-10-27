@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.ads.module.admob.AppOpenManager
 import com.location.and.phone.tracker.locationnphonetracker.TrackerApplication
 import com.location.and.phone.tracker.locationnphonetracker.app.ResumeAdsEntryRule
+import com.location.and.phone.tracker.locationnphonetracker.ads.RemoteConfigUtils
 import com.location.and.phone.tracker.locationnphonetracker.service.LocationSharingCoordinator
 
 class AppActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
@@ -22,7 +23,8 @@ class AppActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
     override fun onActivityResumed(activity: Activity) {
         TrackerApplication.currentActivity = activity
         LocationSharingCoordinator.syncAcceptedFriends(activity.applicationContext)
-        if (ResumeAdsEntryRule.shouldShowWelcomeOnResume() ||
+        if (!RemoteConfigUtils.getShowAds() ||
+            ResumeAdsEntryRule.shouldShowWelcomeOnResume() ||
             !ResumeAdsEntryRule.shouldEnableOpenResume()
         ) {
             AppOpenManager.getInstance().disableAppResume()

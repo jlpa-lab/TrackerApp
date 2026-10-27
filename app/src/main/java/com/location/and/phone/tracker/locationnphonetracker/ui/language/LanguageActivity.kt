@@ -150,19 +150,27 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
     private fun listenLanguageAd() {
         AdsManager.nativeLanguageAdLive.removeObservers(this)
         AdsManager.nativeLanguageAdLive.observe(this) { ad ->
-            if (ad != null) showNativeLanguage(ad) else mBinding.flAds.goneView()
+            if (RemoteConfigUtils.getShowAds() && ad != null) {
+                showNativeLanguage(ad)
+            } else {
+                mBinding.flAds.goneView()
+            }
         }
     }
 
     private fun listenLanguageClickAd() {
         AdsManager.nativeLanguageClickAdLive.removeObservers(this)
         AdsManager.nativeLanguageClickAdLive.observe(this) { ad ->
-            if (ad != null) showNativeLanguage(ad) else mBinding.flAds.visibility = View.GONE
+            if (RemoteConfigUtils.getShowAds() && ad != null) {
+                showNativeLanguage(ad)
+            } else {
+                mBinding.flAds.visibility = View.GONE
+            }
         }
     }
 
     private fun showNativeLanguage(ad: ApNativeAd) {
-        if (!isNetwork()) {
+        if (!RemoteConfigUtils.getShowAds() || !isNetwork()) {
             mBinding.flAds.visibility = View.GONE
             return
         }

@@ -105,7 +105,6 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
         // Display the same layout instance used by binding so the splash banner is visible.
         setContentView(binding.root)
         Log.d("AppEvent", "SplashActivity")
-        OneSignal.initWithContext(applicationContext, getString(R.string.onesignal_app_id))
     //    RemoteConfigUtils.init(this, this)
 
         val track = findViewById<View>(R.id.splash_loader_track)
@@ -275,12 +274,21 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
 
     override fun loadSuccess() {
         getConfigSuccess = true
+        // A language native ad may have been preloaded before Firebase
+        // finished. Clear it immediately when the universal ads switch is off.
+        if (!RemoteConfigUtils.getShowAds()) {
+            AdsManager.clearAll()
+        }
+        OneSignal.initWithContext(
+            applicationContext,
+            RemoteConfigUtils.getOneSignalAppId(this)
+        )
     }
 
     override fun onResume() {
         super.onResume()
         // Re-check network state when returning to app (e.g. after changing settings in Wi-Fi screen)
-        if (!isCheckingNetworkForStartup && isNetwork()) {
+        if (!isCheckingNetworkForStartup && isNetwork() && RemoteConfigUtils.getShowAds()) {
             noInternetDialog?.dismiss()
             ERainAd.getInstance().onCheckShowSplashWhenFail(this@SplashActivity, object : AdCallback() {
                 override fun onNextAction() {
@@ -308,7 +316,7 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
         } else {
             AdRemoteConfig.inter_splash
         }
-        if (splashInterConfig.isEnable && isNetwork()) {
+        if (RemoteConfigUtils.getShowAds() && splashInterConfig.isEnable && isNetwork()) {
             ERainAd.getInstance().loadSplashInterstitialAds(
                 this, splashInterConfig.id, 30000, 5000, object : AdCallback() {
                     override fun onNextAction() {
@@ -323,7 +331,7 @@ class SplashActivity : AppCompatActivity() , RemoteConfigUtils.Listener {
         } else {
             moveActivity()
         }
-        if (ResumeAdsEntryRule.shouldEnableOpenResume()) {
+        if (RemoteConfigUtils.getShowAds() && ResumeAdsEntryRule.shouldEnableOpenResume()) {
             AppOpenManager.getInstance().setAppResumeAdId(AdRemoteConfig.open_resume.id)
             AppOpenManager.getInstance().enableAppResume()
         } else {

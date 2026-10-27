@@ -72,11 +72,10 @@ object LocationSharingCoordinator {
             Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
         if (!foregroundGranted) return false
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) return false
+        // Foreground location ("While using the app") is sufficient for the
+        // connection-screen sharing flow. Do not force users into Settings for
+        // background access; the foreground service can continue while sharing
+        // is enabled and the app controls the active session.
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
     }

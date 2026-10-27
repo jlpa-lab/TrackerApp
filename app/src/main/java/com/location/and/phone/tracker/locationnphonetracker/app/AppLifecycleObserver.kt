@@ -11,6 +11,7 @@ import com.location.and.phone.tracker.locationnphonetracker.TrackerApplication
 import com.location.and.phone.tracker.locationnphonetracker.ui.uninstall.ReasonActivity
 import com.location.and.phone.tracker.locationnphonetracker.ui.welcome.WelcomeActivity
 import com.location.and.phone.tracker.locationnphonetracker.ads.AdRemoteConfig
+import com.location.and.phone.tracker.locationnphonetracker.ads.RemoteConfigUtils
 import com.location.and.phone.tracker.locationnphonetracker.ads.inter_welcome_back
 import com.location.and.phone.tracker.locationnphonetracker.ui.onboarding.OnBoardingActivity
 import com.location.and.phone.tracker.locationnphonetracker.ui.phonelocator.PhoneLocatorActivity
@@ -33,6 +34,10 @@ class AppLifecycleObserver : DefaultLifecycleObserver {
     override fun onStart(owner: LifecycleOwner) {
         val currentActivity = TrackerApplication.currentActivity
         if (currentActivity != null) {
+            if (!RemoteConfigUtils.getShowAds()) {
+                AppOpenManager.getInstance().disableAppResume()
+                return
+            }
             LocationSharingCoordinator.syncAcceptedFriends(currentActivity.applicationContext)
             if (ResumeAdsEntryRule.consumeResumeSuppression()) {
                 // Returning from Android Settings must restore the feature

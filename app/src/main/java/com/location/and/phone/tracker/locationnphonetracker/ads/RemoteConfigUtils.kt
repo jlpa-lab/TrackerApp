@@ -6,6 +6,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.location.and.phone.tracker.locationnphonetracker.BuildConfig
+import com.location.and.phone.tracker.locationnphonetracker.R
 import com.location.and.phone.tracker.locationnphonetracker.TrackerApplication
 import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants
 import com.location.and.phone.tracker.locationnphonetracker.app.AppConstants.DEFAULT_TIME_DELAY_SHOW_LANGUAGE_DONE_BUTTON
@@ -19,6 +20,8 @@ object RemoteConfigUtils {
     private const val ON_SHOW_DIALOG_CONSENT = "on_show_dialog_consent"
     private const val DELAY_SHOW_LANGUAGE_DONE_BUTTON = "delay_button_done_language"
     private const val TIME_DELAY_SHOW_LANGUAGE_DONE_BUTTON = "time_delay_show_language_done_button"
+    private const val SHOW_ADS = "show_ads"
+    private const val ONESIGNAL_APP_ID = "onesignal_app_id"
     private const val AD_REMOTE_CONFIG = "ad_remote_config"
     private const val FORCE_UPDATE_CONFIG = "force_update_config"
     private const val BACKEND_BASE_URL = "backend_base_url"
@@ -30,6 +33,7 @@ object RemoteConfigUtils {
     private const val ON_ENABLE_UNINSTALL_WIDGET = "on_enable_uninstall_widget"
 
     private val mapConditionForAd: HashMap<String, Any> = hashMapOf(
+        SHOW_ADS to true,
         ON_SHOW_DIALOG_CONSENT to true,
         ON_SHOW_NAVIGATION_BUTTON to false,
         DELAY_SHOW_LANGUAGE_DONE_BUTTON to true,
@@ -45,6 +49,9 @@ object RemoteConfigUtils {
 
     fun getOnShowNavigationButton(): Boolean = getBoolean(ON_SHOW_NAVIGATION_BUTTON)
     fun getOnShowDialogConsent(): Boolean = getBoolean(ON_SHOW_DIALOG_CONSENT)
+    fun getShowAds(): Boolean = getBoolean(SHOW_ADS, true)
+    fun getOneSignalAppId(context: Context): String =
+        getString(ONESIGNAL_APP_ID, context.getString(R.string.onesignal_app_id))
     fun getOnEnableUninstallWidget(): Boolean = getBoolean(ON_ENABLE_UNINSTALL_WIDGET, false)
     fun getBackendBaseUrl(): String = getString(BACKEND_BASE_URL, BuildConfig.TRACKER_BACKEND_URL)
     fun getTermsAndConditionsUrl(): String =
@@ -108,6 +115,7 @@ object RemoteConfigUtils {
         defaults[PRIVACY_POLICY_URL] = AppConstants.LINK_PRIVACY_POLICY
         defaults[MAPS_API_KEY] = BuildConfig.MAPS_API_KEY
         defaults[GOOGLE_PLACES_API_KEY] = BuildConfig.GOOGLE_PLACES_API_KEY
+        defaults[ONESIGNAL_APP_ID] = context.getString(R.string.onesignal_app_id)
         remoteConfig.apply {
             setConfigSettingsAsync(configSettings)
             mapConditionForAd.forEach { (key, value) ->

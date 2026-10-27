@@ -1,14 +1,11 @@
 package com.location.and.phone.tracker.locationnphonetracker.ui.connection
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.location.and.phone.tracker.locationnphonetracker.network.TrackerBackendClient
 import com.location.and.phone.tracker.locationnphonetracker.service.LocationSharingCoordinator
@@ -32,7 +29,6 @@ import androidx.activity.OnBackPressedCallback
 class ConnectionActivity : DashboardActivity() {
     private lateinit var binding: ActivityConnectionBinding
     private var pendingSharingEnable = false
-    private var backgroundSettingsOpen = false
     private var suppressSharingChange = false
     private val locationPermissionFlow by lazy {
         LocationPermissionFlow(
@@ -81,11 +77,6 @@ class ConnectionActivity : DashboardActivity() {
         val prefs = getSharedPreferences(LocationSharingCoordinator.PREFS, MODE_PRIVATE)
         val sharing = binding.connectionLocationSwitch
         sharing.isChecked = prefs.getBoolean("enabled", false)
-        if (sharing.isChecked && !hasBackgroundLocation()) {
-            prefs.edit().putBoolean("enabled", false).apply()
-            sharing.isChecked = false
-            Toast.makeText(this, R.string.connection_background_needed, Toast.LENGTH_LONG).show()
-        }
         updateSharingSummary(sharing.isChecked)
         sharing.setOnCheckedChangeListener { _, enabled ->
             if (suppressSharingChange) return@setOnCheckedChangeListener
@@ -104,11 +95,6 @@ class ConnectionActivity : DashboardActivity() {
     override fun onResume() {
         super.onResume()
         LocationSharingCoordinator.syncAcceptedFriends(this)
-        if (backgroundSettingsOpen) {
-            backgroundSettingsOpen = false
-            if (pendingSharingEnable && hasBackgroundLocation()) attemptEnableSharing()
-            else if (pendingSharingEnable) disableSharing(getString(R.string.connection_background_access_required))
-        }
         locationPermissionFlow.onHostResume()
         if (::backend.isInitialized) loadPendingCount()
     }
@@ -118,11 +104,6 @@ class ConnectionActivity : DashboardActivity() {
         if (!hasForegroundLocation()) {
             setSharingChecked(false)
             locationPermissionFlow.request()
-            return
-        }
-        if (!hasBackgroundLocation()) {
-            setSharingChecked(false)
-            showBackgroundLocationDialog()
             return
         }
         if (Build.VERSION.SDK_INT >= 33 && !hasNotificationPermission()) {
@@ -166,19 +147,6 @@ class ConnectionActivity : DashboardActivity() {
         message?.let { Toast.makeText(this, it, Toast.LENGTH_LONG).show() }
     }
 
-    private fun showBackgroundLocationDialog() {
-        if (backgroundSettingsOpen) return
-        backgroundSettingsOpen = true
-        AlertDialog.Builder(this)
-            .setTitle(R.string.live_background_title)
-            .setMessage(R.string.connection_background_sharing_message)
-            .setNegativeButton(R.string.common_not_now) { _, _ -> backgroundSettingsOpen = false; pendingSharingEnable = false }
-            .setPositiveButton(R.string.common_open_settings) { _, _ ->
-                openLocationPermissionSettings()
-            }
-            .show()
-    }
-
     private fun updateSharingSummary(enabled: Boolean) {
         binding.connectionLocationTitle.text = getString(
             if (enabled) R.string.connection_sharing_on else R.string.connection_sharing_off
@@ -188,13 +156,6 @@ class ConnectionActivity : DashboardActivity() {
             if (enabled) R.string.connection_location_shared_summary
             else R.string.connection_no_active_connections
         )
-    }
-
-    private fun openLocationPermissionSettings() {
-        startActivity(Intent(
-            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-            Uri.parse("package:$packageName")
-        ))
     }
 
     private fun setSharingChecked(checked: Boolean) {
